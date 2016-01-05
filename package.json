@@ -7,7 +7,7 @@
     "clean": "rimraf lib",
     "build": "babel src --out-dir lib",
     "test": "babel-tape-runner ./test/*",
-    "prepublish": "npm run test && npm run clean && npm run build"
+    "install": "npm run test && npm run clean && npm run build"
   },
   "author": "",
   "license": "MIT",
