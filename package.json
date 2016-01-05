@@ -10,7 +10,7 @@
   },
   "author": "",
   "license": "MIT",
-  "devDependencies": {
+  "dependencies": {
     "babel": "6.3.13",
     "babel-cli": "6.3.17",
     "babel-plugin-transform-object-rest-spread": "6.3.13",
