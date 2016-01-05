@@ -4,10 +4,10 @@
   "description": "",
   "main": "lib/index.js",
   "scripts": {
-    "clean": "$(npm bin)/rimraf lib",
-    "build": "$(npm bin)/babel src --out-dir lib",
-    "test": "$(npm bin)/babel-tape-runner ./test/*",
-    "install": "npm run test && npm run clean && npm run build"
+    "clean": "rimraf lib",
+    "build": "babel src --out-dir lib",
+    "test": "babel-tape-runner ./test/*",
+    "postinstall": "npm run test && npm run clean && npm run build"
   },
   "author": "",
   "license": "MIT",
