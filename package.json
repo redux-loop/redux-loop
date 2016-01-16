@@ -1,6 +1,6 @@
 {
   "name": "redux-loop",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "",
   "main": "lib/index.js",
   "scripts": {
@@ -9,7 +9,7 @@
     "test": "babel-tape-runner ./test/*",
     "install": "npm run build"
   },
-  "author": "",
+  "author": "Raise",
   "license": "MIT",
   "dependencies": {
     "babel-cli": "6.3.17",

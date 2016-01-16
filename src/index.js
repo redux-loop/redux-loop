@@ -11,7 +11,7 @@ const isLoopSymbol = Symbol('isLoop');
  *     );
  *   }
  *
- *   function reducerWithManyEffects(state, action) {
+ *   function reducerWithManyEffectsOneAsyncOneNot(state, action) {
  *     // ...
  *     return loop(
  *       newState,
@@ -46,7 +46,9 @@ function isLoop(state) {
  * Lifts a state to a looped state if it is not already
  */
 function liftState(state) {
-  return isLoop(state) ? state : loop(state, Promise.resolve());
+  return isLoop(state) ?
+    state :
+    loop(state, Promise.resolve());
 }
 
 /**
@@ -60,6 +62,29 @@ function liftReducer(reducer) {
 }
 
 /**
+ * Attempts to retrieve the `model` component of a looped reducer result. If the
+ * object is not a looped result the original object is returned. Primarily
+ * useful for testing reducers with loops.
+ */
+export function getModel(object) {
+  return isLoop(object) ?
+    object.model :
+    object;
+}
+
+
+/**
+ * Attempts to retrieve the `effect` component of a looped reducer result. If
+ * the object is not a looped result `null` is returned. Primarily used for
+ * testing reducers with loops.
+ */
+export function getEffect(object) {
+  return isLoop(object) ?
+    object.effect :
+    null;
+}
+
+/**
  * Installs a new dispatch function which will attempt to execute any effects
  * attached to the current model as established by the original dispatch.
  */
@@ -69,7 +94,6 @@ export function installReduxLoop() {
     const store = next(liftReducer(reducer), liftState(initialState));
 
     function dispatch(action) {
-      console.log('dispatching');
       const dispatchedAction = store.dispatch(action);
       const { effect } = store.getState();
       return runEffect(action, effect).then(() => {});
@@ -83,8 +107,8 @@ export function installReduxLoop() {
         })
         .catch((error) => {
           console.error(
-            `Loopback Promise caught when returned from action of type ${originalAction.type}.
-             Loopback Promises must not throw!`
+            `loop Promise caught when returned from action of type ${originalAction.type}.
+            loop Promises must not throw!`
           );
           throw error;
         });
@@ -99,9 +123,7 @@ export function installReduxLoop() {
     }
 
     const initialEffect = liftState(initialState).effect;
-    if(initialEffect) {
-      runEffect({ type: "@@ReduxLoop/INIT" }, initialEffect);
-    }
+    runEffect({ type: "@@ReduxLoop/INIT" }, initialEffect);
 
     return {
       ...store,
