@@ -1,5 +1,5 @@
 import test from 'tape';
-import { installReduxLoop, loop } from '../src';
+import Loop, { installReduxLoop, loop } from '../src';
 import { createStore, applyMiddleware, compose } from 'redux';
 
 const finalCreateStore = installReduxLoop()(createStore);
@@ -10,7 +10,16 @@ test('a looped action gets dispatched after the action that initiated it is redu
 
   const firstAction = { type: 'FIRST_ACTION' };
   const secondAction = { type: 'SECOND_ACTION' };
-  const initialState = { firstRun: false, secondRun: false };
+  const thirdAction = (value) => ({ type: 'THIRD_ACTION', payload: value });
+  const initialState = { firstRun: false, secondRun: false, thirdRun: false };
+
+  function doThirdLater(value) {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(thirdAction(value));
+      }, 0);
+    });
+  }
 
   function reducer(state, action) {
     switch(action.type) {
@@ -18,11 +27,17 @@ test('a looped action gets dispatched after the action that initiated it is redu
     case 'FIRST_ACTION':
       return loop(
         { ...state, firstRun: true },
-        Promise.resolve(secondAction)
+        Loop.batch([
+          Loop.constant(secondAction),
+          Loop.promise(thirdAction, 'hello'),
+        ])
       );
 
     case 'SECOND_ACTION':
       return { ...state, secondRun: true };
+
+    case 'THIRD_ACTION':
+      return { ...state, thirdRun: action.payload };
 
     default:
       return state;
@@ -32,11 +47,18 @@ test('a looped action gets dispatched after the action that initiated it is redu
   const store = finalCreateStore(reducer, initialState);
 
   const dispatchPromise = store.dispatch(firstAction);
-  t.deepEqual(store.getState(), { firstRun: true, secondRun: false });
+  t.deepEqual(store.getState(), {
+    firstRun: true,
+    secondRun: false,
+    thirdRun: false,
+  });
 
   dispatchPromise
     .then(() => {
-      t.deepEqual(store.getState(), { firstRun: true, secondRun: true });
+      t.deepEqual(store.getState(), {
+        firstRun: true,
+        secondRun: true,
+        thirdRun: 'hello',
+      });
     });
-
 });

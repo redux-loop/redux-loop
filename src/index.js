@@ -1,7 +1,80 @@
 const isLoopSymbol = Symbol('isLoop');
+const isEffectSymbol = Symbol('isEffect');
+
+const effectTypes = {
+  PROMISE: 'PROMISE',
+  BATCH: 'BATCH',
+  CONSTANT: 'CONSTANT',
+  NONE: 'NONE',
+};
 
 /**
- * Discretely attaches a promise to the model as an effect
+ * Throws with message if condition is false.
+ */
+function throwInvariant(condition, message) {
+  if(!condition) {
+    throw Error(message);
+  }
+}
+
+/**
+ * Determines if the object was created with an effect creator.
+ */
+function isEffect(object) {
+  return object[isEffectSymbol];
+}
+
+/**
+ * Determines if the object was created via `loop()`.
+ */
+function isLoop(object) {
+  return object[isLoopSymbol];
+}
+
+/**
+ * Runs an effect and returns the Promise for its completion.
+ */
+function effectToPromise(effect) {
+  if(process.env.NODE_ENV === 'development') {
+    throwInvariant(
+      isEffect(effect),
+      'Given effect is not an effect instance.'
+    );
+  }
+
+  switch (effect.type) {
+    case effectTypes.PROMISE:
+      return effect.factory(...effect.args);
+    case effectTypes.BATCH:
+      return Promise.all(effect.effects.map(effectToPromise));
+    case effectTypes.CONSTANT:
+      return Promise.resolve(effect.action);
+    case effectTypes.NONE:
+      return Promise.resolve();
+  }
+}
+
+/**
+ * Lifts a state to a looped state if it is not already.
+ */
+function liftState(state) {
+  return isLoop(state) ?
+    state :
+    loop(state, none());
+}
+
+/**
+ * Lifts a reducer to always return a looped state.
+ */
+function liftReducer(reducer) {
+  return (state, action) => {
+    const result = reducer(state.model, action);
+    return liftState(result);
+  };
+}
+
+/**
+ * Attaches an effect to the model.
  *
  *   function reducerWithSingleEffect(state, action) {
  *     // ...
@@ -23,9 +96,11 @@ const isLoopSymbol = Symbol('isLoop');
  *   }
  */
 export function loop(model, effect) {
-
-  if(typeof effect.then !== 'function') {
-    throw Error('Given effect is not a Promise instance');
+  if(process.env.NODE_ENV === 'development') {
+    throwInvariant(
+      isEffect(effect),
+      'Given effect is not an effect instance.'
+    );
   }
 
   return {
@@ -36,52 +111,47 @@ export function loop(model, effect) {
 }
 
 /**
- * Determines if the object was created via `loop()`.
+ * Creates an effect for a function that returns a Promise.
  */
-function isLoop(state) {
-  return state[isLoopSymbol];
+export function promise(factory, ...args) {
+  return {
+    factory,
+    args,
+    type: effectTypes.PROMISE,
+    [isEffectSymbol]: true
+  };
 }
 
 /**
- * Lifts a state to a looped state if it is not already
+ * Composes an array of effects together.
  */
-function liftState(state) {
-  return isLoop(state) ?
-    state :
-    loop(state, Promise.resolve());
+export function batch(effects) {
+  return {
+    effects,
+    type: effectTypes.BATCH,
+    [isEffectSymbol]: true
+  };
 }
 
 /**
- * Lifts a reducer to always return a looped state
+ * Creates an effect for an already-available action.
  */
-function liftReducer(reducer) {
-  return (state, action) => {
-    const result = reducer(state.model, action);
-    return liftState(result);
-  }
+export function constant(action) {
+  return {
+    action,
+    type: effectTypes.CONSTANT,
+    [isEffectSymbol]: true
+  };
 }
 
 /**
- * Attempts to retrieve the `model` component of a looped reducer result. If the
- * object is not a looped result the original object is returned. Primarily
- * useful for testing reducers with loops.
+ * Creates a noop effect.
  */
-export function getModel(object) {
-  return isLoop(object) ?
-    object.model :
-    object;
-}
-
-
-/**
- * Attempts to retrieve the `effect` component of a looped reducer result. If
- * the object is not a looped result `null` is returned. Primarily used for
- * testing reducers with loops.
- */
-export function getEffect(object) {
-  return isLoop(object) ?
-    object.effect :
-    null;
+export function none() {
+  return {
+    type: effectTypes.NONE,
+    [isEffectSymbol]: true
+  };
 }
 
 /**
@@ -100,7 +170,7 @@ export function installReduxLoop() {
     }
 
     function runEffect(originalAction, effect) {
-      return effect
+      return effectToPromise(effect)
         .then((actions) => {
           const materializedActions = [].concat(actions).filter(a => a);
           return Promise.all(materializedActions.map(dispatch));
@@ -129,7 +199,16 @@ export function installReduxLoop() {
       ...store,
       getState,
       dispatch,
-      replaceReducer
+      replaceReducer,
     };
   };
 }
+
+export default {
+  constant,
+  promise,
+  batch,
+  none,
+  loop,
+  installReduxLoop,
+};
