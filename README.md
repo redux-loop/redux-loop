@@ -6,20 +6,23 @@ Sequence your effects more naturally by returning them from your reducer.
 
 ```javascript
 import { createStore } from 'redux';
-import { installReduxLoop, loop } from 'redux-loop';
+import Loop, { installReduxLoop, loop } from 'redux-loop';
 import { fromJS } from 'immutable';
 
 const firstAction = {
   type: 'FIRST_ACTION',
 };
 
-const doSecondAction = () => new Promise((resolve) => {
-  setTimeout(() => {
-    resolve({
-      type: 'SECOND_ACTION',
+const doSecondAction = (value) => {
+  new Promise((resolve) => {
+    setTimeout(() => {
+      resolve({
+        type: 'SECOND_ACTION',
+        payload: value,
+      });
     });
   });
-});
+}
 
 const thirdAction = {
   type: 'THIRD_ACTION',
@@ -37,17 +40,17 @@ function reducer(state, action) {
 
   case 'FIRST_ACTION':
     // Enter a sequence at FIRST_ACTION, SECOND_ACTION and THIRD_ACTION will be
-    // dispatched in the order they are passed to Promise.all
+    // dispatched in the order they are passed to batch
     return loop(
       state.set('firstRun', true),
-      Promise.all([
-        doSecondAction(),
-        thirdAction
+      Loop.batch([
+        Loop.promise(doSecondAction, 'hello'),
+        Loop.constant(thirdAction)
       ])
     );
 
   case 'SECOND_ACTION':
-    return state.set('secondRun', true);
+    return state.set('secondRun', action.payload);
 
   case 'THIRD_ACTION':
     return state.set('thirdRun', true);
@@ -63,7 +66,7 @@ store
   .dispatch(firstAction);
   .then(() => {
     // dispatch returns a promise for when the current sequence is complete
-    // { firstRun: true, secondRun: true, thirdRun: true }
+    // { firstRun: true, secondRun: 'hello', thirdRun: true }
     console.log(store.getState().toJS());
   });
 ```
