@@ -1,6 +1,6 @@
 {
   "name": "redux-loop",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Return effects from your reducers as Promises for actions",
   "main": "lib/index.js",
   "jsnext:main": "src/index.js",
