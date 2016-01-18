@@ -1,5 +1,3 @@
-import { isPlainObject, mapValues } from 'lodash';
-
 import { throwInvariant } from './utils';
 
 import {
@@ -39,8 +37,8 @@ function liftReducer(reducer) {
  */
 export function install() {
   return (next) => (reducer, initialState) => {
-
-    const store = next(liftReducer(reducer), liftState(initialState));
+    const liftedInitialState = liftState(initialState);
+    const store = next(liftReducer(reducer), liftedInitialState);
 
     function dispatch(action) {
       const dispatchedAction = store.dispatch(action);
@@ -56,8 +54,8 @@ export function install() {
         })
         .catch((error) => {
           console.error(
-            `loop Promise caught when returned from action of type ${originalAction.type}.
-            loop Promises must not throw!`
+            `loop Promise caught when returned from action of type ${originalAction.type}.` +
+            '\nloop Promises must not throw!'
           );
           throw error;
         });
@@ -71,8 +69,7 @@ export function install() {
       return store.replaceReducer(liftReducer(r));
     }
 
-    const initialEffect = liftState(initialState).effect;
-    runEffect({ type: "@@ReduxLoop/INIT" }, initialEffect);
+    runEffect({ type: "@@ReduxLoop/INIT" }, liftedInitialState.effect);
 
     return {
       ...store,

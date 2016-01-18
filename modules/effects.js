@@ -9,8 +9,11 @@ const effectTypes = {
   NONE: 'NONE',
 };
 
+
 /**
 * Runs an effect and returns the Promise for its completion.
+* @param {Object} effect The effect to convert to a Promise.
+* @returns {Promise} The converted effect Promise.
 */
 export function effectToPromise(effect) {
   if(process.env.NODE_ENV === 'development') {
@@ -34,6 +37,8 @@ export function effectToPromise(effect) {
 
 /**
  * Determines if the object was created with an effect creator.
+ * @param {Object} object The object to inspect.
+ * @returns {Boolean} Whether the object is an effect.
  */
 export function isEffect(object) {
   return object[isEffectSymbol];
@@ -41,6 +46,7 @@ export function isEffect(object) {
 
 /**
  * Creates a noop effect.
+ * @returns {Object} An effect of type NONE, essentially a no-op.
  */
 export function none() {
   return {
@@ -51,6 +57,8 @@ export function none() {
 
 /**
  * Creates an effect for a function that returns a Promise.
+ * @param {Function} factory The function to invoke with the given args that returns a Promise for an action.
+ * @returns {Object} The wrapped effect of type PROMISE.
  */
 export function promise(factory, ...args) {
   return {
