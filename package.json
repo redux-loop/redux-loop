@@ -1,16 +1,16 @@
 {
   "name": "redux-loop",
-  "version": "0.3.0",
+  "version": "0.5.0",
   "description": "Return effects from your reducers as Promises for actions",
   "main": "lib/index.js",
-  "jsnext:main": "src/index.js",
+  "jsnext:main": "modules/index.js",
   "files": [
-    "src",
+    "modules",
     "lib"
   ],
   "scripts": {
     "clean": "rimraf lib",
-    "build": "babel src --out-dir lib",
+    "build": "babel modules --out-dir lib",
     "test": "babel-tape-runner ./test/*",
     "prepublish": "npm run clean && npm run build"
   },
