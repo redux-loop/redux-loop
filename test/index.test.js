@@ -1,8 +1,8 @@
 import test from 'tape';
-import Loop, { installReduxLoop, loop } from '../src';
+import { install, loop, Effects } from '../modules';
 import { createStore, applyMiddleware, compose } from 'redux';
 
-const finalCreateStore = installReduxLoop()(createStore);
+const finalCreateStore = install()(createStore);
 
 test('a looped action gets dispatched after the action that initiated it is reduced', (t) => {
 
@@ -27,9 +27,9 @@ test('a looped action gets dispatched after the action that initiated it is redu
     case 'FIRST_ACTION':
       return loop(
         { ...state, firstRun: true },
-        Loop.batch([
-          Loop.constant(secondAction),
-          Loop.promise(thirdAction, 'hello'),
+        Effects.batch([
+          Effects.constant(secondAction),
+          Effects.promise(thirdAction, 'hello'),
         ])
       );
 
