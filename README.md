@@ -146,6 +146,37 @@ several options for effects, all available under the `Effects` object:
 - `none()`
   - A no-op action, for convenience when writing custom effect creators
 
+  ### Easily test reducer results
+
+  ```javascript
+  import test from 'tape';
+  import reducer, { fetchDetails } from './reducer';
+  import { loadingStart } from './actions';
+  import { Effects, loop } from 'redux-loop';
+
+  test('reducer works as expected', (t) => {
+    const state = { loading: false };
+
+    const result = reducer(state, loadingStart(1));
+
+    t.deepEqual(result, loop(
+      { loading: true },
+      Effects.promise(loadingStart, 1)
+    ));
+  });
+  ```
+
+  Effects are declarative specifications of the next behavior of the store. They
+  are only processed by an active store, pushing effecting behavior to the edge of
+  the application. You can call a reducer as many times with a given action and
+  state and always get a result which is `deepEqual`.
+
+  > CAVEAT
+  > For testing sanity, always pass a referenceable function to `Effects.promise`.
+  > Functions curried or bound from the same function with the same arguments are
+  > not equal within JavaScript, and so are best to avoid if you want to compare
+  > effects in your tests.
+
 ### Use the custom `combineReducers` if you need it
 
 ```javascript
@@ -168,37 +199,6 @@ and forward them to the store. The built-in `createStore` in `redux` will not
 properly identify effects from your nested reducers' results and execute them,
 and the `redux-loop` implementation is completely compatible with the behavior
 of the built-in version so there should be no problem with exchanging it.
-
-### Easily test reducer results
-
-```javascript
-import test from 'tape';
-import reducer, { fetchDetails } from './reducer';
-import { loadingStart } from './actions';
-import { Effects, loop } from 'redux-loop';
-
-test('reducer works as expected', (t) => {
-  const state = { loading: false };
-
-  const result = reducer(state, loadingStart(1));
-
-  t.deepEqual(result, loop(
-    { loading: true },
-    Effects.promise(loadingStart, 1)
-  ));
-});
-```
-
-Effects are declarative specifications of the next behavior of the store. They
-are only processed by an active store, pushing effecting behavior to the edge of
-the application. You can call a reducer as many times with a given action and
-state and always get a result which is `deepEqual`.
-
-> CAVEAT
-> For testing sanity, always pass a referenceable function to `Effects.promise`.
-> Functions curried or bound from the same function with the same arguments are
-> not equal within JavaScript, and so are best to avoid if you want to compare
-> effects in your tests.
 
 ### Avoid circular loops!
 
