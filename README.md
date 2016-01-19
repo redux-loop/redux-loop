@@ -14,7 +14,7 @@ const firstAction = {
 };
 
 const doSecondAction = (value) => {
-  new Promise((resolve) => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
         type: 'SECOND_ACTION',
