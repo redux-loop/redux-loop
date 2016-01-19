@@ -95,7 +95,7 @@ from `redux-loop`.
 ### Write a reducer with some effects
 
 ```javascript
-import { Effects } from 'redux-loop';
+import { Effects, loop } from 'redux-loop';
 import { loadingStart, loadingSuccess, loadingFailure } from './actions';
 
 export function fetchDetails(id) {
