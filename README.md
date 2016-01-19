@@ -14,7 +14,7 @@ const firstAction = {
 };
 
 const doSecondAction = (value) => {
-  new Promise((resolve) => {
+  return new Promise((resolve) => {
     setTimeout(() => {
       resolve({
         type: 'SECOND_ACTION',
@@ -96,7 +96,7 @@ import { Effects } from 'redux-loop';
 import { loadingStart, loadingSuccess, loadingFailure } from './actions';
 
 export function fetchDetails(id) {
-  fetch(`/api/details/${id}`)
+  return fetch(`/api/details/${id}`)
     .then((r) => r.json())
     .then(loadingSuccess)
     .catch(loadingFailure);
