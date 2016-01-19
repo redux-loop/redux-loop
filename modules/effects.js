@@ -1,4 +1,4 @@
-import { throwInvariant } from './utils';
+import { throwInvariant, flatten } from './utils';
 
 const isEffectSymbol = Symbol('isEffect');
 
@@ -27,7 +27,7 @@ export function effectToPromise(effect) {
     case effectTypes.PROMISE:
       return effect.factory(...effect.args);
     case effectTypes.BATCH:
-      return Promise.all(effect.effects.map(effectToPromise));
+      return Promise.all(effect.effects.map(effectToPromise)).then(flatten);
     case effectTypes.CONSTANT:
       return Promise.resolve(effect.action);
     case effectTypes.NONE:

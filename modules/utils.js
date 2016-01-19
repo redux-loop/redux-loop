@@ -1,3 +1,14 @@
+const concat = Array.prototype.concat;
+
+
+/**
+ * Flattens an array one level
+ */
+export function flatten(array) {
+  return concat.apply([], array);
+}
+
+
 /**
  * Throws with message if condition is false.
  * @param {Boolean} condition The condition to assert.
@@ -8,6 +19,7 @@ export function throwInvariant(condition, message) {
     throw Error(message);
   }
 }
+
 
 /**
  * Maps over each value in an object and creates a new object with the mapped

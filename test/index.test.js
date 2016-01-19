@@ -35,7 +35,10 @@ test('a looped action gets dispatched after the action that initiated it is redu
       return loop(
         { ...state, firstRun: true },
         Effects.batch([
-          Effects.constant(secondAction),
+          Effects.batch([
+            Effects.constant(secondAction),
+            Effects.none(),
+          ]),
           Effects.promise(thirdAction, 'hello'),
         ])
       );
