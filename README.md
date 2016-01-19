@@ -164,7 +164,7 @@ test('reducer works as expected', (t) => {
 
   t.deepEqual(result, loop(
     { loading: true },
-    Effects.promise(loadingStart, 1)
+    Effects.promise(fetchDetails, 1)
   ));
 });
 ```
