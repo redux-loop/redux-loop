@@ -1,9 +1,18 @@
 {
   "name": "redux-loop",
+  "npmName": "redux-loop",
   "version": "1.0.0",
-  "description": "Return effects from your reducers as Promises for actions",
+  "description": "Sequence your effects naturally and purely by returning them from your reducers.",
   "main": "lib/index.js",
   "jsnext:main": "modules/index.js",
+  "homepage": "https://github.com/RaiseMarketplace/redux-loop",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/RaiseMarketplace/redux-loop.git"
+  },
+  "bugs": {
+    "url": "https://github.com/RaiseMarketplace/redux-loop/issues"
+  },
   "files": [
     "modules",
     "lib"
@@ -14,7 +23,23 @@
     "test": "babel-tape-runner ./test/*",
     "prepublish": "npm run clean && npm run build"
   },
-  "author": "Raise",
+  "keywords": [
+    "redux",
+    "middleware",
+    "effects",
+    "side effects",
+    "elm",
+    "loop"
+  ],
+  "tags": [
+    "redux",
+    "middleware",
+    "effects",
+    "side effects",
+    "elm",
+    "loop"
+  ],
+  "author": "Luke William Westby <luke.westby@raise.com>",
   "license": "MIT",
   "devDependencies": {
     "babel-cli": "6.3.17",
