@@ -3,7 +3,7 @@
 [![Build Status](https://travis-ci.org/raisemarketplace/redux-loop.svg?branch=master)](https://travis-ci.org/raisemarketplace/redux-loop)
 
 
-Sequence your effects naturally and purely by returning them from your reducer.
+Sequence your effects naturally and purely by returning them from your reducers.
 
 ## Quick Example
 
