@@ -4,6 +4,8 @@
 
 
 Sequence your effects naturally and purely by returning them from your reducers.
+Inspired by [elm-effects](https://github.com/evancz/elm-effects) and the [Elm
+Architecture](https://github.com/evancz/elm-architecture-tutorial).
 
 ## Quick Example
 
