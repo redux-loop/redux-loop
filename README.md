@@ -232,3 +232,7 @@ keep your reducers small and focused, and use `combineReducers` or manually
 compose reducers so that the number of actions you deal with at one time is
 small. A small set of actions which initiate a `loop` will help reduce the
 likelihood of causing circular dispatches.
+
+## Contributing
+
+Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms. Multiple language translations are available at http://contributor-covenant.org/
