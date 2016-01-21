@@ -99,8 +99,8 @@ can apply it directly over `createStore` or compose it with other enhancers
 and middlewares. For best results, we recommend installing this enhancer
 _*last*_, so that other enhancers like `applyMiddleware` and `DevTools.instrument`
 will recieve the result of `getState()` from `redux-loop` and not the raw state
-that `redux-loop` works with internally. If you see `model` or `effects`
-properties in your top-level state, check your composition order!
+that `redux-loop` works with internally. If you see `model` and `effects`
+properties in your top-level state and nothing else, check your composition order!
 
 ### Write a reducer with some effects
 
@@ -240,6 +240,13 @@ keep your reducers small and focused, and use `combineReducers` or manually
 compose reducers so that the number of actions you deal with at one time is
 small. A small set of actions which initiate a `loop` will help reduce the
 likelihood of causing circular dispatches.
+
+## Support
+
+Potential bugs, generally discussion, and proposals or RFCs should be submitted
+as issues to this repo, we'll do our best to address them quickly. We use this
+library as well and want it to be the best it can! For questions about using the
+library, submit questions on StackOverflow with the `redux-loop` tag.
 
 ## Contributing
 
