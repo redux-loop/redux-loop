@@ -81,18 +81,26 @@ store
 ### Install the store enhancer
 
 ```javascript
-import { createStore } from 'redux';
+import { createStore, compose, applyMiddleware } from 'redux';
 import reducer from './reducers';
 import { install } from 'redux-loop';
+import someMiddleware from 'some-middleware';
 
-const store = install()(createStore)(reducer);
+const finalCreateStore = compose(
+  applyMiddleware(someMiddleware),
+  install()
+)(createStore);
+
+const store = finalCreateStore(reducer);
 ```
 
 Installing `redux-loop` is as easy as installing any other store enhancer. You
 can apply it directly over `createStore` or compose it with other enhancers
-and middlewares. For best results, we recommend installing this enhancer such
-that other enhancers like `devtools` will receive the result of `getState()`
-from `redux-loop`.
+and middlewares. For best results, we recommend installing this enhancer
+_*last*_, so that other enhancers like `applyMiddleware` and `DevTools.instrument`
+will recieve the result of `getState()` from `redux-loop` and not the raw state
+that `redux-loop` works with internally. If you see `model` or `effects`
+properties in your top-level state, check your composition order!
 
 ### Write a reducer with some effects
 
