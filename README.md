@@ -96,7 +96,8 @@ to handle asynchronous effects as well as synchronous state transitions. With
 particular action, it decides what happens _*next*_. All of the behavior of your
 application can be traced through one place, and that behavior can be easily broken
 apart and composed back together. This is one of the most powerful features of the
-Elm architecture, and with `redux-loop` it is a feature of Redux as well.
+[Elm architecture](https://github.com/evancz/elm-architecture-tutorial), and with
+`redux-loop` it is a feature of Redux as well.
 
 ## Tutorial
 
