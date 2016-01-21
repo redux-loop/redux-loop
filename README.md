@@ -86,15 +86,17 @@ conclusion:
 > in response to an action are just one of all possible effects an action can
 > have on application state.
 
-Many of the other possible methods for handling effects in Redux which focus on
-action-creators guide the user either explicitly or implicitly to understand
-asynchronous effects as a significantly different concept than reducer state
-transitions simply because they are asynchronous. With `redux-loop`, the reducer
-doesn't just decides what happens _*now*_ due to a particular action, it decides
-what happens _*next*_. All of the behavior of your application can be traced
-through one place, and that behavior can be easily broken apart and composed
-back together. This is one of the most powerful features of the Elm
-Architecture, and with `redux-loop` it can be a feature of Redux as well.
+Many other methods for handling effects in Redux, especially those implemented
+with action-creators, incorrectly teach the user that asynchronous effects are
+fundamentally different from synchronous state transitions. This separation
+encourages divergent and increasingly specific means of processing particular
+types effects. Instead, we should focus on making our reducers powerful enough
+to handle asynchronous effects as well as synchronous state transitions. With
+`redux-loop`, the reducer doesn't just decides what happens _*now*_ due to a
+particular action, it decides what happens _*next*_. All of the behavior of your
+application can be traced through one place, and that behavior can be easily broken
+apart and composed back together. This is one of the most powerful features of the
+Elm architecture, and with `redux-loop` it can be a feature of Redux as well.
 
 ## Tutorial
 
