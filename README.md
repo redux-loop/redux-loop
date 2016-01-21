@@ -76,6 +76,29 @@ store
   });
 ```
 
+## Why use this?
+
+Having used and followed the progression of Redux and the Elm Architecture, and
+after trying other effect patterns for Redux, we came to the following
+conclusion:
+
+> Synchronous state transitions caused by returning a new state from the reducer
+> in response to an action are just one of all possible effects an action can
+> have on application state.
+
+Many other methods for handling effects in Redux, especially those implemented
+with action-creators, incorrectly teach the user that asynchronous effects are
+fundamentally different from synchronous state transitions. This separation
+encourages divergent and increasingly specific means of processing particular
+types effects. Instead, we should focus on making our reducers powerful enough
+to handle asynchronous effects as well as synchronous state transitions. With
+`redux-loop`, the reducer doesn't just decide what happens _*now*_ due to a
+particular action, it decides what happens _*next*_. All of the behavior of your
+application can be traced through one place, and that behavior can be easily broken
+apart and composed back together. This is one of the most powerful features of the
+[Elm architecture](https://github.com/evancz/elm-architecture-tutorial), and with
+`redux-loop` it is a feature of Redux as well.
+
 ## Tutorial
 
 ### Install the store enhancer
