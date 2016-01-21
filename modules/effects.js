@@ -41,7 +41,7 @@ export function effectToPromise(effect) {
  * @returns {Boolean} Whether the object is an effect.
  */
 export function isEffect(object) {
-  return object[isEffectSymbol];
+  return object ? object[isEffectSymbol] : false;
 }
 
 /**

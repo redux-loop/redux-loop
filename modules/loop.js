@@ -7,7 +7,7 @@ const isLoopSymbol = Symbol('isLoop');
  * Determines if the object was created via `loop()`.
  */
 export function isLoop(object) {
-  return object[isLoopSymbol];
+  return object ? object[isLoopSymbol] : false;
 }
 
 /**
