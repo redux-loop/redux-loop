@@ -92,11 +92,11 @@ fundamentally different from synchronous state transitions. This separation
 encourages divergent and increasingly specific means of processing particular
 types effects. Instead, we should focus on making our reducers powerful enough
 to handle asynchronous effects as well as synchronous state transitions. With
-`redux-loop`, the reducer doesn't just decides what happens _*now*_ due to a
+`redux-loop`, the reducer doesn't just decide what happens _*now*_ due to a
 particular action, it decides what happens _*next*_. All of the behavior of your
 application can be traced through one place, and that behavior can be easily broken
 apart and composed back together. This is one of the most powerful features of the
-Elm architecture, and with `redux-loop` it can be a feature of Redux as well.
+Elm architecture, and with `redux-loop` it is a feature of Redux as well.
 
 ## Tutorial
 
