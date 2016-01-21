@@ -1,13 +1,13 @@
 # API Docs
 
 * [`install()`](#install)
-* [`loop(state, effect)`](#loop)
+* [`loop(state, effect)`](#loopstate-effect)
 * [`Effects`](#effects)
-  * [`Effects.none()`](#effects-none)
-  * [`Effects.constant(action)`](#effects-constant)
-  * [`Effects.promise(promiseFactory, ...args)`](#effects-promise)
-  * [`Effects.batch(effects)`](#effects-batch)
-* [`combineReducers(reducersMap)`](#combinereducers)
+  * [`Effects.none()`](#effectsnone)
+  * [`Effects.constant(action)`](#effectsconstantaction)
+  * [`Effects.promise(promiseFactory, ...args)`](#effectspromisepromisefactory-args)
+  * [`Effects.batch(effects)`](#effectsbatcheffects)
+* [`combineReducers(reducersMap)`](#combinereducersreducersmap)
 
 ## `install()`
 
