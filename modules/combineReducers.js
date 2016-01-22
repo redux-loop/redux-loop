@@ -14,7 +14,7 @@ function optimizeBatch(effects) {
 }
 
 export function combineReducers(reducerMap) {
-  return function finalReducer(state, action) {
+  return function finalReducer(state = {}, action) {
     const effects = [];
     let hasChanged = false;
 
