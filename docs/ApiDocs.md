@@ -7,7 +7,6 @@
   * [`Effects.constant(action)`](#effectsconstantaction)
   * [`Effects.promise(promiseFactory, ...args)`](#effectspromisepromisefactory-args)
   * [`Effects.batch(effects)`](#effectsbatcheffects)
-* [`combineReducers(reducersMap)`](#combinereducersreducersmap)
 
 ## `install()`
 
@@ -242,32 +241,4 @@ function reducer(state, action) {
       return { ...state, loading: false };
   }
 }
-```
-
-## `combineReducers(reducersMap)`
-
-* `reducersMap: Object<string, ReducerFunction>` &ndash; a map of keys to nested
-  reducers, just like the `combineReducers` you would find in Redux itself.
-
-#### Notes
-
-Reducer composition is key to a clean Redux application. The built-in Redux
-`combineReducers` won't work for nested reducers that use `loop`, so we included
-one that is aware that some reducers might have effects. The `combineReducers`
-in redux-loop knows how to compose effects as well as state from nested reducers
-so that your effects tree is always separate from your state tree. It's also
-completely compatible with the one in Redux, so there should be no issues
-switching to this implementation.
-
-#### Examples
-
-```javascript
-import { combineReducers } from 'redux-loop';
-import reducerWithEffects from './reducer-with-effects';
-import plainReducer from './plain-reducer';
-
-export default combineReducers({
-  withEffects: reducerWithEffects,
-  plain: plainReducer
-});
 ```

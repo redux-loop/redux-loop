@@ -213,29 +213,6 @@ state and always get a result which is `deepEqual`.
 > not equal within JavaScript, and so are best to avoid if you want to compare
 > effects in your tests.
 
-### Use the custom `combineReducers` if you need it
-
-```javascript
-import { createStore } from 'redux';
-import { combineReducers, install } from 'redux-loop';
-
-import { firstReducer, secondReducer } from './reducers';
-
-const reducer = combineReducers({
-  first: firstReducer,
-  second: secondReducer,
-});
-
-const store = install()(createStore)(reducer);
-```
-
-The `combineReducers` implementation in `redux-loop` is aware that some of
-your reducers might return effects, and it knows how to properly compose them
-and forward them to the store. The built-in `createStore` in `redux` will not
-properly identify effects from your nested reducers' results and execute them,
-and the `redux-loop` implementation is completely compatible with the behavior
-of the built-in version so there should be no problem with exchanging it.
-
 ### Avoid circular loops!
 
 ```javascript
