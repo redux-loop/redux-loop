@@ -1,4 +1,6 @@
 const concat = Array.prototype.concat;
+const fnToString = (fn) => Function.prototype.toString.call(fn);
+const objStringValue = fnToString(Object);
 
 
 /**
@@ -33,4 +35,44 @@ export function mapValues(object, mapper) {
     current[key] = mapper(object[key], key);
     return current;
   }, {});
+}
+
+
+/**
+ * https://github.com/rackt/redux/blob/v3.0.5/src/utils/isPlainObject.js
+ *
+ * @param {any} obj The object to inspect.
+ * @returns {boolean} True if the argument appears to be a plain object.
+ */
+export function isPlainObject(obj) {
+  if (!obj || typeof obj !== 'object') {
+    return false;
+  }
+
+  const proto = typeof obj.constructor === 'function' ?
+    Object.getPrototypeOf(obj) :
+    Object.prototype;
+
+  if (proto === null) {
+    return true;
+  }
+
+  const constructor = proto.constructor;
+
+  return typeof constructor === 'function'
+    && constructor instanceof constructor
+    && fnToString(constructor) === objStringValue;
+}
+
+
+export function trampoline(fn) {
+  return (...args) => {
+    let result = fn(...args);
+
+    while (result instanceof Function) {
+      result = result();
+    }
+
+    return result;
+  }
 }

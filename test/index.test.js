@@ -1,6 +1,6 @@
 import test from 'tape';
-import { install, loop, Effects, combineReducers } from '../modules';
-import { createStore, applyMiddleware, compose } from 'redux';
+import { install, loop, Effects } from '../modules';
+import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 
 const finalCreateStore = install()(createStore);
 

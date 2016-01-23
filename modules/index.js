@@ -13,10 +13,6 @@ import {
   install,
 } from './install';
 
-import {
-  combineReducers,
-} from './combineReducers';
-
 
 const Effects = {
   constant,
@@ -26,7 +22,6 @@ const Effects = {
 };
 
 export {
-  combineReducers,
   Effects,
   install,
   loop,
