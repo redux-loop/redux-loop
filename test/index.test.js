@@ -88,5 +88,5 @@ test('a looped action gets dispatched after the action that initiated it is redu
 
   const beforeDispatchUnhandled = store.getState();
   store.dispatch({ type: 'NOT_HANDLED' });
-  t.ok(beforeDispatchUnhandled === store.getState(), );
+  t.ok(beforeDispatchUnhandled === store.getState());
 });
