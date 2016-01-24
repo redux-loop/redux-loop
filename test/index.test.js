@@ -4,8 +4,8 @@ import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 
 const finalCreateStore = install()(createStore);
 
-test('a looped action gets dispatched after the action that initiated it is reduced', (t) => {
-  t.plan(2);
+test('a looped action gets dispatched after the action that initiated it is reduced', async (t) => {
+  t.plan(3);
 
   const firstAction = { type: 'FIRST_ACTION' };
   const secondAction = { type: 'SECOND_ACTION' };
@@ -75,15 +75,18 @@ test('a looped action gets dispatched after the action that initiated it is redu
     prop2: true,
   });
 
-  dispatchPromise
-    .then(() => {
-      t.deepEqual(store.getState(), {
-        prop1: {
-          firstRun: true,
-          secondRun: true,
-          thirdRun: 'hello',
-        },
-        prop2: true,
-      });
-    });
+  await dispatchPromise;
+
+  t.deepEqual(store.getState(), {
+    prop1: {
+      firstRun: true,
+      secondRun: true,
+      thirdRun: 'hello',
+    },
+    prop2: true,
+  });
+
+  const beforeDispatchUnhandled = store.getState();
+  store.dispatch({ type: 'NOT_HANDLED' });
+  t.ok(beforeDispatchUnhandled === store.getState(), );
 });

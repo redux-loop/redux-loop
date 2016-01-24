@@ -32,19 +32,41 @@ function liftReducer(reducer) {
  * Installs a new dispatch function which will attempt to execute any effects
  * attached to the current model as established by the original dispatch.
  */
-export function install() {
+export function install({ autoComposeEffects = true } = {}) {
   return (next) => (reducer, initialState) => {
     const store = next(liftReducer(reducer), initialState);
-    let replacingEffects = false;
+    let runningCustomDispatch = false;
+    let previousParsedState = initialState;
 
     function dispatch(action) {
-      const dispatchedAction = store.dispatch(action);
+      store.dispatch(action);
+
       const rawState = store.getState();
 
-      replacingEffects = true;
-      const { model, effect } = parseRawState(rawState);
+      if (rawState === previousParsedState) {
+        return Promise.resolve();
+      }
+
+      if (process.env.NODE_ENV !== 'production') {
+        if(!autoComposeEffects) {
+          throwInvariant(
+            isLoop(rawState),
+            'With autoComposeEffects turned off you must return a `loop` from' +
+            ' your top level reducer.'
+          );
+        }
+      }
+
+      const { model, effect } = autoComposeEffects ?
+        parseRawState(rawState) :
+        rawState;
+
+      previousParsedState = model;
+
+      runningCustomDispatch = true;
       store.dispatch({ type: replaceEffectsTag, state: model });
-      replacingEffects = false;
+      runningCustomDispatch = false;
+
       return runEffect(action, effect).then(() => {});
     }
 
@@ -69,7 +91,7 @@ export function install() {
 
     function subscribe(listener) {
       return store.subscribe(() => {
-        if (!replacingEffects) listener();
+        if (!runningCustomDispatch) listener();
       });
     }
 
