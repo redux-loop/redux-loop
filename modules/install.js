@@ -52,7 +52,7 @@ export function install() {
           const materializedActions = [].concat(actions).filter(a => a);
           return Promise.all(materializedActions.map(dispatch));
         })
-        .catch((error) => {
+        ['catch']((error) => {
           console.error(
             `loop Promise caught when returned from action of type ${originalAction.type}.` +
             '\nloop Promises must not throw!'
