@@ -65,7 +65,8 @@ function reducer(state, action) {
   }
 }
 
-const store = install()(createStore)(reducer, initialState);
+// Note: passing enhancer as the last argument to createStore requires redux@>=3.1.0
+const store = createStore(reducer, initialState, install());
 
 store
   .dispatch(firstAction);
@@ -109,12 +110,13 @@ import reducer from './reducers';
 import { install } from 'redux-loop';
 import someMiddleware from 'some-middleware';
 
-const finalCreateStore = compose(
+const enhancer = compose(
   applyMiddleware(someMiddleware),
   install()
-)(createStore);
+);
 
-const store = finalCreateStore(reducer);
+// Note: passing enhancer as the last argument to createStore requires redux@>=3.1.0
+const store = createStore(reducer, initialState, enhancer);
 ```
 
 Installing `redux-loop` is as easy as installing any other store enhancer. You
@@ -226,7 +228,8 @@ const reducer = combineReducers({
   second: secondReducer,
 });
 
-const store = install()(createStore)(reducer);
+// Note: passing enhancer as the last argument to createStore requires redux@>=3.1.0
+const store = createStore(reducer, initialState, install());
 ```
 
 The `combineReducers` implementation in `redux-loop` is aware that some of
