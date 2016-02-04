@@ -27,8 +27,10 @@ last.
 import { createStore } from 'redux';
 import { install } from 'redux-loop';
 import reducer from './reducer';
+const initialState = { /* ... */ };
 
-const store = install()(createStore)(reducer);
+// Note: passing enhancer as the last argument to createStore requires redux@>=3.1.0
+const store = createStore(reducer, initialState, install());
 ```
 
 **Applied with other enhancers:**
@@ -38,14 +40,16 @@ import someMiddleware from 'some-middleware';
 import installOther from 'other-enhancer';
 import { install as installReduxLoop } from 'redux-loop';
 import reducer from './reducer';
+const initialState = { /* ... */ };
 
-const finalCreateStore = compose(
+const enhancer = compose(
   applyMiddleware(someMiddleware),
   installOther(),
   installReduxLoop()
 );
 
-const store = finalCreateStore(reducer);
+// Note: passing enhancer as the last argument to createStore requires redux@>=3.1.0
+const store = createStore(reducer, initialState, enhancer);
 ```
 
 ## `loop(state, effect)`
