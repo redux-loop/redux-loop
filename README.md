@@ -7,6 +7,17 @@ Sequence your effects naturally and purely by returning them from your reducers.
 Inspired by [elm-effects](https://github.com/evancz/elm-effects) and the [Elm
 Architecture](https://github.com/evancz/elm-architecture-tutorial).
 
+> Isn't it incorrect to cause side-effects in a reducer?
+Yes! Absolutely.
+
+> Doesn't redux-loop put side-effects in the reducer?
+It doesn't. The values returned from the reducer when scheduling an effect with
+redux-loop only _describe_ the effect. Calling the reducer will not cause the
+effect to run. The value returned by the reducer is just an object that the
+store knows how to interpret when it is enhanced by redux-loop. You can safely
+call a reducer in your tests without worrying about waiting for effects to finish
+and what they will do to your environment.
+
 ## Quick Example
 
 ```javascript
