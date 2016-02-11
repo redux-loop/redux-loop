@@ -14,7 +14,7 @@
     "url": "https://github.com/RaiseMarketplace/redux-loop/issues"
   },
   "peerDependencies": {
-    "redux": "^3.0.0",
+    "redux": "^3.0.0"
   },
   "files": [
     "modules",
