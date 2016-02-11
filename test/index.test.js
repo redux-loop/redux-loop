@@ -39,7 +39,7 @@ test('a looped action gets dispatched after the action that initiated it is redu
             Effects.constant(secondAction),
             Effects.none(),
           ]),
-          Effects.promise(thirdAction, 'hello'),
+          Effects.promise(doThirdLater, 'hello'),
         ])
       );
 

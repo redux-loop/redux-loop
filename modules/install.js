@@ -49,7 +49,7 @@ export function install() {
     function runEffect(originalAction, effect) {
       return effectToPromise(effect)
         .then((actions) => {
-          const materializedActions = [].concat(actions).filter(a => a);
+          const materializedActions = actions;
           return Promise.all(materializedActions.map(dispatch));
         })
         .catch((error) => {

@@ -1,7 +1,7 @@
 {
   "name": "redux-loop",
   "npmName": "redux-loop",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Sequence your effects naturally and purely by returning them from your reducers.",
   "main": "lib/index.js",
   "jsnext:main": "modules/index.js",
@@ -12,6 +12,9 @@
   },
   "bugs": {
     "url": "https://github.com/RaiseMarketplace/redux-loop/issues"
+  },
+  "peerDependencies": {
+    "redux": "^3.0.0",
   },
   "files": [
     "modules",

@@ -25,13 +25,13 @@ export function effectToPromise(effect) {
 
   switch (effect.type) {
     case effectTypes.PROMISE:
-      return effect.factory(...effect.args);
+      return effect.factory(...effect.args).then((action) => [action]);
     case effectTypes.BATCH:
       return Promise.all(effect.effects.map(effectToPromise)).then(flatten);
     case effectTypes.CONSTANT:
-      return Promise.resolve(effect.action);
+      return Promise.resolve([effect.action]);
     case effectTypes.NONE:
-      return Promise.resolve();
+      return Promise.resolve([]);
   }
 }
 
