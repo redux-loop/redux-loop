@@ -82,7 +82,7 @@ function reducer(state, action) {
 const store = createStore(reducer, initialState, install());
 
 store
-  .dispatch(firstAction);
+  .dispatch(firstAction)
   .then(() => {
     // dispatch returns a promise for when the current sequence is complete
     // { firstRun: true, secondRun: 'hello', thirdRun: true }
