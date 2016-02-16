@@ -9,7 +9,7 @@ function optimizeBatch(effects) {
     case 1:
       return effects[0];
     default:
-      batch(effects);
+      return batch(effects);
   }
 }
 

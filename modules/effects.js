@@ -7,6 +7,7 @@ const effectTypes = {
   BATCH: 'BATCH',
   CONSTANT: 'CONSTANT',
   NONE: 'NONE',
+  LIFT: 'LIFT',
 };
 
 
@@ -32,6 +33,10 @@ export function effectToPromise(effect) {
       return Promise.resolve([effect.action]);
     case effectTypes.NONE:
       return Promise.resolve([]);
+    case effectTypes.LIFT:
+      return effectToPromise(effect.effect).then((actions) => 
+        actions.map((action) => effect.factory(...effect.args, action))
+      );
   }
 }
 
@@ -87,6 +92,19 @@ export function constant(action) {
   return {
     action,
     type: effectTypes.CONSTANT,
+    [isEffectSymbol]: true
+  };
+}
+
+/**
+ * Transform the return type of a bunch of `Effects`. This is primarily useful for adding tags to route `Actions` to the right place
+ */
+export function lift(effect, factory, ...args) {
+  return {
+    effect,
+    factory,
+    args,
+    type: effectTypes.LIFT,
     [isEffectSymbol]: true
   };
 }
