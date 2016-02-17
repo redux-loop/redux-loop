@@ -1,5 +1,6 @@
 import test from 'tape';
 import { install, loop, Effects, combineReducers } from '../modules';
+import { effectToPromise } from '../modules/effects';
 import { createStore, applyMiddleware, compose } from 'redux';
 
 const finalCreateStore = install()(createStore);
@@ -85,5 +86,27 @@ test('a looped action gets dispatched after the action that initiated it is redu
         },
         prop2: true,
       });
+    });
+});
+
+test('Effects.lift', (t) => {
+
+  const lowerAction = (name) => ({ type: 'LOWER', name });
+  const upperAction = (arg, action) => ({ type: 'UPPER', arg, action });
+
+  const lowerEffect = Effects.constant(lowerAction('hello'));
+  const upperEffect = Effects.lift(lowerEffect, upperAction, 1);
+
+  effectToPromise(upperEffect)
+    .then(([action]) => {
+      t.deepEqual(action, {
+        type: 'UPPER',
+        arg: 1,
+        action: {
+          type: 'LOWER',
+          name: 'hello'
+        },
+      });
+      t.end();
     });
 });

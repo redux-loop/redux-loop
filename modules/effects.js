@@ -34,7 +34,7 @@ export function effectToPromise(effect) {
     case effectTypes.NONE:
       return Promise.resolve([]);
     case effectTypes.LIFT:
-      return effectToPromise(effect.effect).then((actions) => 
+      return effectToPromise(effect.effect).then((actions) =>
         actions.map((action) => effect.factory(...effect.args, action))
       );
   }
