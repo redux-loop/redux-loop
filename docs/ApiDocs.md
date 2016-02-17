@@ -7,6 +7,7 @@
   * [`Effects.constant(action)`](#effectsconstantaction)
   * [`Effects.promise(promiseFactory, ...args)`](#effectspromisepromisefactory-args)
   * [`Effects.batch(effects)`](#effectsbatcheffects)
+  * [`Effects.lift(effect, higherOrderActionCreator, [...additionalArgs])`](#effectslifteffecthigherorderactioncreator-additionalargs)
 * [`combineReducers(reducersMap)`](#combinereducersreducersmap)
 
 ## `install()`
@@ -153,11 +154,11 @@ return loop(
 
 ### `Effects.promise(promiseFactory, ...args)`
 
-* `promiseFactory: (...Array<any>) => Promise<Action>` &ndash a function which,
+* `promiseFactory: (...Array<any>) => Promise<Action>` &ndash; a function which,
   when called with the values in `args`, will return a Promise that will
   _**always**_ resolve to an action, even if the underlying process fails.
   Remember to call `.catch`!
-* `args: Array<any>` &ndash any arguments to call `promiseFactory` with.
+* `args: Array<any>` &ndash; any arguments to call `promiseFactory` with.
 
 #### Notes
 
@@ -244,6 +245,81 @@ function reducer(state, action) {
 
     case 'STOP_LOADING':
       return { ...state, loading: false };
+  }
+}
+```
+
+### `Effects.lift(effect, higherOrderActionCreator, [...additionalArgs])`
+
+* `effect: Effect` &ndash; an effect, the resulting action of which will be
+  passed to `higherOrderActionCreator` to be nested into a higher-order action.
+* `higherOrderActionCreator` &ndash; an action creator function which will
+  accept an action, or optional some other arguments followed by an action, and
+  return a new action in which the previous action was nested.
+* `additionalArgs` &ndash; a list of additional arguments to pass to
+  `higherOrderActionCreator` before passing in the action from the effect.
+
+
+#### Notes
+
+`lift` allows you to take an existing effect from a nested reducer in your
+state and lift it to a more general action in which the resulting action is
+nested. This enables you to build your reducer in a fractal-like fashion, in
+which all of the logic for a particular slice of your state is totally
+encapsulated and actions can be simply directed to the reducer for that slice.
+
+#### Examples
+
+**nestedState.js**
+```javascript
+function incrementAsync(amount) {
+  return new Promise((resolve) => {
+    setTimeout(() => (
+      resolve({ type: 'INCREMENT_FINISH', payload: amount })
+    ), 100);
+  });
+}
+
+function incrementStart(amount) {
+  return { type: 'INCREMENT_START', payload: amount };
+}
+
+function nestedReducer(state = 0, action) {
+  switch (action.type) {
+    case 'INCREMENT_START':
+      return loop(
+        state,
+        Effects.promise(incrementAsync, action.payload)
+      );
+    case 'INCREMENT':
+      return state + action.payload;
+    default:
+      return state;
+  }
+}
+```
+
+**topState.js**
+```javascript
+import nestedReducer from './nestedState';
+
+function nestedAction(action) {
+  return { type: 'NESTED_ACTION', payload: action };
+}
+
+function reducer(state = { /* ... */ }, action) {
+  switch(action.type) {
+    // ... other top-level things
+
+    case 'NESTED_ACTION':
+      const { model, effect } = nestedReducer(state.nestedCount, action.payload);
+      return loop(
+        { ...state, nestedCount: model },
+        Effects.lift(effect, nestedAction)
+      );
+
+    default:
+      return state;
   }
 }
 ```
