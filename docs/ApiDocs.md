@@ -7,7 +7,7 @@
   * [`Effects.constant(action)`](#effectsconstantaction)
   * [`Effects.promise(promiseFactory, ...args)`](#effectspromisepromisefactory-args)
   * [`Effects.batch(effects)`](#effectsbatcheffects)
-  * [`Effects.lift(effect, higherOrderActionCreator, [...additionalArgs])`](#effectslifteffecthigherorderactioncreator-additionalargs)
+  * [`Effects.lift(effect, higherOrderActionCreator, [...additionalArgs])`](#effectslifteffect-higherorderactioncreator-additionalargs)
 * [`combineReducers(reducersMap)`](#combinereducersreducersmap)
 
 ## `install()`
