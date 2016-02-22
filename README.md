@@ -285,7 +285,8 @@ likelihood of causing circular dispatches.
 Potential bugs, generally discussion, and proposals or RFCs should be submitted
 as issues to this repo, we'll do our best to address them quickly. We use this
 library as well and want it to be the best it can! For questions about using the
-library, submit questions on StackOverflow with the `redux-loop` tag.
+library, [submit questions on StackOverflow](http://stackoverflow.com/questions/ask)
+with the [`redux-loop` tag](http://stackoverflow.com/questions/tagged/redux-loop).
 
 ## Contributing
 
