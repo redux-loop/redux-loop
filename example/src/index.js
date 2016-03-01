@@ -226,7 +226,9 @@ const App = connector(({ model, dispatch }) => {
  * object, like an `Immutable.Map` as our initial state.
  */
 const store = install()(createStore)(reducer, initialState);
-
+store.subscribe(() => {
+  console.log(store.isEffectsQueueEmpty());
+});
 
 /**
  * Make some magic!

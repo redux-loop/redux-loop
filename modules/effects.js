@@ -52,6 +52,10 @@ export function isEffect(object) {
   return object ? object[isEffectSymbol] : false;
 }
 
+export function isNone(object) {
+  return isEffect(object) && object.type === effectTypes.NONE;
+}
+
 /**
  * Creates a noop effect.
  * @returns {Object} An effect of type NONE, essentially a no-op.
