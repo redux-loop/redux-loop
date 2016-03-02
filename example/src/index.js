@@ -227,7 +227,8 @@ const App = connector(({ model, dispatch }) => {
  */
 const store = install()(createStore)(reducer, initialState);
 store.subscribe(() => {
-  console.log(store.isEffectsQueueEmpty());
+  const isEmpty = store.isEffectsQueueEmpty();
+  console.log(`Effects queue is ${isEmpty ? '' : 'not '}empty`);
 });
 
 /**
