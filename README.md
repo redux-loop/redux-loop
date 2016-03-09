@@ -288,6 +288,24 @@ library as well and want it to be the best it can! For questions about using the
 library, [submit questions on StackOverflow](http://stackoverflow.com/questions/ask)
 with the [`redux-loop` tag](http://stackoverflow.com/questions/tagged/redux-loop).
 
+### Don't see a feature you want?
+
+If you're interested in adding something to `redux-loop` but don't want to wait
+for us to incorporate the idea you can follow these steps to get your own installable
+version of `redux-loop` with your feature included:
+
+1. Fork the main repo here
+1. Add your feature or change
+1. Change the package `"name"` in package.json to be `"@<your-npm-username>/redux-loop`
+1. Commit to master and `npm publish`
+1. `npm install @<your-npm-username>/redux-loop`
+
+We are _**always**_ interested in new ideas, but sometimes we get a little busy and fall
+behind on responding and reviewing PRs. Hopefully this process will allow you to
+continue making progress on your projects and also provide us with more context if and
+when you do decide to make a PR for your new feature or change. The best way to verify
+new features for a library is to use them in real-world scenarios!
+
 ## Contributing
 
 Please note that this project is released with a [Contributor Code of Conduct](CODE_OF_CONDUCT.md). By participating in this project you agree to abide by its terms. Multiple language translations are available at [contributor-covenant.org](http://contributor-covenant.org/version/1/3/0/i18n/)
