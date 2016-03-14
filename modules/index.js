@@ -1,5 +1,7 @@
 import {
   loop,
+  getModel,
+  getEffect,
 } from './loop';
 
 import {
@@ -32,4 +34,6 @@ export {
   Effects,
   install,
   loop,
+  getModel,
+  getEffect,
 };

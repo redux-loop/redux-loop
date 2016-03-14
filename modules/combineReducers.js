@@ -1,4 +1,4 @@
-import { loop, isLoop } from './loop';
+import { loop, isLoop, getEffect, getModel } from './loop';
 import { batch, none } from './effects';
 import { mapValues } from './utils';
 
@@ -23,9 +23,10 @@ export function combineReducers(reducerMap) {
       const nextStateForKey = reducer(previousStateForKey, action);
 
       if (isLoop(nextStateForKey)) {
-        effects.push(nextStateForKey.effect);
-        hasChanged = hasChanged || nextStateForKey.model !== previousStateForKey;
-        return nextStateForKey.model;
+        effects.push(getEffect(nextStateForKey));
+        const model = getModel(nextStateForKey);
+        hasChanged = hasChanged || model !== previousStateForKey;
+        return model;
       } else {
         hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
         return nextStateForKey;

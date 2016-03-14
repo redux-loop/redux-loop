@@ -2,6 +2,8 @@
 
 * [`install()`](#install)
 * [`loop(state, effect)`](#loopstate-effect)
+* [`getModel(loop)`](#getmodelloop)
+* [`getEffect(loop)`](#geteffectloop)
 * [`Effects`](#effects)
   * [`Effects.none()`](#effectsnone)
   * [`Effects.constant(action)`](#effectsconstantaction)
@@ -53,12 +55,14 @@ const enhancer = compose(
 const store = createStore(reducer, initialState, enhancer);
 ```
 
-## `loop(state, effect)`
+## `loop(state, effect): [any, Effect]`
 
 * `state: any` &ndash; the new store state, like you would normally return from
   a reducer.
 * `effect: Effect` &ndash; an effect to run once the current action has been
   dispatched, can be a result of any of the functions available under `Effects`.
+* returns an `Array` pair of the `state` and the `effect`, to allow for easy
+  destructuring as well as a predictable structure for other functionality.
 
 #### Notes
 
@@ -95,6 +99,31 @@ function reducer(state, action) {
   }
 }
 ```
+
+## `getModel(loop): any`
+
+* `loop: any` &ndash; any object.
+* returns the model component of the array if the input is a `[any, Effect]`
+  pair, otherwise returns the input object.
+
+#### Notes
+
+`getModel` lets you extract just the model component of an array returned by
+`loop`. It's useful in testing if you need to extract out the model component
+to do custom comparisons like `Immutable.is()`.
+
+
+## `getEffect(loop): Effect | null`
+
+* `loop: any` &ndash; any object.
+* returns the effect component of the array if the input is a `[any, Effect]`
+  pair, otherwise returns `null`.
+
+#### Notes
+
+`getEffect` lets you extract just the effect component of an array returned by
+`loop`. It's useful in testing if you need to separate the model and effect and
+test them separately.
 
 ## `Effects`
 
@@ -292,9 +321,15 @@ function nestedReducer(state = 0, action) {
         Effects.promise(incrementAsync, action.payload)
       );
     case 'INCREMENT':
-      return state + action.payload;
+      return loop(
+        state + action.payload,
+        Effects.none()
+      );
     default:
-      return state;
+      return loop(
+        state,
+        Effects.none()
+      );
   }
 }
 ```
@@ -312,7 +347,7 @@ function reducer(state = { /* ... */ }, action) {
     // ... other top-level things
 
     case 'NESTED_ACTION':
-      const { model, effect } = nestedReducer(state.nestedCount, action.payload);
+      const [model, effects] = nestedReducer(state.nestedCount, action.payload);
       return loop(
         { ...state, nestedCount: model },
         Effects.lift(effect, nestedAction)

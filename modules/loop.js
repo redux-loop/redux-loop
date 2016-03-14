@@ -1,13 +1,36 @@
 import { throwInvariant } from './utils';
 import { isEffect } from './effects';
 
-const isLoopSymbol = Symbol('isLoop');
 
 /**
- * Determines if the object was created via `loop()`.
+ * Determines if the object is an array created via `loop()`.
  */
-export function isLoop(object) {
-  return object ? object[isLoopSymbol] : false;
+export const isLoop = (array) => {
+  return Array.isArray(array) && array.length === 2 && isEffect(array[1]);
+};
+
+
+/**
+ * Returns the effect from the loop if it is a loop, otherwise null
+ */
+export const getEffect = (loop) => {
+  if (!isLoop(loop)) {
+    return null;
+  }
+
+  return loop[1];
+}
+
+
+/**
+ * Returns the model from the loop if it is a loop, otherwise identity
+ */
+export const getModel = (loop) => {
+  if (!isLoop(loop)) {
+    return loop;
+  }
+
+  return loop[0];
 }
 
 /**
@@ -32,7 +55,7 @@ export function isLoop(object) {
  *     );
  *   }
  */
-export function loop(model, effect) {
+export const loop = (model, effect) => {
   if(process.env.NODE_ENV === 'development') {
     throwInvariant(
       isEffect(effect),
@@ -40,9 +63,5 @@ export function loop(model, effect) {
     );
   }
 
-  return {
-    model,
-    effect,
-    [isLoopSymbol]: true
-  };
+  return [model, effect];
 }

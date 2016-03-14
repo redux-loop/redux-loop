@@ -2,6 +2,8 @@ import { throwInvariant } from './utils';
 
 import {
   loop,
+  getEffect,
+  getModel,
   isLoop,
 } from './loop';
 
@@ -26,7 +28,7 @@ function liftState(state) {
  */
 function liftReducer(reducer) {
   return (state, action) => {
-    const result = reducer(state.model, action);
+    const result = reducer(getModel(state), action);
     return liftState(result);
   };
 }
@@ -42,7 +44,7 @@ export function install() {
 
     function dispatch(action) {
       const dispatchedAction = store.dispatch(action);
-      const { effect } = store.getState();
+      const effect = getEffect(store.getState());
       return runEffect(action, effect).then(() => {});
     }
 
@@ -62,14 +64,14 @@ export function install() {
     }
 
     function getState() {
-      return store.getState().model;
+      return getModel(store.getState());
     }
 
     function replaceReducer(r) {
       return store.replaceReducer(liftReducer(r));
     }
 
-    runEffect({ type: "@@ReduxLoop/INIT" }, liftedInitialState.effect);
+    runEffect({ type: "@@ReduxLoop/INIT" }, getEffect(liftedInitialState));
 
     return {
       ...store,
