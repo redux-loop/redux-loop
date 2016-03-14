@@ -90,7 +90,6 @@ test('a looped action gets dispatched after the action that initiated it is redu
 });
 
 test('Effects.lift', (t) => {
-
   const lowerAction = (name) => ({ type: 'LOWER', name });
   const upperAction = (arg, action) => ({ type: 'UPPER', arg, action });
 

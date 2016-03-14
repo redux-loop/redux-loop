@@ -1,4 +1,5 @@
 import { throwInvariant } from './utils';
+import { loopPromiseCaughtError } from './errors';
 
 import {
   loop,
@@ -11,6 +12,7 @@ import {
   isEffect,
   effectToPromise,
 } from './effects';
+
 
 /**
  * Lifts a state to a looped state if it is not already.
@@ -53,10 +55,7 @@ export function install() {
           return Promise.all(materializedActions.map(dispatch));
         })
         .catch((error) => {
-          console.error(
-            `loop Promise caught when returned from action of type ${originalAction.type}.` +
-            '\nloop Promises must not throw!'
-          );
+          console.error(loopPromiseCaughtError(originalAction.type));
           throw error;
         });
     }
