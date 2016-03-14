@@ -3,6 +3,7 @@ import { throwInvariant } from './utils';
 import {
   loop,
   isLoop,
+  liftState,
 } from './loop';
 
 import {
@@ -12,14 +13,6 @@ import {
   effectToPromise,
 } from './effects';
 
-/**
- * Lifts a state to a looped state if it is not already.
- */
-function liftState(state) {
-  return isLoop(state) ?
-    state :
-    loop(state, none());
-}
 
 /**
  * Lifts a reducer to always return a looped state.

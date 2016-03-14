@@ -2,6 +2,7 @@
 
 * [`install()`](#install)
 * [`loop(state, effect)`](#loopstate-effect)
+* [`liftState(state)`](#liftstatestate)
 * [`Effects`](#effects)
   * [`Effects.none()`](#effectsnone)
   * [`Effects.constant(action)`](#effectsconstantaction)
@@ -95,6 +96,48 @@ function reducer(state, action) {
   }
 }
 ```
+
+## `liftState(state): [any, Effect]`
+
+* `state: any` &ndash; an object which may be the state of the redux store, or
+  an existing `[any, Effect]` pair created by `loop()`.
+
+#### Notes
+
+Automatically converts objects to `loop()` results. If the value was created
+with `loop()`, then the function behaves as an identity. Otherwise, it is lifted
+into a `[any, Effect]` pair where the effect is `Effects.none()`. Useful for
+forcing reducers to always return a `loop()` result, even if they shortcut to
+just the model internally.
+
+#### Example
+
+```javascript
+function reducer(state, action) {
+  switch(action.type) {
+    case 'LOAD_START':
+      return loop(
+        { ...state, isLoading: true },
+        Effects.promise(apiFetch, action.payload.id)
+      );
+    case 'LOAD_COMPLETE':
+      return {
+        ...state,
+        isLoading: false,
+        result: action.payload,
+      };
+    default:
+      return state;
+  }
+}
+
+// This guarantees that the return value of the reducer will be a loop result,
+// regardless of if it was set as such in the reducer implementation. This makes
+// it much easier to manually compose reducers without cluttering reducer
+// implementations with `loop(state, Effects.none())`.
+export default compose(reducer, liftState);
+```
+
 
 ## `Effects`
 
