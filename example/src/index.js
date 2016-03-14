@@ -184,7 +184,7 @@ const Counter = ({ loading, count, failed, onClick, name }) => {
 * react-redux attempts to spread our state object over our components, so we
 * need to make sure the state is contained in a single property within our
 * component's `props`. We'll call it `model` here, to be a little more like
-* Elm 😄, and we'll also deserialize it to a plain object for convenience. 😆
+* Elm 😄, and we'll also deserialize it to a plain object for convenience.
 */
 const connector = connect((state) => ({ model: state.toJS() }));
 

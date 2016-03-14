@@ -1,5 +1,5 @@
 import { throwInvariant } from './utils';
-import { isEffect } from './effects';
+import { isEffect, none } from './effects';
 
 const isLoopSymbol = Symbol('isLoop');
 
@@ -45,4 +45,13 @@ export function loop(model, effect) {
     effect,
     [isLoopSymbol]: true
   };
+}
+
+/**
+* Lifts a state to a looped state if it is not already.
+*/
+export const liftState = (state) => {
+  return isLoop(state) ?
+    state :
+    loop(state, none());
 }
