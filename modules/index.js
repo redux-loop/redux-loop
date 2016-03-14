@@ -1,6 +1,8 @@
 import {
   loop,
   liftState,
+  getModel,
+  getEffect,
 } from './loop';
 
 import {
@@ -34,4 +36,6 @@ export {
   install,
   loop,
   liftState,
+  getModel,
+  getEffect,
 };
