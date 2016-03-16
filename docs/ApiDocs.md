@@ -2,12 +2,9 @@
 
 * [`install()`](#install)
 * [`loop(state, effect)`](#loopstate-effect)
-<<<<<<< HEAD
 * [`liftState(state)`](#liftstatestate)
-=======
 * [`getModel(loop)`](#getmodelloop)
 * [`getEffect(loop)`](#geteffectloop)
->>>>>>> feature/loop_returns_array
 * [`Effects`](#effects)
   * [`Effects.none()`](#effectsnone)
   * [`Effects.constant(action)`](#effectsconstantaction)
