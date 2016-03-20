@@ -31,9 +31,9 @@ function liftReducer(reducer) {
  * attached to the current model as established by the original dispatch.
  */
 export function install() {
-  return (next) => (reducer, initialState) => {
+  return (next) => (reducer, initialState, enhancer) => {
     const liftedInitialState = liftState(initialState);
-    const store = next(liftReducer(reducer), liftedInitialState);
+    const store = next(liftReducer(reducer), liftedInitialState, enhancer);
 
     function dispatch(action) {
       const dispatchedAction = store.dispatch(action);
