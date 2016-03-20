@@ -33,7 +33,7 @@ export function combineReducers(reducerMap) {
 
       model[key] = nextStateForKey;
       hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
-    });
+    }
 
     return loop(
       hasChanged ? model : state,
