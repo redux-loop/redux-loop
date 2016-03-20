@@ -20,6 +20,10 @@ store knows how to interpret when it is enhanced by redux-loop. You can safely
 call a reducer in your tests without worrying about waiting for effects to finish
 and what they will do to your environment.
 
+> What are the environment requirements for redux-loop?
+
+`redux-loop` requires polyfills for ES6 `Promise` and `Symbol` to be included if the browsers you target don't natively support them.
+
 ## Quick Example
 
 ```javascript
