@@ -109,3 +109,14 @@ test('Effects.lift', (t) => {
       t.end();
     });
 });
+
+test('Effects.call', (t) => {
+  const callAction = (name) => ({ type: 'CALL', name });
+  const callEffect = Effects.call(callAction, 'hello');
+
+  effectToPromise(callEffect)
+    .then(([action]) => {
+      t.deepEqual(action, { type: 'CALL', name: 'hello' });
+      t.end();
+    });
+});

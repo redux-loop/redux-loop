@@ -79,8 +79,8 @@ export function promise(factory, ...args) {
 
 /**
  * Creates an effect for a function that returns an action.
- * @param {Function} factory The function to invoke with the given args an action.
- * @returns {Object} The wrapped effect of type PROMISE.
+ * @param {Function} factory The function to invoke with the given args that returns an action.
+ * @returns {Object} The wrapped effect of type CALL.
  */
 export function call(factory, ...args) {
   return {
