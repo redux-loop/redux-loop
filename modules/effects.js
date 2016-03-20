@@ -4,6 +4,7 @@ const isEffectSymbol = Symbol('isEffect');
 
 const effectTypes = {
   PROMISE: 'PROMISE',
+  CALL: 'CALL',
   BATCH: 'BATCH',
   CONSTANT: 'CONSTANT',
   NONE: 'NONE',
@@ -27,6 +28,8 @@ export function effectToPromise(effect) {
   switch (effect.type) {
     case effectTypes.PROMISE:
       return effect.factory(...effect.args).then((action) => [action]);
+    case effectTypes.CALL:
+      return Promise.resolve([effect.factory(...effect.args)]);
     case effectTypes.BATCH:
       return Promise.all(effect.effects.map(effectToPromise)).then(flatten);
     case effectTypes.CONSTANT:
@@ -70,6 +73,20 @@ export function promise(factory, ...args) {
     factory,
     args,
     type: effectTypes.PROMISE,
+    [isEffectSymbol]: true
+  };
+}
+
+/**
+ * Creates an effect for a function that returns an action.
+ * @param {Function} factory The function to invoke with the given args an action.
+ * @returns {Object} The wrapped effect of type PROMISE.
+ */
+export function call(factory, ...args) {
+  return {
+    factory,
+    args,
+    type: effectTypes.CALL,
     [isEffectSymbol]: true
   };
 }

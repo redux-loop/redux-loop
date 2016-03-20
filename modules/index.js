@@ -10,6 +10,7 @@ import {
   none,
   constant,
   promise,
+  call,
   lift,
 } from './effects';
 
@@ -25,6 +26,7 @@ import {
 const Effects = {
   constant,
   promise,
+  call,
   batch,
   none,
   lift,
