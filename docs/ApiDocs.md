@@ -8,6 +8,7 @@
 * [`Effects`](#effects)
   * [`Effects.none()`](#effectsnone)
   * [`Effects.constant(action)`](#effectsconstantaction)
+  * [`Effects.call(actionFactory, ...args)`](#effectsactionfactory-args)
   * [`Effects.promise(promiseFactory, ...args)`](#effectspromisepromisefactory-args)
   * [`Effects.batch(effects)`](#effectsbatcheffects)
   * [`Effects.lift(effect, higherOrderActionCreator, [...additionalArgs])`](#effectslifteffect-higherorderactioncreator-additionalargs)
@@ -222,6 +223,37 @@ that run in parallel but don't need to communicate or complete at the same time.
 return loop(
   { state, someProp: action.payload },
   Effects.constant({ type: 'SOME_ACTION' })
+);
+```
+
+### `Effects.call(actionFactory, ...args)`
+
+* `actionFactory: (...Array<any>) => Action` &ndash; a function that will run
+  some synchronous effects and then return an action to represent the result.
+* `args: Array<any>` &ndash; any arguments to call `actionFactory` with.
+
+
+#### Notes
+
+`call` allows you to declaratively schedule a function with some arguments that
+can cause synchronous effects like manipulating `localStorage` or interacting
+with `window` and then return an action to represent the outcome. The return
+value of `call` must be an action. If you find it necessary to execute effects
+in response to a state change that don't result in further actions, you should
+implement a subscriber to the store via `store.subscribe()`.
+
+#### Examples
+
+```javascript
+const readKeyFromLocalStorage = (key) => {
+  return Actions.updateFromLocalStorage(localStorage[key]);
+}
+
+// ...
+
+return loop(
+  state,
+  Effects.call(readKeyFromLocalStorage, action.payload)
 );
 ```
 
