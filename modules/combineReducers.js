@@ -1,6 +1,5 @@
 import { loop, isLoop, getEffect, getModel } from './loop';
 import { batch, none } from './effects';
-import { mapValues } from './utils';
 
 function optimizeBatch(effects) {
   switch(effects.length) {
@@ -15,23 +14,26 @@ function optimizeBatch(effects) {
 
 export function combineReducers(reducerMap) {
   return function finalReducer(state = {}, action) {
-    const effects = [];
     let hasChanged = false;
+    let effects = [];
+    let model = {};
 
-    const model = mapValues(reducerMap, (reducer, key) => {
+    const reducerMapKeys = Object.keys(reducerMap);
+    for (let i = 0; i < reducerMapKeys.length; i++) {
+      const key = reducerMapKeys[i];
+      const reducer = reducerMap[key];
+
       const previousStateForKey = state[key];
-      const nextStateForKey = reducer(previousStateForKey, action);
+      let nextStateForKey = reducer(previousStateForKey, action);
 
       if (isLoop(nextStateForKey)) {
         effects.push(getEffect(nextStateForKey));
-        const model = getModel(nextStateForKey);
-        hasChanged = hasChanged || model !== previousStateForKey;
-        return model;
-      } else {
-        hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
-        return nextStateForKey;
+        nextStateForKey = getModel(nextStateForKey);
       }
-    });
+
+      model[key] = nextStateForKey;
+      hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
+    }
 
     return loop(
       hasChanged ? model : state,
