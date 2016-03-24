@@ -22,7 +22,8 @@ and what they will do to your environment.
 
 > What are the environment requirements for redux-loop?
 
-`redux-loop` requires polyfills for ES6 `Promise` and `Symbol` to be included if the browsers you target don't natively support them.
+`redux-loop` requires polyfills for ES6 `Promise` and `Symbol` to be included if
+the browsers you target don't natively support them.
 
 ## Quick Example
 
@@ -138,11 +139,9 @@ const store = createStore(reducer, initialState, enhancer);
 
 Installing `redux-loop` is as easy as installing any other store enhancer. You
 can apply it directly over `createStore` or compose it with other enhancers
-and middlewares. For best results, we recommend installing this enhancer
-_*last*_, so that other enhancers like `applyMiddleware` and `DevTools.instrument`
-will recieve the result of `getState()` from `redux-loop` and not the raw state
-that `redux-loop` works with internally. If you see `model` and `effects`
-properties in your top-level state and nothing else, check your composition order!
+and middlewares. Composition of enhancers can be confusing, so the order in
+which `install()` is applied may matter. If something like `applyMiddleware()`
+doesn't work when called before `install()`, applying after may fix the issue.
 
 ### Write a reducer with some effects
 
