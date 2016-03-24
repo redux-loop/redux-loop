@@ -11,5 +11,6 @@ abide by its terms. Multiple language translations are available at
 ## Issues
 
 Issues in which the maintainers have requested more information from the issue-
-creator and the issue-creator has not responded within 7 days will be closed and
-can be reopened when the issue-creator does respond.
+creator and the issue-creator has not responded within 7 days will be closed
+with a note. Closed issues can be reopened once the issue-creator has responded
+with the information requested.
