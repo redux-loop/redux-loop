@@ -13,7 +13,8 @@ function optimizeBatch(effects) {
 }
 
 export function combineReducers(
-    reducerMap, rootState = {}, 
+    reducerMap,
+    rootState = {}, 
     accessor = (child, key) => child[key],
     mutator = (child, key, value) => { child[key] = value; return child; }
 ) {
