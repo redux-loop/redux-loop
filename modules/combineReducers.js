@@ -12,7 +12,7 @@ function optimizeBatch(effects) {
   }
 }
 
-function combineReducers(reducerMap, rootState = {}, accessor, mutator) {
+export function combineReducers(reducerMap, rootState = {}, accessor, mutator) {
     if (typeof accessor !== 'function') {
         accessor = (child, key) => child[key];
     }
