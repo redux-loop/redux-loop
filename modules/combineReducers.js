@@ -12,32 +12,36 @@ function optimizeBatch(effects) {
   }
 }
 
-export function combineReducers(reducerMap) {
-  return function finalReducer(state = {}, action) {
-    let hasChanged = false;
-    let effects = [];
-    let model = {};
-
-    const reducerMapKeys = Object.keys(reducerMap);
-    for (let i = 0; i < reducerMapKeys.length; i++) {
-      const key = reducerMapKeys[i];
-      const reducer = reducerMap[key];
-
-      const previousStateForKey = state[key];
-      let nextStateForKey = reducer(previousStateForKey, action);
-
-      if (isLoop(nextStateForKey)) {
-        effects.push(getEffect(nextStateForKey));
-        nextStateForKey = getModel(nextStateForKey);
-      }
-
-      model[key] = nextStateForKey;
-      hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
+function combineReducers(reducerMap, rootState = {}, accessor, mutator) {
+    if (typeof accessor !== 'function') {
+        accessor = (child, key) => child[key];
     }
+    if (typeof mutator !== 'function') {
+        mutator = (child, key, value) => { child[key] = value; return child; };
+    }
+    return function finalReducer(state = {}, action) {
+        let hasChanged = false;
+        let effects = [];
 
-    return loop(
-      hasChanged ? model : state,
-      optimizeBatch(effects)
-    );
-  };
+        const model = Object.keys(reducerMap).reduce((model, key) => {
+            const reducer = reducerMap[key];
+            const previousStateForKey = accessor(state, key);
+            let nextStateForKey = reducer(previousStateForKey, action);
+
+            if (isLoop(nextStateForKey)) {
+                effects.push(getEffect(nextStateForKey));
+                nextStateForKey = getModel(nextStateForKey);
+            }
+
+            hasChanged = hasChanged || nextStateForKey !== previousStateForKey;
+            return mutator(model, key, nextStateForKey);
+        }, rootState);
+
+        console.log(model);
+
+        return loop(
+            hasChanged ? model : state,
+            optimizeBatch(effects)
+        );
+    };
 }
