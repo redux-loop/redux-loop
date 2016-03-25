@@ -12,13 +12,11 @@ function optimizeBatch(effects) {
   }
 }
 
-export function combineReducers(reducerMap, rootState = {}, accessor, mutator) {
-    if (typeof accessor !== 'function') {
-        accessor = (child, key) => child[key];
-    }
-    if (typeof mutator !== 'function') {
-        mutator = (child, key, value) => { child[key] = value; return child; };
-    }
+export function combineReducers(
+    reducerMap, rootState = {}, 
+    accessor = (child, key) => child[key],
+    mutator = (child, key, value) => { child[key] = value; return child; }
+) {
     return function finalReducer(state = {}, action) {
         let hasChanged = false;
         let effects = [];
