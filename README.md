@@ -279,7 +279,7 @@ const reducer = combineReducers(
 ```
 
 Our `combineReducers` can also handle states made of data structures
-other than the default `{}`, you simple pass it in the root state,
+other than the default `{}`, you simply pass it in the root state,
 an accessor function (which returns a value for that key), and a mutator
 function (which returns a **new version** of the object with a value
 set at a given key). The example above demonstrates using Immutable.js'
