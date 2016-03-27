@@ -18,7 +18,7 @@ export function combineReducers(
     accessor = (child, key) => child[key],
     mutator = (child, key, value) => { child[key] = value; return child; }
 ) {
-    return function finalReducer(state = {}, action) {
+    return function finalReducer(state = rootState, action) {
         let hasChanged = false;
         let effects = [];
 
