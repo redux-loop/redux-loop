@@ -255,7 +255,7 @@ properly identify effects from your nested reducers' results and execute them,
 and the `redux-loop` implementation is completely compatible with the behavior
 of the built-in version so there should be no problem with exchanging it.
 
-## Using redux-loop's `combineReducers` with Immutable.js (or any other data structure)
+#### Using redux-loop's `combineReducers` with Immutable.js (or any other data structure)
 
 ```javascript
 import { combineReducers } from 'redux-loop';
