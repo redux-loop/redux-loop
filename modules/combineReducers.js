@@ -36,8 +36,6 @@ export function combineReducers(
             return mutator(model, key, nextStateForKey);
         }, rootState);
 
-        console.log(model);
-
         return loop(
             hasChanged ? model : state,
             optimizeBatch(effects)
