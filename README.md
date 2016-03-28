@@ -255,6 +255,37 @@ properly identify effects from your nested reducers' results and execute them,
 and the `redux-loop` implementation is completely compatible with the behavior
 of the built-in version so there should be no problem with exchanging it.
 
+#### Using redux-loop's `combineReducers` with Immutable.js (or any other data structure)
+
+```javascript
+import { combineReducers } from 'redux-loop';
+import { Map } from 'immutable';
+
+import { firstReducer, secondReducer } from './reducers';
+
+const reducers = {
+  first: firstReducer,
+  second: secondReducer,
+}
+
+//Map() is now used as the new root state, and custom accessor and mutator properties are provided
+const reducer = combineReducers(
+    reducers,
+    Map(),
+    (child, key) => child.get(key),
+    (child, key, value) => child.set(key, value)
+);
+
+```
+
+Our `combineReducers` can also handle states made of data structures
+other than the default `{}`, you simply pass it in the root state,
+an accessor function (which returns a value for that key), and a mutator
+function (which returns a **new version** of the object with a value
+set at a given key). The example above demonstrates using Immutable.js'
+Map() data structure, but you can use any `key => value` data structure
+as long as you provide your own accessor and mutator functions.
+
 ### Avoid circular loops!
 
 ```javascript

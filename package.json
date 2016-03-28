@@ -53,6 +53,7 @@
     "babel-polyfill": "6.7.2",
     "babel-preset-es2015": "6.3.13",
     "babel-register": "6.7.2",
+    "immutable": "^3.7.6",
     "redux": "3.0.5",
     "rimraf": "2.4.4",
     "tape": "4.5.1"
