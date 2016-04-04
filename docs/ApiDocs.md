@@ -1,18 +1,18 @@
 # API Docs
 
 * [`install()`](#install)
-* [`loop(state, effect)`](#loopstate-effect)
-* [`liftState(state)`](#liftstatestate)
-* [`getModel(loop)`](#getmodelloop)
-* [`getEffect(loop)`](#geteffectloop)
+* [`loop(state, effect)`](#loopstate-effect-any-effect)
+* [`liftState(state)`](#liftstatestate-any-effect)
+* [`getModel(loop)`](#getmodelloop-any)
+* [`getEffect(loop)`](#geteffectloop-effect--null)
 * [`Effects`](#effects)
   * [`Effects.none()`](#effectsnone)
   * [`Effects.constant(action)`](#effectsconstantaction)
-  * [`Effects.call(actionFactory, ...args)`](#effectsactionfactory-args)
+  * [`Effects.call(actionFactory, ...args)`](#effectscallactionfactory-args)
   * [`Effects.promise(promiseFactory, ...args)`](#effectspromisepromisefactory-args)
   * [`Effects.batch(effects)`](#effectsbatcheffects)
   * [`Effects.lift(effect, higherOrderActionCreator, [...additionalArgs])`](#effectslifteffect-higherorderactioncreator-additionalargs)
-* [`combineReducers(reducersMap, [initialState, accessor, modifier])`](#combinereducersreducersmap-initialstateaccessormodifier)
+* [`combineReducers(reducersMap, [initialState, accessor, modifier])`](#combinereducersreducersmap-initialstate-accessor-modifier)
 
 ## `install()`
 
