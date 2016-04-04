@@ -1,7 +1,7 @@
 {
   "name": "redux-loop",
   "npmName": "redux-loop",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Sequence your effects naturally and purely by returning them from your reducers.",
   "main": "lib/index.js",
   "jsnext:main": "modules/index.js",
