@@ -12,11 +12,20 @@ function optimizeBatch(effects) {
   }
 }
 
+const defaultAccessor = (state, key) => {
+  return state[key];
+};
+
+const defaultMutator = (state, key, value) => {
+  state[key] = value;
+  return state;
+};
+
 export function combineReducers(
     reducerMap,
-    rootState = {}, 
-    accessor = (child, key) => child[key],
-    mutator = (child, key, value) => { child[key] = value; return child; }
+    rootState = {},
+    accessor = defaultAccessor,
+    mutator = defaultMutator
 ) {
     return function finalReducer(state = rootState, action) {
         let hasChanged = false;
