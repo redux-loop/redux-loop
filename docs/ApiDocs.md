@@ -285,7 +285,7 @@ any async function calls in the process.
 function fetchData(id) {
   return fetch(`endpoint/${id}`)
     .then((r) => r.json())
-    .then((data) => ({ type: 'FETCH_SUCCESS', payload: data })
+    .then((data) => ({ type: 'FETCH_SUCCESS', payload: data }))
     .catch((error) => ({ type: 'FETCH_FAILURE', payload: error.message }));
 }
 
