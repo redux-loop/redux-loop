@@ -12,7 +12,7 @@
   * [`Effects.promise(promiseFactory, ...args)`](#effectspromisepromisefactory-args)
   * [`Effects.batch(effects)`](#effectsbatcheffects)
   * [`Effects.lift(effect, higherOrderActionCreator, [...additionalArgs])`](#effectslifteffect-higherorderactioncreator-additionalargs)
-* [`combineReducers(reducersMap)`](#combinereducersreducersmap)
+* [`combineReducers(reducersMap, [initialState, accessor, modifier])`](#combinereducersreducersmap-initialstateaccessormodifier)
 
 ## `install()`
 
@@ -436,10 +436,21 @@ function reducer(state = { /* ... */ }, action) {
 }
 ```
 
-## `combineReducers(reducersMap)`
+## `combineReducers(reducersMap, [initialState, accessor, modifier])`
 
 * `reducersMap: Object<string, ReducerFunction>` &ndash; a map of keys to nested
   reducers, just like the `combineReducers` you would find in Redux itself.
+* `initialState: any` &ndash; an optional initial value to map over when
+  combining reducer results. Defaults to a plain object `{}`, but could be, for
+  example, an `Immutable.Map`.
+* `accessor: (state: any, key: any) => any` &ndash; a function to use when
+  looking up the existing state for a reducer key on the state atom. Defaults to
+  plain object property access, but can be passed a function to look up a key on
+  an `Immutable.Map`, for example.
+* `modifier: (state: any, key: any, value: any) => any` &ndash; a function to
+  use when updating the existing state atom with the result of a reducer for a
+  given key. Defaults to plain object property setting but can be implemented as
+  a call to `set()` on an `Immutable.Map`, for example.
 
 #### Notes
 
@@ -453,6 +464,7 @@ switching to this implementation.
 
 #### Examples
 
+**Plain object**
 ```javascript
 import { combineReducers } from 'redux-loop';
 import reducerWithEffects from './reducer-with-effects';
@@ -462,4 +474,24 @@ export default combineReducers({
   withEffects: reducerWithEffects,
   plain: plainReducer
 });
+```
+
+**With `Immutable.Map`**
+```javascript
+import { combineReducers } from 'redux-loop';
+import reducerWithEffects from './reducer-with-effects';
+import plainReducer from './plain-reducer';
+import { Map } from 'immutable';
+
+const reducerMap = {
+  withEffects: reducerWithEffects,
+  plain: plainReducer
+};
+
+export default combineReducers(
+  reducerMap,
+  Map(),
+  (state, key) => state.get(key),
+  (state, key, value) => state.set(key, value)
+);
 ```
