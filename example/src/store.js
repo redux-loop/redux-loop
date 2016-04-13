@@ -144,8 +144,20 @@ const reducer = createReducer({
 }, initialState);
 
 /**
- * Setting up the store is as easy as using any other enhancer, like
- * `applyMiddleware` or `DevTools.instrument()`. We can also pass any sort of
- * object, like an `Immutable.Map` as our initial state.
+ * This method exist for server side,
+ * to create new store for each HTTP request
  */
-export const store = install()(createStore)(reducer, initialState);
+export function setupNewStore(initState = initialState) {
+  /**
+   * Setting up the store is as easy as using any other enhancer, like
+   * `applyMiddleware` or `DevTools.instrument()`. We can also pass any sort of
+   * object, like an `Immutable.Map` as our initial state.
+   */
+  return install()(createStore)(reducer, initState);
+}
+
+/**
+ * The singleton store for client application, to share store
+ * entity between files on CommonJS level
+ */
+export const store = setupNewStore();
