@@ -17,8 +17,10 @@ const defaultAccessor = (state, key) => {
 };
 
 const defaultMutator = (state, key, value) => {
-  state[key] = value;
-  return state;
+  return {
+    ...state,
+    [key]: value
+  };
 };
 
 export function combineReducers(
