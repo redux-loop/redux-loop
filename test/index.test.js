@@ -67,25 +67,33 @@ test('a looped action gets dispatched after the action that initiated it is redu
   const store = finalCreateStore(finalReducer, initialState);
 
   const dispatchPromise = store.dispatch(firstAction);
-  t.deepEqual(store.getState(), {
-    prop1: {
-      firstRun: true,
-      secondRun: false,
-      thirdRun: false,
+  t.deepEqual(
+    store.getState(),
+    {
+      prop1: {
+        firstRun: true,
+        secondRun: false,
+        thirdRun: false,
+      },
+      prop2: true,
     },
-    prop2: true,
-  });
+    'firstRun is set to true in the same tick as firstAction is dispatched'
+  );
 
   dispatchPromise
     .then(() => {
-      t.deepEqual(store.getState(), {
-        prop1: {
-          firstRun: true,
-          secondRun: true,
-          thirdRun: 'hello',
+      t.deepEqual(
+        store.getState(),
+        {
+          prop1: {
+            firstRun: true,
+            secondRun: true,
+            thirdRun: 'hello',
+          },
+          prop2: true,
         },
-        prop2: true,
-      });
+        'secondRun is set to true and thirdRun is set to \'hello\' once the effects path is completed'
+      );
     });
 });
 
@@ -98,14 +106,18 @@ test('Effects.lift', (t) => {
 
   effectToPromise(upperEffect)
     .then(([action]) => {
-      t.deepEqual(action, {
-        type: 'UPPER',
-        arg: 1,
-        action: {
-          type: 'LOWER',
-          name: 'hello'
+      t.deepEqual(
+        action,
+        {
+          type: 'UPPER',
+          arg: 1,
+          action: {
+            type: 'LOWER',
+            name: 'hello'
+          },
         },
-      });
+        'the action takes the proper shape for a lifted action'
+      );
       t.end();
     });
 });
@@ -116,7 +128,11 @@ test('Effects.call', (t) => {
 
   effectToPromise(callEffect)
     .then(([action]) => {
-      t.deepEqual(action, { type: 'CALL', name: 'hello' });
+      t.deepEqual(
+        action,
+        { type: 'CALL', name: 'hello' },
+        'the action takes the proper shape for a call action'
+      );
       t.end();
     });
 });

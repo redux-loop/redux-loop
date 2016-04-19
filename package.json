@@ -1,7 +1,7 @@
 {
   "name": "redux-loop",
   "npmName": "redux-loop",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Sequence your effects naturally and purely by returning them from your reducers.",
   "main": "lib/index.js",
   "jsnext:main": "modules/index.js",
@@ -23,7 +23,7 @@
   "scripts": {
     "clean": "rimraf lib",
     "build": "babel modules --out-dir lib",
-    "test": "tape -r babel-polyfill -r babel-register ./test/*",
+    "test": "tape -r babel-polyfill -r babel-register './test/*.test.js'",
     "prepublish": "npm run clean && npm run build"
   },
   "keywords": [

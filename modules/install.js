@@ -17,55 +17,49 @@ import {
 } from './effects';
 
 /**
- * Lifts a reducer to always return a looped state.
- */
-function liftReducer(reducer) {
-  return (state, action) => {
-    const result = reducer(getModel(state), action);
-    return liftState(result);
-  };
-}
-
-/**
  * Installs a new dispatch function which will attempt to execute any effects
  * attached to the current model as established by the original dispatch.
  */
 export function install() {
   return (next) => (reducer, initialState, enhancer) => {
-    const liftedInitialState = liftState(initialState);
-    const store = next(liftReducer(reducer), liftedInitialState, enhancer);
+    let currentEffect = none();
+    const [initialModel, initialEffect] = liftState(initialState);
 
-    function dispatch(action) {
-      const dispatchedAction = store.dispatch(action);
-      const effect = getEffect(store.getState());
-      return runEffect(action, effect).then(() => {});
-    }
+    const liftReducer = (reducer) => (state, action) => {
+      const result = reducer(state, action);
+      const [model, effect] = liftState(result);
+      currentEffect = effect;
+      return model;
+    };
 
-    function runEffect(originalAction, effect) {
+    const store = next(liftReducer(reducer), initialModel, enhancer);
+
+    const runEffect = (originalAction, effect) => {
       return effectToPromise(effect)
         .then((actions) => {
-          const materializedActions = actions;
-          return Promise.all(materializedActions.map(dispatch));
+          return Promise.all(actions.map(dispatch));
         })
         .catch((error) => {
           console.error(loopPromiseCaughtError(originalAction.type));
           throw error;
         });
-    }
+    };
 
-    function getState() {
-      return getModel(store.getState());
-    }
+    const dispatch = (action) => {
+      store.dispatch(action);
+      const effectToRun = currentEffect;
+      currentEffect = none();
+      return runEffect(action, effectToRun);
+    };
 
-    function replaceReducer(r) {
-      return store.replaceReducer(liftReducer(r));
-    }
+    const replaceReducer = (reducer) => {
+      return store.replaceReducer(liftReducer(reducer));
+    };
 
-    runEffect({ type: "@@ReduxLoop/INIT" }, getEffect(liftedInitialState));
+    runEffect({ type: '@@ReduxLoop/INIT' }, initialEffect);
 
     return {
       ...store,
-      getState,
       dispatch,
       replaceReducer,
     };
