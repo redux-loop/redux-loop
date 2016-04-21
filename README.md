@@ -3,9 +3,10 @@
 [![Build Status](https://travis-ci.org/raisemarketplace/redux-loop.svg?branch=master)](https://travis-ci.org/raisemarketplace/redux-loop)
 
 
-Sequence your effects naturally and purely by returning them from your reducers.
-Inspired by [elm-effects](https://github.com/evancz/elm-effects) and the [Elm
-Architecture](https://github.com/evancz/elm-architecture-tutorial).
+A port of [elm-effects](https://github.com/evancz/elm-effects) and the [Elm
+Architecture](https://github.com/evancz/elm-architecture-tutorial) to Redux.
+Allows you to sequence your effects naturally and purely by returning them
+from your reducers.
 
 > Isn't it incorrect to cause side-effects in a reducer?
 
