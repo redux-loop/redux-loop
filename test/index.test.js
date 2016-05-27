@@ -97,6 +97,40 @@ test('a looped action gets dispatched after the action that initiated it is redu
     });
 });
 
+test('Effects are proccessed in the order they are recieved', (t) => {
+  t.plan(1);
+
+  const reducer = function (state = {}, action) {
+    switch (action.type) {
+      case 'LOOPED_BEGIN':
+        return loop(
+          {...state, done: false},
+          Effects.constant({type: 'LOOPED_END'})
+        )
+      case 'LOOPED_END':
+        return {...state, done: true};
+      default:
+        return state
+    }
+  };
+
+  const store = finalCreateStore(reducer, {});
+
+  let needsToFire = true;
+  store.subscribe(function() {
+    if (needsToFire) {
+      needsToFire = false;
+      store.dispatch({type: 'SOME_OTHER_ACTION'});
+    }
+  });
+
+  const dispatchPromise = store.dispatch({type: 'LOOPED_BEGIN'});
+  dispatchPromise.then(function(r) {
+    const state = store.getState();
+    t.equal(state.done, true);
+  });
+});
+
 test('Effects.lift', (t) => {
   const lowerAction = (name) => ({ type: 'LOWER', name });
   const upperAction = (arg, action) => ({ type: 'UPPER', arg, action });
