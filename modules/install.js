@@ -14,6 +14,7 @@ import {
   none,
   isEffect,
   effectToPromise,
+  effectTypes
 } from './effects';
 
 /**
@@ -46,10 +47,16 @@ export function install() {
     };
 
     const dispatch = (action) => {
-      store.dispatch(action);
-      const effectToRun = currentEffect;
-      currentEffect = none();
-      return runEffect(action, effectToRun);
+      const result = store.dispatch(action);
+
+      if (currentEffect.type !== effectTypes.NONE) {
+        const effectToRun = currentEffect
+        currentEffect = none();
+
+        return runEffect(action, effectToRun)
+      }
+
+      return result;
     };
 
     const replaceReducer = (reducer) => {

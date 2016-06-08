@@ -2,7 +2,7 @@ import { throwInvariant, flatten } from './utils';
 
 const isEffectSymbol = Symbol('isEffect');
 
-const effectTypes = {
+export const effectTypes = {
   PROMISE: 'PROMISE',
   CALL: 'CALL',
   BATCH: 'BATCH',
