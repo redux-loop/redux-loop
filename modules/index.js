@@ -3,6 +3,7 @@ import {
   liftState,
   getModel,
   getEffect,
+  isLoop
 } from './loop';
 
 import {
@@ -37,7 +38,9 @@ export {
   Effects,
   install,
   loop,
+  isLoop,
   liftState,
   getModel,
   getEffect,
+  none
 };
