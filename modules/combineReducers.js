@@ -13,7 +13,7 @@ const defaultMutator = (state, key, value) => {
   };
 };
 
-export cost combineReducers = (
+export const combineReducers = (
   reducerMap,
   rootState = {},
   accessor = defaultAccessor,
