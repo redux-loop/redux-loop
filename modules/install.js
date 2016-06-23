@@ -1,67 +1,68 @@
-import { throwInvariant } from './utils';
-import { loopPromiseCaughtError } from './errors';
+import { throwInvariant } from './utils'
+import { loop, getCmd, getModel, isLoop, liftState } from './loop'
+import Cmd, { cmdToPromise, isCmd } from './cmd'
 
-import {
-  loop,
-  getEffect,
-  getModel,
-  isLoop,
-  liftState,
-} from './loop';
 
-import {
-  batch,
-  none,
-  isEffect,
-  effectToPromise,
-} from './effects';
+const noCmdPromise = Promise.resolve()
 
-/**
- * Installs a new dispatch function which will attempt to execute any effects
- * attached to the current model as established by the original dispatch.
- */
+
 export function install() {
   return (next) => (reducer, initialState, enhancer) => {
-    let currentEffect = none();
-    const [initialModel, initialEffect] = liftState(initialState);
+    const [initialModel, initialCmd] = liftState(initialState)
+    let cmdsQueue = []
 
     const liftReducer = (reducer) => (state, action) => {
-      const result = reducer(state, action);
-      const [model, effect] = liftState(result);
-      currentEffect = effect;
-      return model;
-    };
+      const result = reducer(state, action)
+      const [model, cmd] = liftState(result)
+      cmdsQueue.push({ originalAction: action, cmd })
+      return model
+    }
 
-    const store = next(liftReducer(reducer), initialModel, enhancer);
+    const store = next(liftReducer(reducer), initialModel, enhancer)
 
-    const runEffect = (originalAction, effect) => {
-      return effectToPromise(effect)
+    const runCmds = (queue) => {
+      const promises = queue.map(runCmd).filter((x) => x)
+      if (promises.length === 0) return noCmdPromise
+      else if (promises.length === 1) return promises[0].then(() => {})
+      else return Promise.all(promises).then(() => {})
+    }
+
+    const runCmd = ({ originalAction, cmd }) => {
+      const cmdPromise = cmdToPromise(cmd)
+
+      if (!cmdPromise) return null
+
+      return cmdPromise
         .then((actions) => {
-          return Promise.all(actions.map(dispatch));
+          if (!actions.length) return
+          return Promise.all(actions.map(dispatch))
         })
         .catch((error) => {
-          console.error(loopPromiseCaughtError(originalAction.type));
-          throw error;
-        });
-    };
+          console.error(loopPromiseCaughtError(originalAction.type))
+          throw error
+        })
+    }
 
     const dispatch = (action) => {
-      store.dispatch(action);
-      const effectToRun = currentEffect;
-      currentEffect = none();
-      return runEffect(action, effectToRun);
-    };
+      store.dispatch(action)
+      const cmdsToRun = cmdsQueue
+      cmdsQueue = []
+      return runCmds(cmdsToRun)
+    }
 
     const replaceReducer = (reducer) => {
-      return store.replaceReducer(liftReducer(reducer));
-    };
+      return store.replaceReducer(liftReducer(reducer))
+    }
 
-    runEffect({ type: '@@ReduxLoop/INIT' }, initialEffect);
+    runCmd({
+      originalAction: { type: '@@ReduxLoop/INIT' },
+      cmd: initialCmd
+    })
 
     return {
       ...store,
       dispatch,
       replaceReducer,
-    };
-  };
+    }
+  }
 }

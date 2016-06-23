@@ -4,8 +4,8 @@ const concat = Array.prototype.concat;
 /**
  * Flattens an array one level
  */
-export function flatten(array) {
-  return concat.apply([], array);
+export const flatten = (array) => {
+  return concat.apply([], array)
 }
 
 
@@ -14,9 +14,9 @@ export function flatten(array) {
  * @param {Boolean} condition The condition to assert.
  * @param {String} message The message of the error to throw.
  */
-export function throwInvariant(condition, message) {
+export const throwInvariant = (condition, message) => {
   if(!condition) {
-    throw Error(message);
+    throw Error(message)
   }
 }
 
@@ -28,9 +28,19 @@ export function throwInvariant(condition, message) {
  * @param {Function} mapper The mapper function that receives the value and the key.
  * @returns {Object} A new object that contains the mapped values for the keys.
  */
-export function mapValues(object, mapper) {
+export const mapValues = (object, mapper) => {
   return Object.keys(object).reduce((current, key) => {
-    current[key] = mapper(object[key], key);
-    return current;
-  }, {});
+    current[key] = mapper(object[key], key)
+    return current
+  }, {})
+}
+
+
+export const promisify = (nodeStyleFunction) => {
+  return new Promise((resolve, reject) => {
+    nodeStyleFunction((error, result) => {
+      if (error) reject(error)
+      else resolve(result)
+    })
+  })
 }
