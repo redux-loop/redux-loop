@@ -8,20 +8,25 @@ const finalCreateStore = install()(createStore);
 test('a looped action gets dispatched after the action that initiated it is reduced', (t) => {
   t.plan(2)
 
-  const firstAction = { type: 'FIRST_ACTION' }
-  const secondAction = { type: 'SECOND_ACTION' }
-  const thirdAction = (value) => ({ type: 'THIRD_ACTION', payload: value })
-
   const initialState = {
     prop1: {
       firstRun: false,
       secondRun: false,
       thirdRun: false,
+      fourthRun: false,
     },
     prop2: true,
   }
 
-  function doThirdLater(value) {
+  const firstAction = { type: 'FIRST_ACTION' }
+  const secondAction = { type: 'SECOND_ACTION' }
+  const thirdSuccess = (value) => ({ type: 'THIRD_ACTION', payload: value })
+  const thirdFailure = (error) => ({ type: 'THIRD_FAILURE' })
+  const fourthAction = { type: 'FOURTH_ACTION' }
+  const nestAction = (action) => ({ type: 'NESTED_ACTION', payload: action })
+
+
+  const doThirdLater = (value) => {
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         resolve(value)
@@ -29,33 +34,43 @@ test('a looped action gets dispatched after the action that initiated it is redu
     })
   }
 
-  function prop1Reducer(state = initialState.prop1, action) {
+  const prop1Reducer = (state = initialState.prop1, action) => {
     switch(action.type) {
-
-    case 'FIRST_ACTION':
-      return loop(
-        { ...state, firstRun: true },
-        Cmd.batch([
+      case 'FIRST_ACTION':
+        return loop(
+          { ...state, firstRun: true },
           Cmd.batch([
-            Cmd.constant(secondAction),
-            Cmd.none,
-          ]),
-          Cmd.promise(doThirdLater, thirdAction, undefined, 'hello'),
-        ])
-      )
+            Cmd.batch([
+              Cmd.constant(secondAction),
+              Cmd.none,
+              Cmd.map(Cmd.constant(fourthAction), nestAction)
+            ]),
+            Cmd.promise(doThirdLater, thirdSuccess, thirdFailure, 'hello'),
+          ])
+        )
 
-    case 'SECOND_ACTION':
-      return { ...state, secondRun: true };
+      case 'SECOND_ACTION':
+        return { ...state, secondRun: true };
 
-    case 'THIRD_ACTION':
-      return { ...state, thirdRun: action.payload };
+      case 'THIRD_ACTION':
+        console.log('THIRD')
+        return { ...state, thirdRun: action.payload };
 
-    default:
-      return state;
+      case 'NESTED_ACTION':
+        return loop(
+          state,
+          Cmd.constant(action.payload)
+        )
+
+      case 'FOURTH_ACTION':
+        return { ...state, fourthRun: true };
+
+      default:
+        return state;
     }
   }
 
-  function prop2Reducer(state = initialState.prop2, action) {
+  const prop2Reducer = (state = initialState.prop2, action) => {
     return state
   }
 
@@ -74,6 +89,7 @@ test('a looped action gets dispatched after the action that initiated it is redu
         firstRun: true,
         secondRun: false,
         thirdRun: false,
+        fourthRun: false,
       },
       prop2: true,
     },
@@ -89,6 +105,7 @@ test('a looped action gets dispatched after the action that initiated it is redu
             firstRun: true,
             secondRun: true,
             thirdRun: 'hello',
+            fourthRun: true,
           },
           prop2: true,
         },

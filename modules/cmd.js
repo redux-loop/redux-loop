@@ -57,7 +57,7 @@ export const cmdToPromise = (cmd) => {
       return Promise.all(batchedPromises).then(flatten)
 
     case cmdTypes.MAP:
-      const possiblePromise = cmdToPromise(cmd.cmd)
+      const possiblePromise = cmdToPromise(cmd.nestedCmd)
       if (!possiblePromise) return null
       return possiblePromise.then((actions) => actions.map(cmd.tagger))
 
