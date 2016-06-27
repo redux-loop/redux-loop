@@ -9,6 +9,7 @@ const cmdTypes = {
   CALL: 'CALL',
   CALLBACK: 'CALLBACK',
   CONSTANT: 'CONSTANT',
+  ARBITRARY: 'ARBITRARY',
   BATCH: 'BATCH',
   MAP: 'MAP',
   NONE: 'NONE',
@@ -44,6 +45,10 @@ export const cmdToPromise = (cmd) => {
 
     case cmdTypes.CONSTANT:
       return Promise.resolve(cmd.action)
+
+    case cmdTypes.ARBITRARY:
+      cmd.func(...cmd.args)
+      return null
 
     case cmdTypes.BATCH:
       const batchedPromises = cmd.cmds.map(cmdToPromise).filter((x) => x)
@@ -109,6 +114,14 @@ const constant = (action) => Object.freeze({
   [isCmdSymbol]: true,
   type: cmdTypes.CONSTANT,
   action,
+})
+
+
+const arbitrary = (func, ...args) => Object.freeze({
+  [isCmdSymbol]: true,
+  type: cmdTypes.ARBITRARY,
+  func,
+  args,
 })
 
 
