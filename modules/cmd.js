@@ -46,11 +46,7 @@ export const cmdToPromise = (cmd) => {
       return Promise.resolve(cmd.action)
 
     case cmdTypes.BATCH:
-      const filteredCmds = cmd.cmds
-        .filter((nextCmd) => nextCmd.type !== cmdTypes.NONE)
-
-      const batchedPromises = filteredCmds.map(cmdToPromise).filter((x) => x)
-
+      const batchedPromises = cmd.cmds.map(cmdToPromise).filter((x) => x)
       if (batchedPromises.length === 0) return null
       else if (batchedPromises.length === 1) return batchedPromises[0]
       return Promise.all(batchedPromises).then(flatten)
@@ -124,8 +120,8 @@ const batch = (cmds) => Object.freeze({
 
 
 const map = (
-  tagger,
-  nestedCmd
+  nestedCmd,
+  tagger
 ) => Object.freeze({
   [isCmdSymbol]: true,
   type: cmdTypes.MAP,

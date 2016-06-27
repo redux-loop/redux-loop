@@ -3,7 +3,7 @@ import Cmd, { isCmd } from './cmd';
 
 
 export const isLoop = (array) => {
-  return Array.isArray(array) && array.length === 2 && isEffect(array[1])
+  return Array.isArray(array) && array.length === 2 && isCmd(array[1])
 };
 
 
@@ -25,7 +25,7 @@ export const loop = (model, cmd) => {
     )
   }
 
-  return [model, effect]
+  return [model, cmd]
 }
 
 

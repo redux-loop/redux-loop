@@ -1,4 +1,4 @@
-import { loop, isLoop, getEffect, getModel } from './loop'
+import { loop, isLoop, getCmd, getModel } from './loop'
 import Cmd from './cmd'
 
 
@@ -18,28 +18,29 @@ export const combineReducers = (
   rootState = {},
   accessor = defaultAccessor,
   mutator = defaultMutator
+) => (
+  state = rootState,
+  action
 ) => {
-  return const finalReducer = (state = rootState, action) => {
-    let hasChanged = false
-    let effects = []
+  let hasChanged = false
+  let cmds = []
 
-    const model = Object.keys(reducerMap).reduce((model, key) => {
-      const reducer = reducerMap[key]
-      const previousStateForKey = accessor(state, key)
-      let nextStateForKey = reducer(previousStateForKey, action)
+  const model = Object.keys(reducerMap).reduce((model, key) => {
+    const reducer = reducerMap[key]
+    const previousStateForKey = accessor(state, key)
+    let nextStateForKey = reducer(previousStateForKey, action)
 
-      if (isLoop(nextStateForKey)) {
-        effects.push(getEffect(nextStateForKey))
-        nextStateForKey = getModel(nextStateForKey)
-      }
+    if (isLoop(nextStateForKey)) {
+      cmds.push(getCmd(nextStateForKey))
+      nextStateForKey = getModel(nextStateForKey)
+    }
 
-      hasChanged = hasChanged || nextStateForKey !== previousStateForKey
-      return mutator(model, key, nextStateForKey)
-    }, rootState)
+    hasChanged = hasChanged || nextStateForKey !== previousStateForKey
+    return mutator(model, key, nextStateForKey)
+  }, rootState)
 
-    return loop(
-      hasChanged ? model : state,
-      Cmd.batch(effects)
-    )
-  }
+  return loop(
+    hasChanged ? model : state,
+    Cmd.batch(cmds)
+  )
 }

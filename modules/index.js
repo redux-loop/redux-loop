@@ -22,5 +22,5 @@ export {
   loop,
   liftState,
   getModel,
-  getEffect,
+  getCmd,
 };
