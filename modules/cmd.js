@@ -25,11 +25,11 @@ export const cmdToPromise = (cmd) => {
   switch (cmd.type) {
     case cmdTypes.PROMISE:
       return cmd.promiseFactory(...cmd.args)
-        .then(
-          cmd.successActionCreator,
-          cmd.failureActionCreator
-        )
-        .then((action) => [action])
+        .then(cmd.successActionCreator)
+        .catch(cmd.failureActionCreator)
+        .then((action) => {
+          return [action]
+        })
 
     case cmdTypes.CALL:
       const result = cmd.resultFactory(...cmd.args)
@@ -37,14 +37,12 @@ export const cmdToPromise = (cmd) => {
 
     case cmdTypes.CALLBACK:
       return promisify(cmd.nodeStyleFunction)(...cmd.args)
-        .then(
-          cmd.successActionCreator,
-          cmd.failureActionCreator
-        )
+        .then(cmd.successActionCreator)
+        .catch(cmd.failureActionCreator)
         .then((action) => [action])
 
     case cmdTypes.CONSTANT:
-      return Promise.resolve(cmd.action)
+      return Promise.resolve([cmd.action])
 
     case cmdTypes.ARBITRARY:
       cmd.func(...cmd.args)
@@ -54,7 +52,8 @@ export const cmdToPromise = (cmd) => {
       const batchedPromises = cmd.cmds.map(cmdToPromise).filter((x) => x)
       if (batchedPromises.length === 0) return null
       else if (batchedPromises.length === 1) return batchedPromises[0]
-      return Promise.all(batchedPromises).then(flatten)
+      else return Promise.all(batchedPromises).then(flatten)
+
 
     case cmdTypes.MAP:
       const possiblePromise = cmdToPromise(cmd.nestedCmd)

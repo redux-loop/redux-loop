@@ -22,9 +22,13 @@ export function install() {
 
     const runCmds = (queue) => {
       const promises = queue.map(runCmd).filter((x) => x)
-      if (promises.length === 0) return noCmdPromise
-      else if (promises.length === 1) return promises[0].then(() => {})
-      else return Promise.all(promises).then(() => {})
+      if (promises.length === 0) {
+        return Promise.resolve()
+      } else if (promises.length === 1) {
+        return promises[0]
+      } else {
+        return Promise.all(promises).then(() => {})
+      }
     }
 
     const runCmd = ({ originalAction, cmd }) => {
@@ -53,11 +57,6 @@ export function install() {
     const replaceReducer = (reducer) => {
       return store.replaceReducer(liftReducer(reducer))
     }
-
-    runCmd({
-      originalAction: { type: '@@ReduxLoop/INIT' },
-      cmd: initialCmd
-    })
 
     return {
       ...store,

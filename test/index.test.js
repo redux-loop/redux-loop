@@ -3,11 +3,7 @@ import { install, loop, Cmd, combineReducers } from '../modules';
 import { effectToPromise } from '../modules/effects';
 import { createStore, applyMiddleware, compose } from 'redux';
 
-const finalCreateStore = install()(createStore);
-
 test('a looped action gets dispatched after the action that initiated it is reduced', (t) => {
-  t.plan(2)
-
   const initialState = {
     prop1: {
       firstRun: false,
@@ -30,7 +26,7 @@ test('a looped action gets dispatched after the action that initiated it is redu
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         resolve(value)
-      }, 0)
+      }, 1)
     })
   }
 
@@ -53,7 +49,6 @@ test('a looped action gets dispatched after the action that initiated it is redu
         return { ...state, secondRun: true };
 
       case 'THIRD_ACTION':
-        console.log('THIRD')
         return { ...state, thirdRun: action.payload };
 
       case 'NESTED_ACTION':
@@ -79,7 +74,7 @@ test('a looped action gets dispatched after the action that initiated it is redu
     prop2: prop2Reducer,
   })
 
-  const store = finalCreateStore(finalReducer, initialState)
+  const store = createStore(finalReducer, initialState, install())
 
   const dispatchPromise = store.dispatch(firstAction)
   t.deepEqual(
@@ -111,5 +106,6 @@ test('a looped action gets dispatched after the action that initiated it is redu
         },
         'secondRun is set to true and thirdRun is set to \'hello\' once the effects path is completed'
       )
+      t.end()
     })
 })
