@@ -70,27 +70,60 @@ const promise = (
   successActionCreator,
   failureActionCreator,
   ...args
-) => Object.freeze({
-  [isCmdSymbol]: true,
-  type: cmdTypes.PROMISE,
-  promiseFactory,
-  successActionCreator,
-  failureActionCreator,
-  args
-})
+) => {
+  if (process.env.NODE_ENV !== 'production') {
+    throwInvariant(
+      typeof promiseFactory === 'function',
+      'Cmd.promise: first argument to Cmd.promise must be a function that returns a promise'
+    )
+
+    throwInvariant(
+      typeof successActionCreator === 'function',
+      'Cmd.promise: second argument to Cmd.promise must be a function that returns an action'
+    )
+
+    throwInvariant(
+      typeof failureActionCreator === 'function',
+      'Cmd.promise: third argument to Cmd.promise must be a function that returns an action'
+    )
+  }
+
+  return Object.freeze({
+    [isCmdSymbol]: true,
+    type: cmdTypes.PROMISE,
+    promiseFactory,
+    successActionCreator,
+    failureActionCreator,
+    args
+  })
+}
 
 
 const call = (
   resultFactory,
   actionCreator,
   ...args
-) => Object.freeze({
-  [isCmdSymbol]: true,
-  type: cmdTypes.CALL,
-  resultFactory,
-  actionCreator,
-  args
-})
+) => {
+  if (process.env.NODE_ENV !== 'production') {
+    throwInvariant(
+      typeof resultFactory === 'function',
+      'Cmd.call: first argument to Cmd.call must be a function'
+    )
+
+    throwInvariant(
+      typeof actionCreator === 'function',
+      'Cmd.call: second argument to Cmd.call must be a function that returns an action'
+    )
+  }
+
+  return Object.freeze({
+    [isCmdSymbol]: true,
+    type: cmdTypes.CALL,
+    resultFactory,
+    actionCreator,
+    args
+  })
+}
 
 
 const callback = (
@@ -98,47 +131,107 @@ const callback = (
   successActionCreator,
   failureActionCreator,
   ...args
-) => Object.freeze({
-  [isCmdSymbol]: true,
-  type: cmdTypes.CALLBACK,
-  nodeStyleFunction,
-  successActionCreator,
-  failureActionCreator,
-  args,
-})
+) => {
+  if (process.env.NODE_ENV !== 'production') {
+    throwInvariant(
+      typeof nodeStyleFunction === 'function',
+      'Cmd.callback: first argument to Cmd.callback must be a function that accepts a callback'
+    )
+
+    throwInvariant(
+      typeof successActionCreator === 'function',
+      'Cmd.callback: second argument to Cmd.callback must be a function that returns an action'
+    )
+
+    throwInvariant(
+      typeof failureActionCreator === 'function',
+      'Cmd.callback: third argument to Cmd.callback must be a function that returns an action'
+    )
+  }
+
+  return Object.freeze({
+    [isCmdSymbol]: true,
+    type: cmdTypes.CALLBACK,
+    nodeStyleFunction,
+    successActionCreator,
+    failureActionCreator,
+    args,
+  })
+}
 
 
-const constant = (action) => Object.freeze({
-  [isCmdSymbol]: true,
-  type: cmdTypes.CONSTANT,
-  action,
-})
+const constant = (action) => {
+  if (process.env.NODE_ENV !== 'production') {
+    throwInvariant(
+      typeof action === 'object' && action !== null && typeof action.type !== 'undefined',
+      'Cmd.constant: first argument and only argument to Cmd.constant must be an action'
+    )
+  }
+
+  return Object.freeze({
+    [isCmdSymbol]: true,
+    type: cmdTypes.CONSTANT,
+    action,
+  })
+}
 
 
-const arbitrary = (func, ...args) => Object.freeze({
-  [isCmdSymbol]: true,
-  type: cmdTypes.ARBITRARY,
-  func,
-  args,
-})
+const arbitrary = (func, ...args) => {
+  if (process.env.NODE_ENV !== 'production') {
+    throwInvariant(
+      typeof func === 'function',
+      'Cmd.arbitrary: first argument to Cmd.promise must be a function that returns a promise'
+    )
+  }
 
+  return Object.freeze({
+    [isCmdSymbol]: true,
+    type: cmdTypes.ARBITRARY,
+    func,
+    args,
+  })
+}
 
-const batch = (cmds) => Object.freeze({
-  [isCmdSymbol]: true,
-  type: cmdTypes.BATCH,
-  cmds,
-})
+const batch = (cmds) => {
+  if (process.env.NODE_ENV !== 'production') {
+    throwInvariant(
+      Array.isArray(cmds) && cmds.every(isCmd),
+      'Cmd.batch: first and only argument to Cmd.batch must be an array of other Cmds'
+    )
+  }
+
+  return Object.freeze({
+    [isCmdSymbol]: true,
+    type: cmdTypes.BATCH,
+    cmds,
+  })
+}
+
 
 
 const map = (
   nestedCmd,
   tagger
-) => Object.freeze({
-  [isCmdSymbol]: true,
-  type: cmdTypes.MAP,
-  tagger,
-  nestedCmd,
-})
+) => {
+  if (process.env.NODE_ENV !== 'production') {
+    throwInvariant(
+      isCmd(nestedCmd),
+      'Cmd.map: first argument to Cmd.map must be a function that returns a promise'
+    )
+
+    throwInvariant(
+      typeof tagger === 'function',
+      'Cmd.map: second argument to Cmd.map must be a function that returns an action'
+    )
+  }
+
+  return Object.freeze({
+    [isCmdSymbol]: true,
+    type: cmdTypes.MAP,
+    tagger,
+    nestedCmd,
+  })
+}
 
 
 const none = Object.freeze({
@@ -151,6 +244,7 @@ export default {
   call,
   callback,
   constant,
+  arbitrary,
   batch,
   map,
   none,

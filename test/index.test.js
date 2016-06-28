@@ -4,6 +4,9 @@ import { effectToPromise } from '../modules/effects';
 import { createStore, applyMiddleware, compose } from 'redux';
 
 test('a looped action gets dispatched after the action that initiated it is reduced', (t) => {
+
+  let arbitraryValue = 0;
+
   const initialState = {
     prop1: {
       firstRun: false,
@@ -39,8 +42,9 @@ test('a looped action gets dispatched after the action that initiated it is redu
             Cmd.batch([
               Cmd.constant(secondAction),
               Cmd.none,
-              Cmd.map(Cmd.constant(fourthAction), nestAction)
+              Cmd.map(Cmd.constant(fourthAction), nestAction),
             ]),
+            Cmd.arbitrary((arg) => arbitraryValue = arg, 5),
             Cmd.promise(doThirdLater, thirdSuccess, thirdFailure, 'hello'),
           ])
         )
@@ -106,6 +110,9 @@ test('a looped action gets dispatched after the action that initiated it is redu
         },
         'secondRun is set to true and thirdRun is set to \'hello\' once the effects path is completed'
       )
+
+      t.equal(arbitraryValue, 5)
+      
       t.end()
     })
 })
