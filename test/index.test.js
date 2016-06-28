@@ -1,6 +1,5 @@
 import test from 'tape';
 import { install, loop, Cmd, combineReducers } from '../modules';
-import { effectToPromise } from '../modules/effects';
 import { createStore, applyMiddleware, compose } from 'redux';
 
 test('a looped action gets dispatched after the action that initiated it is reduced', (t) => {
@@ -13,6 +12,7 @@ test('a looped action gets dispatched after the action that initiated it is redu
       secondRun: false,
       thirdRun: false,
       fourthRun: false,
+      fifthRun: false,
     },
     prop2: true,
   }
@@ -23,7 +23,14 @@ test('a looped action gets dispatched after the action that initiated it is redu
   const thirdFailure = (error) => ({ type: 'THIRD_FAILURE' })
   const fourthAction = { type: 'FOURTH_ACTION' }
   const nestAction = (action) => ({ type: 'NESTED_ACTION', payload: action })
+  const fifthSuccess = (value) => ({ type: 'FIFTH_ACTION', payload: value })
+  const fifthFailure = (error) => ({ type: 'FIFTH_FAILURE' })
 
+  const callbackFn = (arg1, cb) => {
+    setTimeout(() => {
+      cb(null, arg1)
+    })
+  }
 
   const doThirdLater = (value) => {
     return new Promise((resolve, reject) => {
@@ -43,6 +50,7 @@ test('a looped action gets dispatched after the action that initiated it is redu
               Cmd.constant(secondAction),
               Cmd.none,
               Cmd.map(Cmd.constant(fourthAction), nestAction),
+              Cmd.callback(callbackFn, fifthSuccess, fifthFailure, 'hi')
             ]),
             Cmd.arbitrary((arg) => arbitraryValue = arg, 5),
             Cmd.promise(doThirdLater, thirdSuccess, thirdFailure, 'hello'),
@@ -63,6 +71,9 @@ test('a looped action gets dispatched after the action that initiated it is redu
 
       case 'FOURTH_ACTION':
         return { ...state, fourthRun: true };
+
+      case 'FIFTH_ACTION':
+        return { ...state, fifthRun: action.payload };
 
       default:
         return state;
@@ -89,6 +100,7 @@ test('a looped action gets dispatched after the action that initiated it is redu
         secondRun: false,
         thirdRun: false,
         fourthRun: false,
+        fifthRun: false,
       },
       prop2: true,
     },
@@ -105,6 +117,7 @@ test('a looped action gets dispatched after the action that initiated it is redu
             secondRun: true,
             thirdRun: 'hello',
             fourthRun: true,
+            fifthRun: 'hi',
           },
           prop2: true,
         },
@@ -112,7 +125,7 @@ test('a looped action gets dispatched after the action that initiated it is redu
       )
 
       t.equal(arbitraryValue, 5)
-      
+
       t.end()
     })
 })

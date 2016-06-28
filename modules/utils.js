@@ -37,10 +37,12 @@ export const mapValues = (object, mapper) => {
 
 
 export const promisify = (nodeStyleFunction) => {
-  return new Promise((resolve, reject) => {
-    nodeStyleFunction((error, result) => {
-      if (error) reject(error)
-      else resolve(result)
+  return (...args) => {
+    return new Promise((resolve, reject) => {
+      nodeStyleFunction(...args, (error, result) => {
+        if (error) reject(error)
+        else resolve(result)
+      })
     })
-  })
+  }
 }
