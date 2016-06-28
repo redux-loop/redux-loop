@@ -58,6 +58,11 @@ export function install() {
       return store.replaceReducer(liftReducer(reducer))
     }
 
+    runCmd({
+      originalAction: { type: '@@ReduxLoop/INIT' },
+      cmd: initialCmd
+    })
+
     return {
       ...store,
       dispatch,
