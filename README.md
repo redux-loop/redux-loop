@@ -1,4 +1,4 @@
-# redux-loop
+# <img alt='redux-loop' src='https://raw.githubusercontent.com/raisemarketplace/redux-loop/master/logo/logo.png' height='200'>
 
 A port of the [Elm Architecture](https://github.com/evancz/elm-architecture-tutorial) to Redux that allows you to sequence your effects naturally and purely by returning them from your reducers.
 
