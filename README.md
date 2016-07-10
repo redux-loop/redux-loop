@@ -1,4 +1,4 @@
-# redux-loop
+# <img alt='redux-loop' src='https://raw.githubusercontent.com/raisemarketplace/redux-loop/master/logo/logo.png' height='200'>
 
 [![Build Status](https://travis-ci.org/raisemarketplace/redux-loop.svg?branch=master)](https://travis-ci.org/raisemarketplace/redux-loop)
 
