@@ -1,72 +1,97 @@
 import test from 'tape';
-import { install, loop, Effects, combineReducers } from '../modules';
-import { effectToPromise } from '../modules/effects';
+import { install, loop, Cmd, combineReducers } from '../modules';
 import { createStore, applyMiddleware, compose } from 'redux';
 
-const finalCreateStore = install()(createStore);
-
 test('a looped action gets dispatched after the action that initiated it is reduced', (t) => {
-  t.plan(2);
 
-  const firstAction = { type: 'FIRST_ACTION' };
-  const secondAction = { type: 'SECOND_ACTION' };
-  const thirdAction = (value) => ({ type: 'THIRD_ACTION', payload: value });
+  let arbitraryValue = 0;
 
   const initialState = {
     prop1: {
       firstRun: false,
       secondRun: false,
       thirdRun: false,
+      fourthRun: false,
+      fifthRun: false,
     },
     prop2: true,
-  };
-
-  function doThirdLater(value) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(thirdAction(value));
-      }, 0);
-    });
   }
 
-  function prop1Reducer(state = initialState.prop1, action) {
+  const firstAction = { type: 'FIRST_ACTION' }
+  const secondAction = { type: 'SECOND_ACTION' }
+  const thirdSuccess = (value) => ({ type: 'THIRD_ACTION', payload: value })
+  const thirdFailure = (error) => ({ type: 'THIRD_FAILURE' })
+  const fourthAction = { type: 'FOURTH_ACTION' }
+  const nestAction = (action) => ({ type: 'NESTED_ACTION', payload: action })
+  const fifthSuccess = (value) => ({ type: 'FIFTH_ACTION', payload: value })
+  const fifthFailure = (error) => ({ type: 'FIFTH_FAILURE' })
+
+  const callbackFn = (arg1, cb) => {
+    setTimeout(() => {
+      cb(null, arg1)
+    })
+  }
+
+  const doThirdLater = (value) => {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        resolve(value)
+      }, 1)
+    })
+  }
+
+  const prop1Reducer = (state = initialState.prop1, action) => {
     switch(action.type) {
+      case 'FIRST_ACTION':
+        return loop(
+          { ...state, firstRun: true },
+          Cmd.batch([
+            Cmd.batch([
+              Cmd.constant(secondAction),
+              Cmd.none,
+              Cmd.map(Cmd.constant(fourthAction), nestAction),
+              Cmd.callback(callbackFn, fifthSuccess, fifthFailure, 'hi')
+            ]),
+            Cmd.arbitrary((arg) => arbitraryValue = arg, 5),
+            Cmd.promise(doThirdLater, thirdSuccess, thirdFailure, 'hello'),
+          ])
+        )
 
-    case 'FIRST_ACTION':
-      return loop(
-        { ...state, firstRun: true },
-        Effects.batch([
-          Effects.batch([
-            Effects.constant(secondAction),
-            Effects.none(),
-          ]),
-          Effects.promise(doThirdLater, 'hello'),
-        ])
-      );
+      case 'SECOND_ACTION':
+        return { ...state, secondRun: true };
 
-    case 'SECOND_ACTION':
-      return { ...state, secondRun: true };
+      case 'THIRD_ACTION':
+        return { ...state, thirdRun: action.payload };
 
-    case 'THIRD_ACTION':
-      return { ...state, thirdRun: action.payload };
+      case 'NESTED_ACTION':
+        return loop(
+          state,
+          Cmd.constant(action.payload)
+        )
 
-    default:
-      return state;
+      case 'FOURTH_ACTION':
+        return { ...state, fourthRun: true };
+
+      case 'FIFTH_ACTION':
+        return { ...state, fifthRun: action.payload };
+
+      default:
+        return state;
     }
   }
 
-  function prop2Reducer(state = initialState.prop2, action) {
-    return state;
+  const prop2Reducer = (state = initialState.prop2, action) => {
+    return state
   }
 
   const finalReducer = combineReducers({
     prop1: prop1Reducer,
     prop2: prop2Reducer,
-  });
+  })
 
-  const store = finalCreateStore(finalReducer, initialState);
+  const store = createStore(finalReducer, initialState, install())
 
-  const dispatchPromise = store.dispatch(firstAction);
+  const dispatchPromise = store.dispatch(firstAction)
   t.deepEqual(
     store.getState(),
     {
@@ -74,11 +99,13 @@ test('a looped action gets dispatched after the action that initiated it is redu
         firstRun: true,
         secondRun: false,
         thirdRun: false,
+        fourthRun: false,
+        fifthRun: false,
       },
       prop2: true,
     },
     'firstRun is set to true in the same tick as firstAction is dispatched'
-  );
+  )
 
   dispatchPromise
     .then(() => {
@@ -89,50 +116,16 @@ test('a looped action gets dispatched after the action that initiated it is redu
             firstRun: true,
             secondRun: true,
             thirdRun: 'hello',
+            fourthRun: true,
+            fifthRun: 'hi',
           },
           prop2: true,
         },
         'secondRun is set to true and thirdRun is set to \'hello\' once the effects path is completed'
-      );
-    });
-});
+      )
 
-test('Effects.lift', (t) => {
-  const lowerAction = (name) => ({ type: 'LOWER', name });
-  const upperAction = (arg, action) => ({ type: 'UPPER', arg, action });
+      t.equal(arbitraryValue, 5)
 
-  const lowerEffect = Effects.constant(lowerAction('hello'));
-  const upperEffect = Effects.lift(lowerEffect, upperAction, 1);
-
-  effectToPromise(upperEffect)
-    .then(([action]) => {
-      t.deepEqual(
-        action,
-        {
-          type: 'UPPER',
-          arg: 1,
-          action: {
-            type: 'LOWER',
-            name: 'hello'
-          },
-        },
-        'the action takes the proper shape for a lifted action'
-      );
-      t.end();
-    });
-});
-
-test('Effects.call', (t) => {
-  const callAction = (name) => ({ type: 'CALL', name });
-  const callEffect = Effects.call(callAction, 'hello');
-
-  effectToPromise(callEffect)
-    .then(([action]) => {
-      t.deepEqual(
-        action,
-        { type: 'CALL', name: 'hello' },
-        'the action takes the proper shape for a call action'
-      );
-      t.end();
-    });
-});
+      t.end()
+    })
+})
