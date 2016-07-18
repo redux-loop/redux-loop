@@ -5,7 +5,7 @@
 * [`liftState(state)`](#liftstatestate-any-effect)
 * [`getModel(loop)`](#getmodelloop-any)
 * [`getEffect(loop)`](#geteffectloop-effect--null)
-* [`isLoop(object)`](#isloop-object)
+* [`isLoop(object)`](#isloopobject-boolean)
 * [`Effects`](#effects)
   * [`Effects.none()`](#effectsnone)
   * [`Effects.constant(action)`](#effectsconstantaction)
