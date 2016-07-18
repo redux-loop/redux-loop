@@ -5,6 +5,7 @@
 * [`liftState(state)`](#liftstatestate-any-effect)
 * [`getModel(loop)`](#getmodelloop-any)
 * [`getEffect(loop)`](#geteffectloop-effect--null)
+* [`isLoop(object)`](#isloop-object)
 * [`Effects`](#effects)
   * [`Effects.none()`](#effectsnone)
   * [`Effects.constant(action)`](#effectsconstantaction)
@@ -170,6 +171,17 @@ to do custom comparisons like `Immutable.is()`.
 `loop`. It's useful in testing if you need to separate the model and effect and
 test them separately.
 
+
+## `isLoop(object): boolean`
+
+* `object: any` &ndash; any object.
+* returns whether the given object was created with the `loop` function.
+
+#### Notes
+
+`isLoop` lets you determine whether an object returned by a reducer includes an
+effect. This function is useful for writing custom higher-order functionality on
+top of redux-loop's API.
 
 ## `Effects`
 
