@@ -1,4 +1,4 @@
-import { throwInvariant, flatten, promisify } from './utils';
+import { throwInvariant, flatten, promisify, isPromiseLike } from './utils';
 
 
 const isCmdSymbol = Symbol('isCmd');
@@ -45,8 +45,9 @@ export const cmdToPromise = (cmd) => {
       return Promise.resolve([cmd.action])
 
     case cmdTypes.ARBITRARY:
-      cmd.func(...cmd.args)
-      return null
+      const possiblyPromise = cmd.func(...cmd.args)
+      if (isPromiseLike(possiblyPromise)) return possiblyPromise.then(() => [])
+      else return null
 
     case cmdTypes.BATCH:
       const batchedPromises = cmd.cmds.map(cmdToPromise).filter((x) => x)
