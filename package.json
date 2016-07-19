@@ -5,13 +5,13 @@
   "description": "Sequence your effects naturally and purely by returning them from your reducers.",
   "main": "lib/index.js",
   "jsnext:main": "modules/index.js",
-  "homepage": "https://github.com/RaiseMarketplace/redux-loop",
+  "homepage": "https://github.com/redux-loop/redux-loop",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/RaiseMarketplace/redux-loop.git"
+    "url": "git+https://github.com/redux-loop/redux-loop.git"
   },
   "bugs": {
-    "url": "https://github.com/RaiseMarketplace/redux-loop/issues"
+    "url": "https://github.com/redux-loop/redux-loop/issues"
   },
   "peerDependencies": {
     "redux": "^3.0.0"
@@ -42,7 +42,14 @@
     "elm",
     "loop"
   ],
-  "author": "Luke William Westby <luke.westby@raise.com>",
+  "author": {
+    "name": "Luke William Westby",
+    "email": "opensource@lukewestby.com",
+    "url": "https://twitter.com/luke_dot_js"
+  },
+  "contributors": [
+    
+  ],
   "license": "MIT",
   "devDependencies": {
     "babel": "6.3.13",
