@@ -13,6 +13,7 @@ import {
   batch,
   none,
   isEffect,
+  isNone,
   effectToPromise,
 } from './effects';
 
@@ -28,7 +29,11 @@ export function install() {
     const liftReducer = (reducer) => (state, action) => {
       const result = reducer(state, action);
       const [model, effect] = liftState(result);
-      currentEffect = effect;
+      if (isNone(currentEffect)) {
+        currentEffect = effect
+      } else {
+        currentEffect = batch([currentEffect, effect]);
+      }
       return model;
     };
 

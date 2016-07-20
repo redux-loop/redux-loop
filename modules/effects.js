@@ -53,6 +53,15 @@ export function isEffect(object) {
 }
 
 /**
+ * Determines id the effect object is of type none
+ * @param {Object} The object to inspect.
+ * @returns {Boolean} Whether the object is a none effect.
+ */
+export function isNone(object) {
+  return object ? object.type === effectTypes.NONE : false;
+}
+
+/**
  * Creates a noop effect.
  * @returns {Object} An effect of type NONE, essentially a no-op.
  */
