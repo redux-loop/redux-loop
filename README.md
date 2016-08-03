@@ -3,8 +3,7 @@
 [![Build Status](https://travis-ci.org/raisemarketplace/redux-loop.svg?branch=master)](https://travis-ci.org/raisemarketplace/redux-loop)
 
 
-A port of [elm-effects](https://github.com/evancz/elm-effects) and the [Elm
-Architecture](https://github.com/evancz/elm-architecture-tutorial) to Redux
+A port of [Elm Architecture *commands*](http://www.elm-tutorial.org/en/03-subs-cmds/02-commands.html) to Redux
 that allows you to sequence your effects naturally and purely by returning them
 from your reducers.
 
