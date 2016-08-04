@@ -1,6 +1,7 @@
 import { throwInvariant } from './utils'
 import { loop, getCmd, getModel, isLoop, liftState } from './loop'
 import Cmd, { cmdToPromise, isCmd } from './cmd'
+import { loopPromiseCaughtError } from './errors'
 
 
 const noCmdPromise = Promise.resolve()
@@ -32,7 +33,7 @@ export function install() {
     }
 
     const runCmd = ({ originalAction, cmd }) => {
-      const cmdPromise = cmdToPromise(cmd)
+      const cmdPromise = cmdToPromise(cmd, dispatch, store.getState)
 
       if (!cmdPromise) return null
 
