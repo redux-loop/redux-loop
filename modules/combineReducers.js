@@ -23,20 +23,27 @@ const defaultMutator = (state, key, value) => {
   };
 };
 
+const keys = (value) => {
+  return [
+    ...Object.getOwnPropertyNames(value),
+    ...Object.getOwnPropertySymbols(value)
+  ];
+};
+
 export function combineReducers(
     reducerMap,
     rootState = {},
     accessor = defaultAccessor,
     mutator = defaultMutator
 ) {
-    return function finalReducer(state = rootState, action) {
+    return function finalReducer(state = rootState, action, ...rest) {
         let hasChanged = false;
         let effects = [];
 
-        const model = Object.keys(reducerMap).reduce((model, key) => {
+        const model = keys(reducerMap).reduce((model, key) => {
             const reducer = reducerMap[key];
             const previousStateForKey = accessor(state, key);
-            let nextStateForKey = reducer(previousStateForKey, action);
+            let nextStateForKey = reducer(previousStateForKey, action, ...rest);
 
             if (isLoop(nextStateForKey)) {
                 effects.push(getEffect(nextStateForKey));
