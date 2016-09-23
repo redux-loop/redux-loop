@@ -170,3 +170,23 @@ test('Effects.call', (t) => {
       t.end();
     });
 });
+
+test('Looping a loop batches the effects together', (t) => {
+  const innerEffect = Effects.constant({ type: 'INNER', name: 'inner'});
+  const outerEffect = Effects.constant({ type: 'OUTER', name: 'outer'});
+
+  const innerLoop = loop({state: 'model'}, innerEffect);
+  const outerLoop = loop(innerLoop, outerEffect);
+
+  t.deepEqual(outerLoop[0], {state: 'model'}, 'the model is unchanged');
+
+  effectToPromise(outerLoop[1])
+    .then((actions) => {
+      t.deepEqual(
+        actions,
+        [{ type: 'INNER', name: 'inner'}, { type: 'OUTER', name: 'outer'}],
+        'the actions are batched together'
+      );
+      t.end();
+    });
+})
