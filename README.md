@@ -24,6 +24,14 @@ and what they will do to your environment.
 `redux-loop` requires polyfills for ES6 `Promise` and `Symbol` to be included if
 the browsers you target don't natively support them.
 
+## Credits
+
+Most of the credit for the ideas that go into this library to [Evan
+Czaplicki](https://github.com/evancz) and all of the work he and others have put
+into [Elm](https://github.com/elm-lang). Thanks also to
+[Folktale.js](https://github.com/folktale/data.task) for inspiration on the
+implementation and method naming on Tasks.
+
 ## Why use this?
 
 Having used and followed the progression of Redux and the Elm Architecture, and
