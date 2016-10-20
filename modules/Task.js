@@ -4,6 +4,7 @@ const isTaskSymbol = Symbol()
 
 const createTask = (attrs) => {
   const result = Object.create(TaskProto)
+  result[isTaskSymbol] = true
   for (var k in attrs) {
     result[k] = attrs[k]
   }
@@ -11,8 +12,6 @@ const createTask = (attrs) => {
 }
 
 const TaskProto = Object.freeze({
-  [isTaskSymbol]: true,
-
   map(tagger) {
     return createTask({
       type: 'map',
@@ -92,7 +91,10 @@ Task.fromCallback = (callback, ...args) => {
 }
 
 Task.isTask = (task) => {
-  return task[isTaskSymbol] === true
+  return typeof task === 'object'
+    && task !== null
+    && task.hasOwnProperty(isTaskSymbol)
+    && task[isTaskSymbol] === true
 }
 
 const executeTask = (task) => {
