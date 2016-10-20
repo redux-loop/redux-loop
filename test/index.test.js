@@ -1,172 +1,183 @@
-import test from 'tape';
-import { install, loop, Effects, combineReducers } from '../modules';
-import { effectToPromise } from '../modules/effects';
-import { createStore, applyMiddleware, compose } from 'redux';
+const test = require('tape')
+const { install, Task, Port, Cmd } = require('../modules')
+const { execute } = require('../modules/Cmd')
+const { createStore, applyMiddleware, compose } = require('redux')
 
-const finalCreateStore = install()(createStore);
+const createActionCreator = (type) => (payload) => {
+  return { type, payload }
+}
 
-test('a looped action gets dispatched after the action that initiated it is reduced', (t) => {
-  t.plan(2);
+test('Task.fail and Task.succeed with Task.attempt', (t) => {
+  t.plan(5)
 
-  const firstAction = { type: 'FIRST_ACTION' };
-  const secondAction = { type: 'SECOND_ACTION' };
-  const thirdAction = (value) => ({ type: 'THIRD_ACTION', payload: value });
-
-  const initialState = {
-    prop1: {
-      firstRun: false,
-      secondRun: false,
-      thirdRun: false,
-    },
-    prop2: true,
-  };
-
-  function doThirdLater(value) {
-    return new Promise((resolve, reject) => {
-      setTimeout(() => {
-        resolve(thirdAction(value));
-      }, 0);
-    });
+  const createTask = (fail) => {
+    return fail ?
+      Task.fail('failure message') :
+      Task.succeed('success message')
   }
 
-  function prop1Reducer(state = initialState.prop1, action) {
+  const startAction = createActionCreator('START')
+  const failureAction = createActionCreator('FAILED')
+  const successAction = createActionCreator('SUCCEEDED')
+
+  const reducer = (model, action) => {
     switch(action.type) {
+      case 'START':
+        return [
+          { ...model, taskMessage: 'loading' },
+          createTask(action.payload).attempt(failureAction, successAction)
+        ]
 
-    case 'FIRST_ACTION':
-      return loop(
-        { ...state, firstRun: true },
-        Effects.batch([
-          Effects.batch([
-            Effects.constant(secondAction),
-            Effects.none(),
-          ]),
-          Effects.promise(doThirdLater, 'hello'),
-        ])
-      );
+      case 'SUCCEEDED':
+      case 'FAILED':
+        return [
+          { ...model, taskMessage: action.payload },
+          Cmd.none()
+        ]
 
-    case 'SECOND_ACTION':
-      return { ...state, secondRun: true };
-
-    case 'THIRD_ACTION':
-      return { ...state, thirdRun: action.payload };
-
-    default:
-      return state;
-    }
-  }
-
-  function prop2Reducer(state = initialState.prop2, action) {
-    return state;
-  }
-
-  const finalReducer = combineReducers({
-    prop1: prop1Reducer,
-    prop2: prop2Reducer,
-  });
-
-  const store = finalCreateStore(finalReducer, initialState);
-
-  const dispatchPromise = store.dispatch(firstAction);
-  t.deepEqual(
-    store.getState(),
-    {
-      prop1: {
-        firstRun: true,
-        secondRun: false,
-        thirdRun: false,
-      },
-      prop2: true,
-    },
-    'firstRun is set to true in the same tick as firstAction is dispatched'
-  );
-
-  dispatchPromise
-    .then(() => {
-      t.deepEqual(
-        store.getState(),
-        {
-          prop1: {
-            firstRun: true,
-            secondRun: true,
-            thirdRun: 'hello',
-          },
-          prop2: true,
-        },
-        'secondRun is set to true and thirdRun is set to \'hello\' once the effects path is completed'
-      );
-    });
-});
-
-test('Effects are proccessed in the order they are recieved', (t) => {
-  t.plan(1);
-
-  const reducer = function (state = {}, action) {
-    switch (action.type) {
-      case 'LOOPED_BEGIN':
-        return loop(
-          {...state, done: false},
-          Effects.constant({type: 'LOOPED_END'})
-        )
-      case 'LOOPED_END':
-        return {...state, done: true};
       default:
-        return state
+        return [model, Cmd.none()]
     }
-  };
+  }
 
-  const store = finalCreateStore(reducer, {});
+  const store = createStore(reducer, { taskMessage: 'waiting' }, install())
 
-  let needsToFire = true;
-  store.subscribe(function() {
-    if (needsToFire) {
-      needsToFire = false;
-      store.dispatch({type: 'SOME_OTHER_ACTION'});
+  t.equal(store.getState().taskMessage, 'waiting')
+
+  store
+    .dispatch(startAction(false))
+    .then(() => {
+      t.equal(store.getState().taskMessage, 'success message')
+
+      const promise = store.dispatch(startAction(true))
+      t.equal(store.getState().taskMessage, 'loading')
+      return promise
+    })
+    .then(() => {
+      t.equal(store.getState().taskMessage, 'failure message')
+    })
+
+  t.equal(store.getState().taskMessage, 'loading')
+})
+
+test('Port.send', (t) => {
+  t.plan(2)
+
+  let outerVariable = 1
+
+  const increment = Port((howMuch) => {
+    outerVariable += howMuch
+  })
+
+  const incrementAction = createActionCreator('INCREMENT_OUTER')
+
+  const reducer = (model, action) => {
+    switch (action.type) {
+      case 'INCREMENT_OUTER':
+        return [
+          model,
+          increment.send(action.payload)
+        ]
+
+      default:
+        return [model, Cmd.none()]
     }
-  });
+  }
 
-  const dispatchPromise = store.dispatch({type: 'LOOPED_BEGIN'});
-  dispatchPromise.then(function(r) {
-    const state = store.getState();
-    t.equal(state.done, true);
-  });
-});
+  const store = createStore(reducer, 'test', install())
 
-test('Effects.lift', (t) => {
-  const lowerAction = (name) => ({ type: 'LOWER', name });
-  const upperAction = (arg, action) => ({ type: 'UPPER', arg, action });
 
-  const lowerEffect = Effects.constant(lowerAction('hello'));
-  const upperEffect = Effects.lift(lowerEffect, upperAction, 1);
+  store.dispatch(incrementAction(5))
+    .then(() => {
+      t.equal(outerVariable, 6)
+    })
 
-  effectToPromise(upperEffect)
-    .then(([action]) => {
-      t.deepEqual(
-        action,
-        {
-          type: 'UPPER',
-          arg: 1,
-          action: {
-            type: 'LOWER',
-            name: 'hello'
-          },
-        },
-        'the action takes the proper shape for a lifted action'
-      );
-      t.end();
-    });
-});
+  t.equal(outerVariable, 1)
+})
 
-test('Effects.call', (t) => {
-  const callAction = (name) => ({ type: 'CALL', name });
-  const callEffect = Effects.call(callAction, 'hello');
+test('Cmd.map and Cmd.batch with Task.perform', (t) => {
+  t.plan(4)
 
-  effectToPromise(callEffect)
-    .then(([action]) => {
-      t.deepEqual(
-        action,
-        { type: 'CALL', name: 'hello' },
-        'the action takes the proper shape for a call action'
-      );
-      t.end();
-    });
-});
+  const xTask = (howMuch) => Task.succeed(howMuch)
+  const yTask = (howMuch) => Task.succeed(howMuch)
+
+  const startAction = createActionCreator('START')
+  const xAction = createActionCreator('X')
+  const yAction = createActionCreator('Y')
+
+  const nestedReducer = (model, action) => {
+    switch (action.type) {
+      case 'START':
+        return [
+          { ...model, x: 0, y: 0 },
+          Cmd.batch([
+            xTask(5).perform(xAction),
+            yTask(4).perform(yAction),
+          ])
+        ]
+
+      case 'X':
+        return [
+          { ...model, x: action.payload },
+          Cmd.none()
+        ]
+
+      case 'Y':
+        return [
+          { ...model, y: action.payload },
+          Cmd.none()
+        ]
+
+      default:
+        return [model, Cmd.none()]
+    }
+  }
+
+  const nestedAction = createActionCreator('NESTED_ACTION')
+
+  const outerReducer = (model, action) => {
+    switch(action.type) {
+      case 'NESTED_ACTION':
+        const [nestedModel, nestedCmd] = nestedReducer(model.nestedModel, action.payload)
+        return [
+          { ...model, nestedModel },
+          Cmd.map(nestedAction, nestedCmd)
+        ]
+
+      default:
+        return [ model, Cmd.none() ]
+    }
+  }
+
+  const store = createStore(outerReducer, { nestedModel: { x: 1, y: 1 } }, install())
+
+  store.dispatch(nestedAction(startAction()))
+    .then(() => {
+      t.equal(store.getState().nestedModel.x, 5)
+      t.equal(store.getState().nestedModel.y, 4)
+    })
+
+  t.equal(store.getState().nestedModel.x, 0)
+  t.equal(store.getState().nestedModel.y, 0)
+})
+
+
+test('Task.map, Task.chain, Task.mapError, Task.chainError', (t) => {
+  t.plan(1)
+
+  const methods = (value) => {
+    return Task.succeed(value)
+      .map((x) => x * 2)
+      .chain((x) => Task.fail(x * 2))
+      .mapError((x) => x * 2)
+      .chainError((x) => Task.succeed(x * 2))
+  }
+
+  const action = createActionCreator('DONE')
+
+  execute(methods(1).perform(action))
+    .then((xs) => xs[0].payload)
+    .then((x) => {
+      t.equal(x, 16)
+    })
+})
