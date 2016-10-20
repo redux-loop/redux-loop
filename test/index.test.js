@@ -7,7 +7,7 @@ const createActionCreator = (type) => (payload) => {
   return { type, payload }
 }
 
-test('Task.fail and Task.succeed with Task.attempt', (t) => {
+test('Task.fail and Task.succeed with Task.perform', (t) => {
   t.plan(5)
 
   const createTask = (fail) => {
@@ -25,7 +25,7 @@ test('Task.fail and Task.succeed with Task.attempt', (t) => {
       case 'START':
         return [
           { ...model, taskMessage: 'loading' },
-          createTask(action.payload).attempt(failureAction, successAction)
+          createTask(action.payload).perform(successAction, failureAction)
         ]
 
       case 'SUCCEEDED':
