@@ -6,6 +6,16 @@
 A port of [Elm Architecture `Cmd`](http://www.elm-tutorial.org/en/03-subs-cmds/02-commands.html) to Redux
 that allows you to express effects like HTTP requests by returning them from your reducers.
 
+## Credits
+
+Credit for the ideas and concepts that go into this library to [Evan
+Czaplicki](https://github.com/evancz) and all of the work he and others have put
+into [Elm](https://github.com/elm-lang). Thanks also to
+[Folktale.js](https://github.com/folktale/data.task) for inspiration on the
+implementation and method naming on Tasks.
+
+## FAQ
+
 > Isn't it incorrect to cause side-effects in a reducer?
 
 Yes! Absolutely.
@@ -23,14 +33,6 @@ and what they will do to your environment.
 
 `redux-loop` requires polyfills for ES6 `Promise` and `Symbol` to be included if
 the browsers you target don't natively support them.
-
-## Credits
-
-Credit for the ideas and concepts that go into this library to [Evan
-Czaplicki](https://github.com/evancz) and all of the work he and others have put
-into [Elm](https://github.com/elm-lang). Thanks also to
-[Folktale.js](https://github.com/folktale/data.task) for inspiration on the
-implementation and method naming on Tasks.
 
 ## Why use this?
 
