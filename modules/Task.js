@@ -45,20 +45,12 @@ const TaskProto = Object.freeze({
     })
   },
 
-  perform(onFinished) {
-    return custom('Task.perform', performTask, [onFinished, this])
-  },
-
-  attempt(onError, onSuccess) {
-    return custom('Task.attempt', attemptTask, [onError, onSuccess, this])
+  perform(onSuccess, onError) {
+    return custom('Task.perform', performTask, [onSuccess, onError, this])
   }
 })
 
-const performTask = (onFinished, task) => {
-  return executeTask(task).then(onFinished)
-}
-
-const attemptTask = (onError, onSuccess, task) => {
+const performTask = (onSuccess, onError, task) => {
   return executeTask(task).then(onSuccess, onError)
 }
 
