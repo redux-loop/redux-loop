@@ -52,6 +52,10 @@ export function isEffect(object) {
   return object ? object[isEffectSymbol] : false;
 }
 
+export function isNone(object) {
+  return isEffect(object) && object.type === effectTypes.NONE;
+}
+
 /**
  * Determines id the effect object is of type none
  * @param {Object} The object to inspect.
