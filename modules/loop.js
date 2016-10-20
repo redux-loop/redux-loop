@@ -1,5 +1,5 @@
 import { throwInvariant } from './utils';
-import { isEffect, none } from './effects';
+import { isEffect, none, batch } from './effects';
 
 
 /**
@@ -34,7 +34,8 @@ export const getModel = (loop) => {
 }
 
 /**
- * Attaches an effect to the model.
+ * Attaches an effect to the model if a model is passed,
+ * or batches the effects of the loop if a loop is passed
  *
  *   function reducerWithSingleEffect(state, action) {
  *     // ...
@@ -55,7 +56,7 @@ export const getModel = (loop) => {
  *     );
  *   }
  */
-export const loop = (model, effect) => {
+export const loop = (loopOrModel, effect) => {
   if(process.env.NODE_ENV === 'development') {
     throwInvariant(
       isEffect(effect),
@@ -63,7 +64,11 @@ export const loop = (model, effect) => {
     );
   }
 
-  return [model, effect];
+  if (!isLoop(loopOrModel)) {
+    return [loopOrModel, effect];
+  }
+  const batchedEffect = batch([getEffect(loopOrModel), effect]);
+  return [getModel(loopOrModel), batchedEffect];
 }
 
 /**
