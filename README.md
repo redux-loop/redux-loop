@@ -6,7 +6,7 @@
 A port of [Elm Architecture `Cmd`](http://www.elm-tutorial.org/en/03-subs-cmds/02-commands.html) to Redux
 that allows you to express effects like HTTP requests by returning them from your reducers.
 
-> Looing for the v2 docs? Find them [here](https://github.com/redux-loop/redux-loop/tree/v2.2.2/docs).
+> Looking for the v2 docs? Find them [here](https://github.com/redux-loop/redux-loop/tree/v2.2.2/docs).
 
 ## Credits
 
