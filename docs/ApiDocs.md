@@ -397,7 +397,7 @@ function nestedReducer(state = 0, action) {
         state,
         Effects.promise(incrementAsync, action.payload)
       );
-    case 'INCREMENT':
+    case 'INCREMENT_FINISH':
       return loop(
         state + action.payload,
         Effects.none()
