@@ -1,43 +1,72 @@
-const { isNone, execute, batch } = require('./Cmd')
+import { throwInvariant } from './utils';
+import { loopPromiseCaughtError } from './errors';
 
-const install = () => (next) => (reducer, initialModel, enhancer) => {
-  let queue = []
+import {
+  loop,
+  getEffect,
+  getModel,
+  isLoop,
+  liftState,
+} from './loop';
 
-  const liftReducer = (reducer) => (state, action) => {
-    const [model, cmd] = reducer(state, action)
+import {
+  batch,
+  none,
+  isEffect,
+  isNone,
+  effectToPromise,
+} from './effects';
 
-    if (!isNone(cmd)) {
-      queue.push(cmd)
-    }
+/**
+ * Installs a new dispatch function which will attempt to execute any effects
+ * attached to the current model as established by the original dispatch.
+ */
+export function install() {
+  return (next) => (reducer, initialState, enhancer) => {
+    let currentEffect = none();
+    const [initialModel, initialEffect] = liftState(initialState);
 
-    return model
-  }
+    const liftReducer = (reducer) => (state, action) => {
+      const result = reducer(state, action);
+      const [model, effect] = liftState(result);
+      if (isNone(currentEffect)) {
+        currentEffect = effect
+      } else {
+        currentEffect = batch([currentEffect, effect]);
+      }
+      return model;
+    };
 
-  const store = next(liftReducer(reducer), initialModel, enhancer)
+    const store = next(liftReducer(reducer), initialModel, enhancer);
 
-  const dispatch = (action) => {
-    store.dispatch(action)
+    const runEffect = (originalAction, effect) => {
+      return effectToPromise(effect)
+        .then((actions) => {
+          return Promise.all(actions.map(dispatch));
+        })
+        .catch((error) => {
+          console.error(loopPromiseCaughtError(originalAction.type));
+          throw error;
+        });
+    };
 
-    if (queue.length) {
-      const currentQueue = queue
-      queue = []
-      return execute(batch(currentQueue))
-        .then((actions) => Promise.all(actions.map(dispatch)))
-        .then(() => {})
-    }
+    const dispatch = (action) => {
+      store.dispatch(action);
+      const effectToRun = currentEffect;
+      currentEffect = none();
+      return runEffect(action, effectToRun);
+    };
 
-    return Promise.resolve()
-  }
+    const replaceReducer = (reducer) => {
+      return store.replaceReducer(liftReducer(reducer));
+    };
 
-  const replaceReducer = (reducer) => {
-    return store.replaceReducer(liftReducer(reducer))
-  }
+    runEffect({ type: '@@ReduxLoop/INIT' }, initialEffect);
 
-  return {
-    ...store,
-    dispatch,
-    replaceReducer,
-  }
+    return {
+      ...store,
+      dispatch,
+      replaceReducer,
+    };
+  };
 }
-
-module.exports = install;
