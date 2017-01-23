@@ -1,13 +1,60 @@
-const { map, batch, none, isCmd } = require('./Cmd')
-const Task = require('./Task')
-const Port = require('./Port')
-const install = require('./install')
+import * as Redux from 'redux';
 
-const Cmd = { map, batch, none, isCmd }
+import { loopPromiseCaughtError } from './errors';
+import * as Effects from './effects';
 
-module.exports = {
-  install,
-  Task,
-  Port,
-  Cmd
+export {
+  Effects,
+};
+
+export function createStore(reducer, initialModel, enhancer) {
+  return (function () {
+    let queue = []
+
+    function liftReducer(reducer) {
+      return (state, action) => {
+        const ret = reducer(state, action)
+
+        ret.effects.forEach((effect) => queue.push(effect))
+
+        return ret.state
+      }
+    }
+
+    const store = Redux.createStore(
+      liftReducer(reducer),
+      initialModel.state,
+      enhancer,
+    )
+
+    function executeEffects(callback, effects) {
+      return effects.map(effect =>
+        Effects
+          .toPromise(effect)
+          .then(callback)
+          .catch(err => {
+            throw loopPromiseCaughtError;
+            console.error(err);
+          })
+      );
+    }
+
+    function enhancedDispatch(action) {
+      store.dispatch(action)
+
+      const currentQueue = queue;
+      queue = []
+
+      return Promise.all(
+        executeEffects(enhancedDispatch, currentQueue)
+      );
+    }
+
+    executeEffects(enhancedDispatch, initialModel.effects)
+
+    return {
+      ...store,
+      dispatch: enhancedDispatch,
+    };
+  })();
 }
