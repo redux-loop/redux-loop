@@ -1,4 +1,6 @@
-import test from 'tape';
+import * as test from 'tape';
+import * as Redux from 'redux';
+
 import { createStore, Effects } from '../modules';
 
 
@@ -10,7 +12,7 @@ test('store state is setted to one from initial loop', (t) => {
     effects: []
   };
 
-  const reducer = (state, action) => {
+  const reducer = (state: number, action: Redux.Action) => {
     return { state, effects: [] };
   }
 
@@ -36,7 +38,7 @@ test('effects within initial loop get dispatched', (t) => {
     ]
   };
 
-  const reducer = (state, action) => {
+  const reducer = (state: number, action: Redux.Action) => {
     switch (action.type) {
       case ACTION:
         t.ok(true);
@@ -46,7 +48,7 @@ test('effects within initial loop get dispatched', (t) => {
     }
   }
 
-  const store = createStore(reducer, init);
+  createStore(reducer, init);
 });
 
 
@@ -67,7 +69,7 @@ test('effects returned by the loop get dispatched', (t) => {
     ]
   };
 
-  const reducer = (state, action) => {
+  const reducer = (state: number, action: Redux.Action) => {
     switch (action.type) {
       case FIRST_ACTION:
         t.ok(true);
@@ -92,7 +94,7 @@ test('effects returned by the loop get dispatched', (t) => {
     }
   }
 
-  const store = createStore(reducer, init);
+  createStore(reducer, init);
 });
 
 

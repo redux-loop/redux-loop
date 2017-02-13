@@ -112,7 +112,7 @@ apart and composed back together. This is one of the most powerful features of t
 * [`createStore`](#createStore)
 * [`Effects`](#effects)
   * [`Effects.fromLazyPromise`](#effectsfromlazypromise)
-  * [`Effects.map`](#effectsmap)
+  * [`Effects#map`](#effectsmap)
 
 ### createStore
 
@@ -183,7 +183,7 @@ const effect = Effects.fromLazyPromise(() => {
 
 If you for some reason forgot to use `catch` to handle fail case we will notify you with handful error message!
 
-#### Effects.map
+#### Effects#map
 
 You will need this method, well, for mapping your `Effects`. This is pretty similar to mapping an array.
 
