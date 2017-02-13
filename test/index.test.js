@@ -1,6 +1,5 @@
 import test from 'tape';
-import { createStore } from '../modules';
-import * as Effects from '../modules/effects';
+import { createStore, Effects } from '../modules';
 
 
 test('store state is setted to one from initial loop', (t) => {
@@ -97,16 +96,17 @@ test('effects returned by the loop get dispatched', (t) => {
 });
 
 
-test('Effects.map works', (t) => {
+test('Effects#map works', (t) => {
   t.plan(1);
 
   const childEffect = Effects.fromLazyPromise(() => Promise.resolve({ type: 'child' }));
-  const parentEffect = Effects.map(childEffect, (action) => ({
+  const parentEffect = childEffect.map(action => ({
     type: 'parent',
     nested: action,
   }))
 
-  Effects.toPromise(parentEffect)
+  parentEffect
+    .toPromise()
     .then((action) => {
       t.deepEqual(
         action,

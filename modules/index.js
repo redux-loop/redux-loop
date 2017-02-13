@@ -1,11 +1,7 @@
 import * as Redux from 'redux';
 
 import { loopPromiseCaughtError } from './errors';
-import * as Effects from './effects';
 
-export {
-  Effects,
-};
 
 export function createStore(reducer, initialModel, enhancer) {
   return (function () {
@@ -29,8 +25,8 @@ export function createStore(reducer, initialModel, enhancer) {
 
     function executeEffects(callback, effects) {
       return effects.map(effect =>
-        Effects
-          .toPromise(effect)
+        effect
+          .toPromise()
           .then(callback)
           .catch(err => {
             throw loopPromiseCaughtError;
@@ -62,4 +58,23 @@ export function createStore(reducer, initialModel, enhancer) {
       replaceReducer: enhancedReplaceReducer,
     };
   })();
+}
+
+
+export class Effects {
+  constructor(promiseCreator) {
+    this._promiseCreator = promiseCreator;
+  }
+
+  static fromLazyPromise(promiseCreator) {
+    return new Effects(promiseCreator);
+  }
+
+  map(fn) {
+    return new Effects(() => this._promiseCreator().then(fn));
+  }
+
+  toPromise() {
+    return this._promiseCreator();
+  }
 }
