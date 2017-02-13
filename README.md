@@ -1,6 +1,6 @@
 # <img alt='redux-loop' src='https://raw.githubusercontent.com/redux-loop/redux-loop/master/logo/logo.png' height='200'>
 
-[![Build Status](https://travis-ci.org/raisemarketplace/redux-loop.svg?branch=master)](https://travis-ci.org/raisemarketplace/redux-loop)
+[![Build Status](https://travis-ci.org/redux-loop/redux-loop.svg?branch=master)](https://travis-ci.org/redux-loop/redux-loop)
 
 
 A port of the idea behind [The Elm Architecture](https://guide.elm-lang.org/architecture/) to Redux
