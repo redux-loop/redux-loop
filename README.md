@@ -22,7 +22,7 @@ and what they will do to your environment.
 
 > What are the environment requirements for redux-loop?
 
-`redux-loop` requires polyfills for ES6 `Promise` and `Symbol` to be included if
+`redux-loop` requires polyfill for ES6 `Promise` to be included if
 the browsers you target don't natively support them.
 
 ## Install

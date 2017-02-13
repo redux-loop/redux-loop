@@ -38,3 +38,12 @@ Did you forget to do one of the following?
 
 Don't see the problem here? Please report the issue at <https://github.com/redux-loop/redux-loop/issues/new>
 `;
+
+export const promisePolyfill =
+`
+It looks like your environment do not support ES6 Promises.
+
+To polyfill Promise you can use following package:
+
+    https://github.com/stefanpenner/es6-promise
+`;

@@ -1,6 +1,11 @@
 import * as Redux from 'redux';
 
-import { loopPromiseCaughtError } from './errors';
+import * as Errors from './errors';
+
+
+if (typeof Promise === 'undefined') {
+  throw Errors.promisePolyfill;
+}
 
 
 export interface Loop<State, Action> {
@@ -45,7 +50,7 @@ export function createStore<S, A extends Redux.Action>(reducer: Reducer<S>, init
           .then(callback)
           .catch((err: Error) => {
             console.error(err);
-            throw loopPromiseCaughtError;
+            throw Errors.loopPromiseCaughtError;
           })
       );
     }
