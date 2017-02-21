@@ -4,7 +4,7 @@ import * as Errors from './errors';
 
 
 if (typeof Promise === 'undefined') {
-  throw Errors.promisePolyfill;
+  throw new Error(Errors.promisePolyfill);
 }
 
 
@@ -50,7 +50,7 @@ export function createStore<S, A extends Redux.Action>(reducer: Reducer<S>, init
           .then(callback)
           .catch((err: Error) => {
             console.error(err);
-            throw Errors.loopPromiseCaughtError;
+            throw new Error(Errors.loopPromiseCaughtError);
           })
       );
     }
@@ -93,11 +93,17 @@ export class Effects<A> {
     return new Effects(promiseCreator);
   }
 
-  map<T>(fn: (action: A) => T): Effects<T> {
+  map = <T>(fn: (action: A) => T): Effects<T> => {
     return new Effects(() => this._promiseCreator().then(fn));
   }
 
-  toPromise(): Promise<A> {
-    return this._promiseCreator();
+  toPromise = (): Promise<A> => {
+    const promise = this._promiseCreator();
+
+    if (promise instanceof Promise) {
+      return promise;
+    }
+
+    throw new Error(Errors.effectCreatorIsWrong);
   }
 }

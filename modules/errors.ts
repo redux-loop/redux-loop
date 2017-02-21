@@ -47,3 +47,20 @@ To polyfill Promise you can use following package:
 
     https://github.com/stefanpenner/es6-promise
 `;
+
+export const effectCreatorIsWrong = 
+`
+It looks like function you passed to \`Effects.fromLazyPromise\` do not return actual Promise.
+
+Did you forget to do one of the following?
+
+- Forgot to return in function passed to \`Effects.fromLazyPromise\`
+
+  Effects.fromLazyPromise(() => {
+    Promise.resolve({ type: 'SOME_ACTION' });                   // <-- You need to return it
+  });
+
+- Returned something which is not actual Promise
+
+  Effects.fromLazyPromise(() => 'I am string, not a Promise');  // <-- You need to return Promise instance
+`;
