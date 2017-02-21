@@ -23,7 +23,7 @@ export interface Store<S> {
 }
 
 
-export function createStore<S, A extends Redux.Action>(reducer: Reducer<S>, initialModel: Loop<S, A>, enhancer?: Redux.StoreEnhancer<S>): Store<S> {
+export function createStore<S, A extends Redux.Action>(reducer: Reducer<S>, initialModel: Loop<S, A>, enhancer: Redux.StoreEnhancer<S>): Store<S> {
   return (function () {
     let queue = [] as Effects<A>[];
 
@@ -83,9 +83,9 @@ export function createStore<S, A extends Redux.Action>(reducer: Reducer<S>, init
 
 
 export class Effects<A> {
-  private _promiseCreator: () => Promise<A>;
+  private readonly _promiseCreator: () => Promise<A>;
 
-  constructor(promiseCreator: () => Promise<A>) {
+  constructor(readonly promiseCreator: () => Promise<A>) {
     this._promiseCreator = promiseCreator;
   }
 
