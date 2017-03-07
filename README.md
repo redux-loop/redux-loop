@@ -122,7 +122,7 @@ apart and composed back together. This is one of the most powerful features of t
 | initialState | true     | Initial state and initial effects.
 | enhancer     | false    | Usual Redux ehancer. So you can use all the middlewares you are used to including Redux DevTools
 
-To be able to have side-effects within initial state as well as return them from reducer we created our own implementation of createStore.
+To be able to have side-effects within initial state as well as return them from reducer we created our own implementation of `createStore`.
 
 Don't panic! We use original Redux store creation under the hood. So you will be able to use all your favorite middlewares and dev tools!
 
@@ -131,7 +131,7 @@ Following examle illustrates how very simple store creation could be done.
 ```js
 import * as ReduxLoop from 'redux-loop';
 
-const store = ReduxLoop.createStore(
+const store = ReduxLoop.createLoopStore(
   function reducer(state, action) {
     return { state, effects: [] };
   },
@@ -144,115 +144,6 @@ const store = ReduxLoop.createStore(
   enhancer
 );
 ```
-
-#### Important differences
-
-First of all you can't use `composeReducers` anymore. This is mostly done to reduce API surface area. You can still write your own and use it if you want to.
-
-You can actually compose them on your own.
-
-```js
-// Counter.js
-
-export const initialState = 0;
-
-export function reducer(state, action) {
-  case 'INCREMENT':
-    return state + 1;
-  case 'DECREMENT':
-    return state - 1;
-  default:
-    return state;
-}
-
-export function View({ state, dispatch }) {
-  return (
-    <div>
-      <button onClick={() => dispatch({ type: 'DECREMENT' })}>-</button>
-      <span>{state}</span>
-      <button onClick={() => dispatch({ type: 'INCREMENT' })}>+</button>
-    </div>
-  );
-}
-```
-
-```js
-// Main.js
-
-import * as Counter from './Counter';
-
-export const initialState = {
-  top: Counter.initialState,
-  bottom: Counter.initialState,
-};
-
-export function reducer(state, action) {
-  case 'TOP_COUNTER_ACTION': {
-    const { state: counterState } = Counter.reducer(state.top, action.nestedAction);
-
-    return {
-      ...state,
-      top: counterState
-    };
-  }
-
-  case 'BOTTOM_COUNTER_ACTION': {
-    const { state: counterState } = Counter.reducer(state.bottom, action.nestedAction);
-
-    return {
-      ...state,
-      top: counterState
-    };
-  }
-
-  default:
-    return state;
-}
-
-export function View({ state, dispatch }) {
-  return (
-    <div>
-      <div>
-        Counter #1: 
-        <Counter.View
-          state={state.top}
-          dispatch={action => dispatch({ type: 'TOP_COUNTER_ACTION', nestedAction: action })} />
-      </div>
-      <div>
-        Counter #2: 
-        <Counter.View
-          state={state.bottom}
-          dispatch={action => dispatch({ type: 'BOTTOM_COUNTER_ACTION', nestedAction: action })} />
-      </div>
-    </div>
-  );
-}
-```
-
-```js
-// index.js
-
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { createStore } from 'redux-loop';
-
-import * as Main from './Main';
-
-const mountNode = document.getElementById('app');
-
-function renderApp(state) {
-  ReactDOM.render(
-    <Main.View state={state} dispatch={store.dispatch} />,
-    mountNode
-  );
-}
-
-const store = createStore(Main.reducer, Main.initialState);
-store.subscribe(() => renderApp(store.getState()))
-renderApp(store.getState());
-```
-
-It might look complex and actually it is. For this particular example it probably do not make any sense to create separate module for `Counter`. However intention of this example is to illustrata how you can create reusable and composable modules on your own.
 
 ### Effects
 
