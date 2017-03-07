@@ -15,7 +15,7 @@ export interface Loop<State, Action> {
 
 export type Reducer<State> = <Action extends Redux.Action>(state: State, action: Action) => Loop<State, Action>;
 
-export interface Store<S> {
+export interface LoopStore<S> {
   getState: () => S,
   subscribe: (fn: Function) => void,
   replaceReducer: (reducer: Reducer<S>) => void,
@@ -23,7 +23,7 @@ export interface Store<S> {
 }
 
 
-export function createStore<S, A extends Redux.Action>(reducer: Reducer<S>, initialModel: Loop<S, A>, enhancer: Redux.StoreEnhancer<S>): Store<S> {
+export function createLoopStore<S, A extends Redux.Action>(reducer: Reducer<S>, initialModel: Loop<S, A>, enhancer?: Redux.StoreEnhancer<S>): LoopStore<S> {
   return (function () {
     let queue = [] as Effects<A>[];
 

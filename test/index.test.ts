@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as Redux from 'redux';
 
-import { createStore, Effects } from '../modules';
+import { createLoopStore, Effects } from '../modules';
 
 
 const EXPECT_TIMEOUT = 20;
@@ -18,7 +18,7 @@ describe('Suit', () => {
         return { state, effects: [] };
       }
 
-      const store = createStore(reducer, init);
+      const store = createLoopStore(reducer, init);
 
       expect(store.getState()).to.be.equal(1);
     });
@@ -46,7 +46,7 @@ describe('Suit', () => {
         }
       }
 
-      const store = createStore(reducer, init);
+      const store = createLoopStore(reducer, init);
 
       setTimeout(() => {
         expect(store.getState()).to.be.equal(11);
@@ -92,7 +92,7 @@ describe('Suit', () => {
         }
       }
 
-      const store = createStore(reducer, init);
+      const store = createLoopStore(reducer, init);
 
       setTimeout(() => {
         expect(store.getState()).to.be.equal(18);
