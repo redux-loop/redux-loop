@@ -142,7 +142,9 @@ function reducer(state, action) {
 // regardless of if it was set as such in the reducer implementation. This makes
 // it much easier to manually compose reducers without cluttering reducer
 // implementations with `loop(state, Effects.none())`.
-export default compose(reducer, liftState);
+// The rightmost function defines the signature for the resulting composition.
+// https://github.com/reactjs/redux/blob/master/src/compose.js
+export default compose(liftState, reducer);
 ```
 
 
