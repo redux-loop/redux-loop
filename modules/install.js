@@ -1,6 +1,7 @@
 import { throwInvariant } from './utils'
 import { loop, getCmd, getModel, isLoop, liftState } from './loop'
 import Cmd, { cmdToPromise, isCmd } from './cmd'
+import { loopPromiseCaughtError } from './errors'
 
 
 const noCmdPromise = Promise.resolve()

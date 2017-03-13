@@ -13,6 +13,7 @@ const cmdTypes = {
   BATCH: 'BATCH',
   MAP: 'MAP',
   NONE: 'NONE',
+  SEQUENCE: 'SEQUENCE'
 }
 
 
@@ -54,6 +55,25 @@ export const cmdToPromise = (cmd) => {
       if (batchedPromises.length === 0) return null
       else if (batchedPromises.length === 1) return batchedPromises[0]
       else return Promise.all(batchedPromises).then(flatten)
+
+    case cmdTypes.SEQUENCE:
+      const firstCmd = cmd.cmds.length ? cmd.cmds[0] : null
+      if (firstCmd) {
+        return new Promise(resolve => {
+          let firstPromise = cmdToPromise(firstCmd)
+          if (!firstPromise) firstPromise = Promise.resolve([])
+          firstPromise.then(result => {
+            const remaining = cmdToPromise(sequence(cmd.cmds.slice(1)))
+            if (remaining) {
+              remaining.then(innerResult => {
+                resolve(result.concat(innerResult))
+              })
+            }
+            else resolve(result)
+          })
+        }).then(flatten)
+      }
+      else return null
 
     case cmdTypes.MAP:
       const possiblePromise = cmdToPromise(cmd.nestedCmd)
@@ -208,7 +228,20 @@ const batch = (cmds) => {
   })
 }
 
+const sequence = (cmds) => {
+  if (process.env.NODE_ENV !== 'production') {
+    throwInvariant(
+      Array.isArray(cmds) && cmds.every(isCmd),
+      'Cmd.sequence: first and only argument to Cmd.sequence must be an array of other Cmds'
+    )
+  }
 
+  return Object.freeze({
+    [isCmdSymbol]: true,
+    type: cmdTypes.SEQUENCE,
+    cmds,
+  })
+}
 
 const map = (
   nestedCmd,
@@ -247,6 +280,7 @@ export default {
   constant,
   arbitrary,
   batch,
+  sequence,
   map,
-  none,
+  none
 }
