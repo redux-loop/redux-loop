@@ -1,28 +1,26 @@
 import * as React from 'react';
-import { effect, Loop, Effect } from '../modules/';
+import { effect, Loop } from '../modules/';
 import * as Utils from './Utils';
 
 // ===== ACTIONS ===== //
 
-export type Action = NewNumber | OneSecondPassed;
+export type Action = NewNumber | TimePassed;
 export type NewNumber = { type: 'NewNumber', value: number };
-export type OneSecondPassed = { type: 'OneSecondPassed' };
+export type TimePassed = { type: 'TimePassed' };
 
 
 // ===== EFFECTS ==== //
 
-const generateNewNumber: Effect<Action> = effect(
-  () => new Promise(resolve => {
-    resolve({ type: 'NewNumber', value: Math.random() })
-  })
-);
+function generateNewNumber(): Promise<Action> {
+  return new Promise(resolve => {
+    resolve({ type: 'NewNumber', value: Math.random() });
+  });
+}
 
-function scheduleNewJob(wait: number): Effect<Action> {
-  return effect(
-    () => new Promise(resolve => {
-      setTimeout(() => resolve({ type: 'OneSecondPassed' }), wait)
-    })
-  );
+function scheduleNewJob(wait: number): Promise<Action> {
+  return new Promise(resolve => {
+    setTimeout(() => resolve({ type: 'TimePassed' }), wait);
+  });
 }
 
 // ===== STATE ===== //
@@ -32,8 +30,8 @@ export type State = number;
 export const initialStateAndEffects: Loop<State, Action> = {
   state: 0,
   effects: [
-    scheduleNewJob(1000),
-  ],
+    effect(scheduleNewJob, 1000)
+  ]
 };
 
 // ===== REDUCDER ===== //
@@ -44,15 +42,15 @@ export function reducer(state: State, action: Action): Loop<State, Action> {
       return {
         state: action.value,
         effects: [
-          scheduleNewJob(action.value * 3000),
+          effect(scheduleNewJob, action.value * 3000)
         ]
       };
 
-    case 'OneSecondPassed':
+    case 'TimePassed':
       return {
         state,
         effects: [
-          generateNewNumber,
+          effect(generateNewNumber)
         ]
       };
 
