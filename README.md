@@ -3,22 +3,11 @@
 [![Build Status](https://travis-ci.org/redux-loop/redux-loop.svg?branch=master)](https://travis-ci.org/redux-loop/redux-loop)
 
 
-A port of [Elm Architecture `Cmd`](http://www.elm-tutorial.org/en/03-subs-cmds/02-commands.html) to Redux
-that allows you to express effects like HTTP requests by returning them from your reducers.
+A port of the idea behind [The Elm Architecture](https://guide.elm-lang.org/architecture/) to Redux
+that allows you to sequence your effects naturally and purely by returning them
+from your reducers. This is a partial port because we want to keep API surface area for the library as small as possible.
 
-> Looking for the v2 docs? Find them [here](https://github.com/redux-loop/redux-loop/tree/v2.2.2/docs).
-
-## Credits
-
-Credit for the ideas and concepts that go into this library to [Evan
-Czaplicki](https://github.com/evancz) and all of the work he and others have put
-into [Elm](https://github.com/elm-lang). Thanks also to
-[Folktale.js](https://github.com/folktale/data.task) for inspiration on the
-implementation and method naming on Tasks.
-
-## FAQ
-
-> Isn't it incorrect to cause side-effects in a reducer?
+> Is it correct to cause side-effects in a reducer?
 
 Yes! Absolutely.
 
@@ -33,8 +22,67 @@ and what they will do to your environment.
 
 > What are the environment requirements for redux-loop?
 
-`redux-loop` requires polyfills for ES6 `Promise` and `Symbol` to be included if
+`redux-loop` requires polyfill for ES6 `Promise` to be included if
 the browsers you target don't natively support them.
+
+## Install
+
+```
+npm install --save redux-loop
+```
+
+## Quick Example
+
+```javascript
+import { createStore, Effects } from 'redux-loop';
+
+const FIRST_ACTION = 'FIRST_ACTION';
+const SECOND_ACTION = 'SECOND_ACTION';
+
+const init = {
+  state: {
+    firstActionDispatched: false,
+    secondActionDispatched: false,
+  },
+  effects: [
+    Effects.fromLazyPromise(
+      () => Promise.resolve({ type: FIRST_ACTION })
+    )
+  ],
+};
+
+function reducer(state, action) {
+  switch(action.type) {
+
+    case FIRST_ACTION:
+      return {
+        state: {
+          ...state,
+          firstActionDispatched: true,
+        },
+        effects: [
+          Effects.fromLazyPromise(
+            () => Promise.resolve({ type: SECOND_ACTION })
+          )
+        ]
+      };
+
+    case SECOND_ACTION:
+      return {
+        state: {
+          ...state,
+          secondActionDispatched: true,
+        },
+        effects: [],
+      };
+
+    default:
+      return state;
+    }
+}
+
+const store = createStore(reducer, init);
+```
 
 ## Why use this?
 
@@ -56,8 +104,124 @@ to handle asynchronous effects as well as synchronous state transitions. With
 particular action, it decides what happens _*next*_. All of the behavior of your
 application can be traced through one place, and that behavior can be easily broken
 apart and composed back together. This is one of the most powerful features of the
-[Elm architecture](https://guide.elm-lang.org/architecture/), and with
+[Elm architecture](https://github.com/evancz/elm-architecture-tutorial), and with
 `redux-loop` it is a feature of Redux as well.
+
+## API
+
+* [`createLoopStore`](#createLoopStore)
+* [`Effects`](#effects)
+  * [`Effects.fromLazyPromise`](#effectsfromlazypromise)
+  * [`Effects#map`](#effectsmap)
+
+### createLoopStore
+
+| Argument     | Required | Description |
+|--------------|----------|-------------
+| reducer      | true     | Reducer which returns new state and effects. **Note:** You can't use `composeReducers` because this function do not handle effects.
+| initialState | true     | Initial state and initial effects.
+| enhancer     | false    | Usual Redux ehancer. So you can use all the middlewares you are used to including Redux DevTools
+
+To be able to have side-effects within initial state as well as return them from reducer we created our own implementation of `createStore`.
+
+Don't panic! We use original Redux store creation under the hood. So you will be able to use all your favorite middlewares and dev tools!
+
+Following examle illustrates how very simple store creation could be done.
+
+```js
+import * as ReduxLoop from 'redux-loop';
+
+const store = ReduxLoop.createLoopStore(
+  function reducer(state, action) {
+    return { state, effects: [] };
+  },
+  {
+    state: 'your initial state'
+    effects: [/* your initial effects */]
+  },
+  // As in Redux itself you can pass enhancer as a third argument.
+  // It will be passed down to the Redux store.
+  enhancer
+);
+```
+
+### Effects
+
+#### Effects.fromLazyPromise
+
+This is the only method you need to create any side-effect in your application.
+
+```js
+const effect = Effects.fromLazyPromise(
+  () => Promise.resolve({ type: 'YOUR_ACTION_TYPE' })
+);
+```
+
+The reason we need it is because JavaScript promises get executed immediately which eliminates all the purity of our reducer.
+
+The only important thing here is that promise you use should return valid action both upon success and failure.
+
+```js
+const effect = Effects.fromLazyPromise(() => {
+  return new Promise((resolve, reject) => {
+    const rnd = Math.random();
+
+    if (rnd < 0.5) {
+      reject('OMG!');
+    }
+    else {
+      return resolve(rnd);
+    }
+  })
+  .then(rnd => {
+    return {
+      type: 'SUCCESS',
+      payload: rnd,
+    };
+  })
+  .catch(() => {
+    return {
+      type: 'FAILURE',
+    };
+  });
+});
+```
+
+If you for some reason forgot to use `catch` to handle fail case we will notify you with handful error message!
+
+#### Effects#map
+
+You will need this method, well, for mapping your `Effects`. This is pretty similar to mapping an array.
+
+```js
+[1, 2, 3].map(x => x * x);
+// [1, 4, 9]
+```
+
+Whenever you map an array you get a new array with each value being transformed with the function provided. Whenever you map an `Effect` you get a new `Effect` with it's value being transformed with the function. The primary use case for it is to be able to nest actions one withing the other.
+
+```js
+Effects
+  .fromLazyPromise(
+    () => Promise.resolve({ type: 'ACTION', foo: 'bar' })
+  )
+  .map(action => {
+    return {
+      type: 'WRAPPED_ACTION',
+      nestedAction: action,
+    }
+  });
+
+/*
+{
+  type: 'WRAPPED_ACTION',
+  nestedAction: {
+    type: 'ACTION',
+    foo: 'bar'
+  },
+}
+*/
+```
 
 ## Support
 
@@ -66,6 +230,24 @@ as issues to this repo, we'll do our best to address them quickly. We use this
 library as well and want it to be the best it can! For questions about using the
 library, [submit questions on StackOverflow](http://stackoverflow.com/questions/ask)
 with the [`redux-loop` tag](http://stackoverflow.com/questions/tagged/redux-loop).
+
+### Don't see a feature you want?
+
+If you're interested in adding something to `redux-loop` but don't want to wait
+for us to incorporate the idea you can follow these steps to get your own installable
+version of `redux-loop` with your feature included:
+
+1. Fork the main repo here
+1. Add your feature or change
+1. Change the package `"name"` in package.json to be `"@<your-npm-username>/redux-loop`
+1. Commit to master and `npm publish`
+1. `npm install @<your-npm-username>/redux-loop`
+
+We are _**always**_ interested in new ideas, but sometimes we get a little busy and fall
+behind on responding and reviewing PRs. Hopefully this process will allow you to
+continue making progress on your projects and also provide us with more context if and
+when you do decide to make a PR for your new feature or change. The best way to verify
+new features for a library is to use them in real-world scenarios!
 
 ## Contributing
 
