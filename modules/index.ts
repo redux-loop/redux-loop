@@ -79,26 +79,65 @@ export function createLoopStore<S, A extends Redux.Action>(reducer: Reducer<S>, 
 
 export interface Effect<A> {
   map<T>(fn: (action: A) => T): Effect<T>
+  equals(other: Effect<A>): boolean
   toPromise(): Promise<A>
 }
 
-export function effect<A>(promiseCreator: () => Promise<A>): Effect<A> {
-  return new DefaultEffectImpl(promiseCreator)
+export function effect<A>(promiseCreator: (...args: any[]) => Promise<A>, ...args: any[]): Effect<A> {
+  return new DefaultEffect(promiseCreator, args)
 }
 
-class DefaultEffectImpl<A> implements Effect<A> {
-  private readonly _promiseCreator: () => Promise<A>;
+class MapEffect<A> implements Effect<A> {
+  private readonly _inner: Effect<any>
+  private readonly _tagger: (action: any) => A
 
-  constructor(readonly promiseCreator: () => Promise<A>) {
-    this._promiseCreator = promiseCreator;
+  constructor(readonly innerEffect: Effect<any>, tagger: (action: any) => A) {
+    this._inner = innerEffect;
+    this._tagger = tagger;
   }
 
   map = <T>(fn: (action: A) => T): Effect<T> => {
-    return new DefaultEffectImpl(() => this._promiseCreator().then(fn));
+    return new MapEffect(this, fn);
+  }
+
+  equals = (other: Effect<A>): boolean => {
+    if (other instanceof MapEffect) {
+      return this._tagger === other._tagger
+        && this._inner.equals(other._inner);
+    }
+
+    return false;
   }
 
   toPromise = (): Promise<A> => {
-    const promise = this._promiseCreator();
+    return this._inner.toPromise().then(this._tagger);
+  }
+}
+
+class DefaultEffect<A> implements Effect<A> {
+  private readonly _promiseCreator: (...args: any[]) => Promise<A>;
+  private readonly _args: any[];
+
+  constructor(readonly promiseCreator: (...args: any[]) => Promise<A>, readonly args: any[]) {
+    this._promiseCreator = promiseCreator;
+    this._args = args;
+  }
+
+  map = <T>(fn: (action: A) => T): Effect<T> => {
+    return new MapEffect(this, fn);
+  }
+
+  equals = (other: Effect<A>): boolean => {
+    if (other instanceof DefaultEffect) {
+      return this._promiseCreator === other._promiseCreator
+        && this._args.every((a, i) => a === other._args[i]);
+    }
+
+    return false;
+  }
+
+  toPromise = (): Promise<A> => {
+    const promise = this._promiseCreator(...this._args);
 
     if (promise instanceof Promise) {
       return promise;

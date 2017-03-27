@@ -102,6 +102,19 @@ describe('Suit', () => {
   });
 
   describe('Effects', () => {
+    it('#equals should recognize the same function', () => {
+      const fn = () => Promise.resolve({ type: 'action' });
+      const left = effect(fn);
+      const right = effect(fn);
+      expect(left.equals(right)).to.be.true;
+    });
+
+    it('#equals should recognize different functions', () => {
+      const left = effect(() => Promise.resolve({ type: 'left'}));
+      const right = effect(() => Promise.resolve({ type: 'right'}));
+      expect(left.equals(right)).to.be.false;
+    });
+
     it('#toPromise should throw if wrongly created', () => {
       const subject = effect(() => 'hello' as any);
 
