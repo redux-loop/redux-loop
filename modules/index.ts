@@ -1,31 +1,27 @@
 import * as Redux from 'redux';
-
 import * as Errors from './errors';
-
 
 if (typeof Promise === 'undefined') {
   throw new Error(Errors.promisePolyfill);
 }
 
-
 export interface Loop<State, Action> {
   state: State,
-  effects: Effects<Action>[],
+  effects: Effect<Action>[],
 }
 
 export type Reducer<State> = <Action extends Redux.Action>(state: State, action: Action) => Loop<State, Action>;
 
-export interface LoopStore<S> {
+export interface Store<S> {
   getState: () => S,
   subscribe: (fn: Function) => void,
   replaceReducer: (reducer: Reducer<S>) => void,
   dispatch: (action: Redux.Action) => any,
 }
 
-
-export function createLoopStore<S, A extends Redux.Action>(reducer: Reducer<S>, initialModel: Loop<S, A>, enhancer?: Redux.StoreEnhancer<S>): LoopStore<S> {
+export function createLoopStore<S, A extends Redux.Action>(reducer: Reducer<S>, initialModel: Loop<S, A>, enhancer?: Redux.StoreEnhancer<S>): Store<S> {
   return (function () {
-    let queue = [] as Effects<A>[];
+    let queue = [] as Effect<A>[];
 
     function liftReducer(reducer: Reducer<S>): Redux.Reducer<S> {
       return (state: S, action: A): S => {
@@ -43,7 +39,7 @@ export function createLoopStore<S, A extends Redux.Action>(reducer: Reducer<S>, 
       enhancer,
     )
 
-    function executeEffects(callback: (action: A) => void, effects: Effects<A>[]): Promise<any>[] {
+    function executeEffects(callback: (action: A) => void, effects: Effect<A>[]): Promise<any>[] {
       return effects.map(effect =>
         effect
           .toPromise()
@@ -81,20 +77,24 @@ export function createLoopStore<S, A extends Redux.Action>(reducer: Reducer<S>, 
   })();
 }
 
+export interface Effect<A> {
+  map<T>(fn: (action: A) => T): Effect<T>
+  toPromise(): Promise<A>
+}
 
-export class Effects<A> {
+export function effect<A>(promiseCreator: () => Promise<A>): Effect<A> {
+  return new DefaultEffectImpl(promiseCreator)
+}
+
+class DefaultEffectImpl<A> implements Effect<A> {
   private readonly _promiseCreator: () => Promise<A>;
 
   constructor(readonly promiseCreator: () => Promise<A>) {
     this._promiseCreator = promiseCreator;
   }
 
-  static fromLazyPromise<Action>(promiseCreator: () => Promise<Action>) {
-    return new Effects(promiseCreator);
-  }
-
-  map = <T>(fn: (action: A) => T): Effects<T> => {
-    return new Effects(() => this._promiseCreator().then(fn));
+  map = <T>(fn: (action: A) => T): Effect<T> => {
+    return new DefaultEffectImpl(() => this._promiseCreator().then(fn));
   }
 
   toPromise = (): Promise<A> => {

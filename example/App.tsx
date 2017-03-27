@@ -1,22 +1,23 @@
 import * as React from 'react';
-import { Loop } from '../../modules/';
+import { connect } from 'react-redux';
+import { Loop } from '../modules/';
 import * as Counter from './Counter';
 import * as Random from './Random';
 
-// ===== MODEL ===== //
+// ===== STATE ===== //
 
-export interface Model {
-  counter: Counter.Model;
-  random: Random.Model;
+export interface State {
+  counter: Counter.State;
+  random: Random.State;
 }
 
-export const init: Loop<Model, Action> = {
+export const initialStateAndEffects: Loop<State, Action> = {
   state: {
-    counter: Counter.init,
-    random: Random.init.state,
+    counter: Counter.initialState,
+    random: Random.initialStateAndEffects.state,
   },
   effects: [
-    ...Random.init.effects.map(
+    ...Random.initialStateAndEffects.effects.map(
       eff => eff.map(
         nestedAction => ({ type: 'RandomAction', nestedAction }) as Action
       )
@@ -24,27 +25,28 @@ export const init: Loop<Model, Action> = {
   ],
 };
 
-// ===== UPDATE ===== //
+// ===== REDUCER ===== //
 
-export type Action = CounterAction | RandomAction; 
+export type Action = CounterAction | RandomAction;
 export type CounterAction = { type: 'CounterAction', nestedAction: Counter.Action };
 export type RandomAction = { type: 'RandomAction', nestedAction: Random.Action };
 
-export function reducer(model: Model, action: Action): Loop<Model, Action> {
+export function reducer(state: State, action: Action): Loop<State, Action> {
   switch (action.type) {
     case 'CounterAction':
       return {
         state: {
-          ...model,
-          counter: Counter.update(model.counter, action.nestedAction)
+          ...state,
+          counter: Counter.reducer(state.counter, action.nestedAction)
         },
         effects: [],
       };
+
     case 'RandomAction': {
-      const { state: nextState, effects } = Random.update(model.random, action.nestedAction);
+      const { state: nextState, effects } = Random.reducer(state.random, action.nestedAction);
       return {
         state: {
-          ...model,
+          ...state,
           random: nextState,
         },
         effects: [
@@ -56,29 +58,32 @@ export function reducer(model: Model, action: Action): Loop<Model, Action> {
         ],
       };
     }
+
     default:
-      return { state: model, effects: [] };
+      return { state, effects: [] };
   }
 }
 
 // ===== VIEW ===== //
 
-interface Props {
-  model: Model;
+export interface AppProps {
+  state: State;
   dispatch: (action: Action) => void;
 }
 
-export function View({ model, dispatch}: Props) {
+function AppComponent({ state, dispatch }: AppProps) {
   return (
     <div>
-      <Counter.View
-        model={model.counter}
+      <Counter.Counter
+        state={state.counter}
         dispatch={nestedAction => dispatch({ type: 'CounterAction', nestedAction })}
       />
-      <Random.View
-        model={model.random}
+      <Random.Random
+        state={state.random}
         dispatch={nestedAction => dispatch({ type: 'RandomAction', nestedAction })}
       />
     </div>
   );
 }
+
+export const App = connect((state) => ({ state }))(AppComponent)

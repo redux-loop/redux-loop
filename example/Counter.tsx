@@ -1,41 +1,41 @@
 import * as React from 'react';
 import * as Utils from './Utils';
 
-// ===== MODEL ===== //
+// ===== State ===== //
 
-export type Model = number;
+export type State = number;
 
-export const init: Model = 0;
+export const initialState: State = 0;
 
-// ===== UPDATE ===== //
+// ===== REDUCER ===== //
 
 export type Action
   = { type: 'Increment' }
   | { type: 'Decrement' };
 
-export function update(model: Model, action: Action): Model {
+export function reducer(state: State, action: Action): State {
   switch (action.type) {
     case 'Increment':
-      return model + 1;
+      return state + 1;
     case 'Decrement':
-      return model - 1;
+      return state - 1;
     default:
       return Utils.makeSwitchExaustive(action);
   }
 }
 
-// ===== VIEW ===== //
+// ===== COMPONENT ===== //
 
-export interface ViewProps {
-  model: Model;
+export interface Props {
+  state: State;
   dispatch: (action: Action) => void;
 }
 
-export function View({ model, dispatch }: ViewProps) {
+export function Counter({ state, dispatch }: Props) {
   return (
     <div>
       <button onClick={() => dispatch({ type: 'Increment' })}>+</button>
-      <span>{model}</span>
+      <span>{state}</span>
       <button onClick={() => dispatch({ type: 'Decrement' })}>-</button>
     </div>
   );

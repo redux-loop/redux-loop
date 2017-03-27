@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import * as Redux from 'redux';
 
-import { createLoopStore, Effects } from '../modules';
+import { createLoopStore, effect } from '../modules';
 
 
 const EXPECT_TIMEOUT = 20;
@@ -29,7 +29,7 @@ describe('Suit', () => {
       const init = {
         state: 1,
         effects: [
-          Effects.fromLazyPromise(() => 
+          effect(() =>
             Promise
               .resolve()
               .then(() => ({ type: ACTION, arg: 3 }))
@@ -61,7 +61,7 @@ describe('Suit', () => {
       const init = {
         state: 1,
         effects: [
-          Effects.fromLazyPromise(() => 
+          effect(() =>
             Promise
               .resolve()
               .then(() => ({ type: FIRST_ACTION }))
@@ -75,7 +75,7 @@ describe('Suit', () => {
             return {
               state: state + 5,
               effects: [
-                Effects.fromLazyPromise(() => 
+                effect(() =>
                   Promise
                     .resolve()
                     .then(() => ({ type: SECOND_ACTION }))
@@ -103,13 +103,13 @@ describe('Suit', () => {
 
   describe('Effects', () => {
     it('#toPromise should throw if wrongly created', () => {
-      const effect = Effects.fromLazyPromise(() => 'hello' as any);
+      const subject = effect(() => 'hello' as any);
 
-      expect(effect.toPromise).to.throw(Error);
+      expect(subject.toPromise).to.throw(Error);
     });
 
     it('#map should transform actions', () => {
-      const childEffect = Effects.fromLazyPromise(() => Promise.resolve({ type: 'child' }));
+      const childEffect = effect(() => Promise.resolve({ type: 'child' }));
       const parentEffect = childEffect.map(action => ({
         type: 'parent',
         nested: action,
