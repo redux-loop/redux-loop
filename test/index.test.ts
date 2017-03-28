@@ -102,6 +102,15 @@ describe('Suit', () => {
   });
 
   describe('Effects', () => {
+    it('#catch should capture errors', () => {
+      const fn = () => Promise.reject(Error('no!'));
+      const eff = effect(fn).catch((e: Error) => e.message);
+
+      return eff
+        .toPromise()
+        .then(result => expect(result).to.equal('no!'));
+    });
+
     it('#equals should recognize the same function', () => {
       const fn = () => Promise.resolve({ type: 'action' });
       const left = effect(fn);

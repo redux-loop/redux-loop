@@ -79,21 +79,26 @@ export function createLoopStore<S, A extends Redux.Action>(reducer: Reducer<S>, 
 
 export interface Effect<A> {
   map<T>(fn: (action: A) => T): Effect<T>
+  catch<E,T>(fn: (error: E) => T): Effect<T>
   equals(other: Effect<A>): boolean
   toPromise(): Promise<A>
 }
 
 export function effect<A>(promiseCreator: (...args: any[]) => Promise<A>, ...args: any[]): Effect<A> {
-  return new DefaultEffect(promiseCreator, args)
+  return new DefaultEffect(promiseCreator, args);
 }
 
 class MapEffect<A> implements Effect<A> {
-  private readonly _inner: Effect<any>
-  private readonly _tagger: (action: any) => A
+  protected readonly _inner: Effect<any>
+  protected readonly _tagger: (action: any) => A
 
   constructor(readonly innerEffect: Effect<any>, tagger: (action: any) => A) {
     this._inner = innerEffect;
     this._tagger = tagger;
+  }
+
+  catch = <E,T>(fn: (error: E) => T): Effect<T> => {
+    return new CatchEffect(this, fn);
   }
 
   map = <T>(fn: (action: A) => T): Effect<T> => {
@@ -114,13 +119,24 @@ class MapEffect<A> implements Effect<A> {
   }
 }
 
+class CatchEffect<A> extends MapEffect<A> {
+  toPromise = (): Promise<A> => {
+    return this._inner
+      .toPromise()
+      .catch((e) => Promise.resolve(this._tagger(e)));
+  }
+}
+
 class DefaultEffect<A> implements Effect<A> {
   private readonly _promiseCreator: (...args: any[]) => Promise<A>;
   private readonly _args: any[];
-
   constructor(readonly promiseCreator: (...args: any[]) => Promise<A>, readonly args: any[]) {
     this._promiseCreator = promiseCreator;
     this._args = args;
+  }
+
+  catch = <E,T>(fn: (error: E) => T): Effect<T> => {
+    return new CatchEffect(this, fn);
   }
 
   map = <T>(fn: (action: A) => T): Effect<T> => {
