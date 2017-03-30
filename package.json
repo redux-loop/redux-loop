@@ -1,5 +1,5 @@
 {
-  "name": "redux-loop",
+  "name": "@bdwain/redux-loop",
   "npmName": "redux-loop",
   "version": "2.2.2",
   "description": "Sequence your effects naturally and purely by returning them from your reducers.",
