@@ -120,7 +120,7 @@ apart and composed back together. This is one of the most powerful features of t
 |--------------|----------|-------------
 | reducer      | true     | Reducer which returns new state and effects. **Note:** You can't use `composeReducers` because this function do not handle effects.
 | initialState | true     | Initial state and initial effects.
-| enhancer     | false    | Usual Redux ehancer. So you can use all the middlewares you are used to including Redux DevTools
+| enhancer     | false    | Usual Redux enhancer. So you can use all the middlewares you are used to including Redux DevTools
 
 To be able to have side-effects within initial state as well as return them from reducer we created our own implementation of `createStore`.
 
