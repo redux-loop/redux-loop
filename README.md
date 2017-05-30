@@ -126,7 +126,7 @@ To be able to have side-effects within initial state as well as return them from
 
 Don't panic! We use original Redux store creation under the hood. So you will be able to use all your favorite middlewares and dev tools!
 
-Following examle illustrates how very simple store creation could be done.
+Following example illustrates how very simple store creation could be done.
 
 ```js
 import * as ReduxLoop from 'redux-loop';
