@@ -187,7 +187,7 @@ const effect = Effects.fromLazyPromise(() => {
 });
 ```
 
-If you for some reason forgot to use `catch` to handle fail case we will notify you with handful error message!
+If you for some reason forgot to use `catch` to handle fail case we will notify you with a handful of error messages!
 
 #### Effects#map
 
