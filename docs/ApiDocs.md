@@ -233,8 +233,6 @@ current dispatch is complete. It can be useful for initiating multiple sequences
 that run in parallel but don't need to communicate or complete at the same time. 
 Make sure your action creator is pure if creating an action from a reducer.
 
-Cmd.action was renamed from Cmd.constant
-
 #### Examples
 
 ```js
@@ -278,8 +276,6 @@ the fail action creator is only used if an error is thrown.
 If a Run Cmd is used in a batch or sequence and func returns a promise, the batch/sequence will not
 finish until the returned promise resolves/rejects. If a promise is not returned, the batch/sequence
 does not wait. This can be forced (even if a promise is returned) by using the forceSync option.
-
-Cmd.promise, Cmd.call, and Cmd.arbitrary were replaced by Cmd.run
 
 #### Examples
 
