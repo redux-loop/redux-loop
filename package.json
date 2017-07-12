@@ -1,10 +1,8 @@
 {
   "name": "redux-loop",
-  "npmName": "redux-loop",
   "version": "2.2.2",
   "description": "Sequence your effects naturally and purely by returning them from your reducers.",
   "main": "lib/index.js",
-  "typings": "lib/index.d.ts",
   "jsnext:main": "modules/index.js",
   "homepage": "https://github.com/redux-loop/redux-loop",
   "repository": {
@@ -22,10 +20,10 @@
     "lib"
   ],
   "scripts": {
-    "start": "node ./scripts/runExample.js",
     "clean": "rimraf lib",
-    "build": "tsc",
-    "test": "mocha -r ts-node/register test/**/*.test.ts"
+    "build": "babel modules --out-dir lib",
+    "test": "tape -r babel-polyfill -r babel-register './test/*.test.js'",
+    "prepublish": "npm run clean && npm run build"
   },
   "keywords": [
     "redux",
@@ -43,36 +41,20 @@
     "elm",
     "loop"
   ],
-  "author": {
-    "name": "Luke William Westby",
-    "email": "opensource@lukewestby.com",
-    "url": "https://twitter.com/luke_dot_js"
-  },
-  "contributors": [],
+  "author": "Luke William Westby <luke.westby@raise.com>",
   "license": "MIT",
   "devDependencies": {
-    "@types/chai": "^3.4.35",
-    "@types/es6-promise": "^0.0.32",
-    "@types/mocha": "^2.2.39",
-    "@types/react": "^15.0.20",
-    "@types/react-dom": "^0.14.23",
-    "@types/react-redux": "^4.4.38",
-    "awesome-typescript-loader": "^3.1.2",
-    "chai": "^3.5.0",
-    "express": "^4.15.2",
-    "html-webpack-plugin": "^2.28.0",
-    "mocha": "^3.2.0",
-    "open": "^0.0.5",
-    "react": "^15.4.2",
-    "react-dom": "^15.4.2",
-    "react-redux": "^5.0.3",
-    "redux": "3.6.0",
-    "rimraf": "2.5.4",
-    "source-map-loader": "^0.2.0",
-    "ts-node": "^2.1.0",
-    "typescript": "^2.1.6",
-    "webpack": "^2.3.2",
-    "webpack-dev-middleware": "^1.10.1"
-  },
-  "dependencies": {}
+    "babel": "6.3.13",
+    "babel-cli": "6.3.17",
+    "babel-plugin-transform-es3-member-expression-literals": "6.3.13",
+    "babel-plugin-transform-es3-property-literals": "6.3.13",
+    "babel-plugin-transform-object-rest-spread": "6.3.13",
+    "babel-polyfill": "6.7.2",
+    "babel-preset-es2015": "6.3.13",
+    "babel-register": "6.7.2",
+    "immutable": "^3.7.6",
+    "redux": "3.5.2",
+    "rimraf": "2.4.4",
+    "tape": "4.5.1"
+  }
 }

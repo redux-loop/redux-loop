@@ -1,13 +1,8 @@
-# <img alt='redux-loop' src='https://raw.githubusercontent.com/redux-loop/redux-loop/master/logo/logo.png' height='200'>
+# redux-loop
 
-[![Build Status](https://travis-ci.org/redux-loop/redux-loop.svg?branch=master)](https://travis-ci.org/redux-loop/redux-loop)
+A port of the [Elm Architecture](https://github.com/evancz/elm-architecture-tutorial) to Redux that allows you to sequence your effects naturally and purely by returning them from your reducers.
 
-
-A port of the idea behind [The Elm Architecture](https://guide.elm-lang.org/architecture/) to Redux
-that allows you to sequence your effects naturally and purely by returning them
-from your reducers. This is a partial port because we want to keep API surface area for the library as small as possible.
-
-> Is it correct to cause side-effects in a reducer?
+> Isn't it incorrect to cause side-effects in a reducer?
 
 Yes! Absolutely.
 
@@ -22,69 +17,8 @@ and what they will do to your environment.
 
 > What are the environment requirements for redux-loop?
 
-`redux-loop` requires polyfill for ES6 `Promise` to be included if
+`redux-loop` requires polyfills for ES6 `Promise` and `Symbol` to be included if
 the browsers you target don't natively support them.
-
-## Install
-
-```
-npm install --save redux-loop
-```
-
-## Quick Example
-
-```javascript
-import { createStore, Effects } from 'redux-loop';
-
-const FIRST_ACTION = 'FIRST_ACTION';
-const SECOND_ACTION = 'SECOND_ACTION';
-
-const init = {
-  state: {
-    firstActionDispatched: false,
-    secondActionDispatched: false,
-  },
-  effects: [
-    Effects.fromLazyPromise(
-      () => Promise.resolve({ type: FIRST_ACTION })
-    )
-  ],
-};
-
-function reducer(state, action) {
-  switch(action.type) {
-
-    case FIRST_ACTION:
-      return {
-        state: {
-          ...state,
-          firstActionDispatched: true,
-        },
-        effects: [
-          Effects.fromLazyPromise(
-            () => Promise.resolve({ type: SECOND_ACTION })
-          )
-        ]
-      };
-
-    case SECOND_ACTION:
-      return {
-        state: {
-          ...state,
-          secondActionDispatched: true,
-        },
-        effects: [],
-      };
-
-    default:
-      return {
-        state
-      };
-    }
-}
-
-const store = createStore(reducer, init);
-```
 
 ## Why use this?
 
@@ -109,121 +43,262 @@ apart and composed back together. This is one of the most powerful features of t
 [Elm architecture](https://github.com/evancz/elm-architecture-tutorial), and with
 `redux-loop` it is a feature of Redux as well.
 
-## API
+## Tutorial
 
-* [`createLoopStore`](#createLoopStore)
-* [`Effects`](#effects)
-  * [`Effects.fromLazyPromise`](#effectsfromlazypromise)
-  * [`Effects#map`](#effectsmap)
-
-### createLoopStore
-
-| Argument     | Required | Description |
-|--------------|----------|-------------
-| reducer      | true     | Reducer which returns new state and effects. **Note:** You can't use `composeReducers` because this function do not handle effects.
-| initialState | true     | Initial state and initial effects.
-| enhancer     | false    | Usual Redux enhancer. So you can use all the middlewares you are used to including Redux DevTools
-
-To be able to have side-effects within initial state as well as return them from reducer we created our own implementation of `createStore`.
-
-Don't panic! We use original Redux store creation under the hood. So you will be able to use all your favorite middlewares and dev tools!
-
-Following example illustrates how very simple store creation could be done.
+### Install the store enhancer
 
 ```js
-import * as ReduxLoop from 'redux-loop';
+import { createStore, compose, applyMiddleware } from 'redux';
+import reducer from './reducers';
+import { install } from 'redux-loop';
+import someMiddleware from 'some-middleware';
 
-const store = ReduxLoop.createLoopStore(
-  function reducer(state, action) {
-    return { state, effects: [] };
-  },
-  {
-    state: 'your initial state'
-    effects: [/* your initial effects */]
-  },
-  // As in Redux itself you can pass enhancer as a third argument.
-  // It will be passed down to the Redux store.
-  enhancer
+const enhancer = compose(
+  applyMiddleware(someMiddleware),
+  install()
 );
+
+const store = createStore(reducer, initialState, enhancer);
 ```
 
-### Effects
+Installing `redux-loop` is as easy as installing any other store enhancer. You
+can apply it directly over `createStore` or compose it with other enhancers
+and middlewares. Composition of enhancers can be confusing, so the order in
+which `install()` is applied may matter. If something like `applyMiddleware()`
+doesn't work when called before `install()`, applying after may fix the issue.
 
-#### Effects.fromLazyPromise
-
-This is the only method you need to create any side-effect in your application.
+### Write a reducer with some Cmds (side effects)
 
 ```js
-const effect = Effects.fromLazyPromise(
-  () => Promise.resolve({ type: 'YOUR_ACTION_TYPE' })
-);
+import { loop, Cmd } from 'redux-loop';
+
+function initAction(){
+    return {
+      type: 'INIT'
+    };
+}
+
+function fetchUser(userId){
+    return fetch(`/api/users/${userId}`);
+}
+
+function userFetchSuccessfulAction(user){
+   return {
+      type: 'USER_FETCH_SUCCESSFUL',
+      user
+   };
+}
+
+function userFetchFailedAction(err){
+   return {
+      type: 'USER_FETCH_ERROR',
+      err
+   };
+}
+
+const initialState = {
+  initStarted: false,
+  user: null,
+  error: null
+};
+
+function reducer(state = initialState, action) {
+  switch(action.type) {
+  case 'INIT':
+    return loop(
+      {...state, initStarted: true},
+      Cmd.run(fetchUser, {
+        successActionCreator: userFetchSuccessfulAction,
+        faiLActionCreator: userFetchFailedAction,
+        args: ['123']
+      })
+    );
+
+  case 'USER_FETCH_SUCCESSFUL':
+    return {...state, user: action.user};
+    
+  case 'USER_FETCH_FAILED':
+    return {...state, error: action.error};
+    
+  default:
+    return state;
+  }
+}
 ```
 
-The reason we need it is because JavaScript promises get executed immediately which eliminates all the purity of our reducer.
+Any reducer case can return a `loop` instead of a state object. A `loop` joins
+an updated model state with a cmd for the store to process. A cmd is just 
+an object that describes what side effect should run, and what to do with
+the result. There are several options for cmds, all available under the `Cmd` object:
 
-The only important thing here is that promise you use should return valid action both upon success and failure.
+- `run(functionToCall, options)`
+  - Accepts a function to run and options for how to call it and what to do with the result.
+- `action(actionToDispatch)`
+  - Accepts an `actionToDispatch` instance to dispatch immediately once the current dispatch cycle is completed.
+- `batch(cmds)`
+  - Accepts an array of other cmds and runs them in parallel, dispatching the resulting actions in their original order once all cmds are resolved.
+- `sequence(cmds)`
+  - The same as batch, but commands wait for the previous command to finish before starting.
+- `none()`
+  - A no-op action, for convenience.
+
+#### Accessing state and dispatching actions from your Cmds
+
+While most of your side effect methods should be agnostic to redux, sometimes you
+will need the flexibility of accessing arbitrary slices of state or dispatching an
+action separately from the result of the cmd. Here's an example of how you can do this.
 
 ```js
-const effect = Effects.fromLazyPromise(() => {
-  return new Promise((resolve, reject) => {
-    const rnd = Math.random();
+import {loop, Cmd} from 'redux-loop';
+import {doSomething} from 'something.js';
+import {doSomethingResultAction} from './actions.js';
+function reducer(state, action) {
+  switch(action.type) {
+  case 'ACTION':
+    return loop(
+      {...state, initStarted: true},
+      Cmd.run(doSomething, {
+         successActionCreator: doSomethingResultAction,
+         args: [Cmd.getState, Cmd.dispatch]
+      })
+    );
+  default:
+    return state;
+  }
+}
 
-    if (rnd < 0.5) {
-      reject('OMG!');
-    }
-    else {
-      return resolve(rnd);
-    }
-  })
-  .then(rnd => {
-    return {
-      type: 'SUCCESS',
-      payload: rnd,
-    };
-  })
-  .catch(() => {
-    return {
-      type: 'FAILURE',
-    };
-  });
+//something.js
+export function doSomething(getState, dispatch){
+   let value = getState().some.random.value;
+   dispatch(someRandomAction());
+}
+```
+
+Cmd.getState and Cmd.dispatch are just symbols that the enhanced store will
+replace with the actual functions at the time the cmd is executed. You can 
+use these symbols as parameters to your cmds as you would any other parameter (the
+order does not matter).
+
+### Easily test reducer results
+
+```js
+import test from 'tape';
+import reducer, { fetchDetails } from './reducer';
+import { loadingStart, loadingSuccess, loadingError } from './actions';
+import { Effects, loop } from 'redux-loop';
+
+test('reducer works as expected', (t) => {
+  const state = { loading: false };
+
+  const result = reducer(state, loadingStart(1));
+
+  t.deepEqual(result, loop(
+    { loading: true },
+    Cmd.run(fetchDetails, {
+      sucessActionCreator: loadingSuccess,
+      failActionCreator: loadingError,
+      args: [1]
+    })
+  ));
 });
 ```
 
-If you for some reason forgot to use `catch` to handle fail case we will notify you with a helpful error message!
+Cmds are declarative specifications of the next behavior of the store. They
+are only processed by an active store, pushing effecting behavior to the edge of
+the application. You can call a reducer as many times with a given action and
+state and always get a result which is `deepEqual`.
 
-#### Effects#map
+> CAVEAT
+> For testing sanity, always pass a referenceable function to a cmd.
+> Functions curried or bound from the same function with the same arguments are
+> not equal within JavaScript, and so are best to avoid if you want to compare
+> effects in your tests.
 
-You will need this method, well, for mapping your `Effects`. This is pretty similar to mapping an array.
+### combineReducers with redux-loop
 
 ```js
-[1, 2, 3].map(x => x * x);
-// [1, 4, 9]
+import { createStore } from 'redux';
+import { combineReducers, install } from 'redux-loop';
+
+import { firstReducer, secondReducer } from './reducers';
+
+const reducer = combineReducers({
+  first: firstReducer,
+  second: secondReducer,
+});
+
+const store = createStore(reducer, initialState, install());
 ```
 
-Whenever you map an array you get a new array with each value being transformed with the function provided. Whenever you map an `Effect` you get a new `Effect` with it's value being transformed with the function. The primary use case for it is to be able to nest actions one withing the other.
+The `combineReducers` implementation in `redux-loop` is aware that some of
+your reducers might return cmds, and it knows how to properly compose them
+and forward them to the store. 
+
+#### How to use combineReducers when using libraries such as immutable.js
+
+Our `combineReducers` can also handle states made of data structures
+other than the default `{}`, you simply pass it in the root state,
+an accessor function (which returns a value for that key), and a mutator
+function (which returns a **new version** of the object with a value
+set at a given key). The example below demonstrates using Immutable.js'
+Map() data structure, but you can use any `key => value` data structure
+as long as you provide your own accessor and mutator functions.
+
+While these customization features are provided for convenience, if you
+are using using something other than a plain object as your state, you should
+consider writing your own implementation of combineReducers, using our 
+version as a reference. It's impossible to provide a generic combineReducers
+that will be optimal for all state shapes. As an example, updating an immutable.js
+state would be much faster if you made use of the withMutations method to batch updates. 
 
 ```js
-Effects
-  .fromLazyPromise(
-    () => Promise.resolve({ type: 'ACTION', foo: 'bar' })
-  )
-  .map(action => {
-    return {
-      type: 'WRAPPED_ACTION',
-      nestedAction: action,
-    }
-  });
+import { combineReducers } from 'redux-loop';
+import { Map } from 'immutable';
 
-/*
-{
-  type: 'WRAPPED_ACTION',
-  nestedAction: {
-    type: 'ACTION',
-    foo: 'bar'
-  },
+import { firstReducer, secondReducer } from './reducers';
+
+const reducers = {
+  first: firstReducer,
+  second: secondReducer,
 }
-*/
+
+//Map() is now used as the new root state, and custom accessor and mutator properties are provided
+const reducer = combineReducers(
+    reducers,
+    Map(),
+    (child, key) => child.get(key),
+    (child, key, value) => child.set(key, value)
+);
+
 ```
+
+### Avoid circular loops!
+
+```js
+function reducer(state, action) {
+  switch (action.type) {
+    case 'FIRST':
+      return loop(
+        state,
+        Cmd.action(second())
+      );
+
+    case 'SECOND':
+      return loop(
+        state,
+        Cmd.action(first())
+      );
+  }
+}
+```
+
+This minimal example will cause perpetual dispatching! While it is also possible
+to make this mistake with large, complicated networks of `redux-thunk` action
+creators, it is much easier to spot the mistake before it is made. It helps to
+keep your reducers small and focused, and use `combineReducers` or manually
+compose reducers so that the number of actions you deal with at one time is
+small. A small set of actions which initiate a `loop` will help reduce the
+likelihood of causing circular dispatches.
 
 ## Support
 
