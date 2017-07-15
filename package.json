@@ -56,5 +56,6 @@
     "redux": "3.5.2",
     "rimraf": "2.4.4",
     "tape": "4.5.1"
-  }
+  },
+  "dependencies": {}
 }

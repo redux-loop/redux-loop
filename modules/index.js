@@ -16,9 +16,12 @@ import {
   combineReducers,
 } from './combineReducers';
 
+import Effects from './effects';
+
 export {
   combineReducers,
   Cmd,
+  Effects,
   install,
   loop,
   liftState,
