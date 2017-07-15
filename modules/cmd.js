@@ -146,7 +146,7 @@ const promise = (
   failureActionCreator,
   ...args
 ) => {
-  console.warn('Cmd.promise is deprecated. Please use Cmd.run (https://github.com/bdwain/redux-loop/blob/master/docs/ApiDocs.md#cmdrunfunc-options)')
+  console.warn('Cmd.promise is deprecated. Please use Cmd.run (https://github.com/redux-loop/redux-loop/blob/master/docs/ApiDocs.md#cmdrunfunc-options)')
   if (process.env.NODE_ENV !== 'production') {
     throwInvariant(
       typeof promiseFactory === 'function',
@@ -177,7 +177,7 @@ const call = (
   actionCreator,
   ...args
 ) => {
-  console.warn('Cmd.call is deprecated. Please use Cmd.run (https://github.com/bdwain/redux-loop/blob/master/docs/ApiDocs.md#cmdrunfunc-options)')
+  console.warn('Cmd.call is deprecated. Please use Cmd.run (https://github.com/redux-loop/redux-loop/blob/master/docs/ApiDocs.md#cmdrunfunc-options)')
   if (process.env.NODE_ENV !== 'production') {
     throwInvariant(
       typeof resultFactory === 'function',
@@ -224,7 +224,7 @@ const constant = (actionToDispatch) => {
 
 
 const arbitrary = (func, ...args) => {
-  console.warn('Cmd.arbitrary is deprecated. Please use Cmd.run (https://github.com/bdwain/redux-loop/blob/master/docs/ApiDocs.md#cmdrunfunc-options)')
+  console.warn('Cmd.arbitrary is deprecated. Please use Cmd.run (https://github.com/redux-loop/redux-loop/blob/master/docs/ApiDocs.md#cmdrunfunc-options)')
   if (process.env.NODE_ENV !== 'production') {
     throwInvariant(
       typeof func === 'function',
