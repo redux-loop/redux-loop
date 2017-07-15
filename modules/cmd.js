@@ -88,7 +88,9 @@ export const cmdToPromise = (cmd, dispatch, getState) => {
     case cmdTypes.MAP:
       const possiblePromise = cmdToPromise(cmd.nestedCmd, dispatch, getState)
       if (!possiblePromise) return null
-      return possiblePromise.then((actions) => actions.map(cmd.tagger))
+      return possiblePromise.then((actions) => 
+        actions.map(action => cmd.tagger(...cmd.args, action))
+      );
 
     /*case cmdTypes.CALLBACK:
       return promisify(cmd.nodeStyleFunction)(...getMappedCmdArgs(cmd.args, dispatch, getState))
@@ -97,6 +99,10 @@ export const cmdToPromise = (cmd, dispatch, getState) => {
         .then((action) => [action])*/
 
     case cmdTypes.NONE:
+      if(cmd.isEffect){
+          console.warn(`Effects.none is deprecated and has been renamed Cmd.none. 
+            Effects.none will be removed in the next major version.`)
+      }
       return null
   }
 }
@@ -267,12 +273,13 @@ const sequence = (cmds) => {
 
 const map = (
   nestedCmd,
-  tagger
+  tagger,
+  ...args
 ) => {
   if (process.env.NODE_ENV !== 'production') {
     throwInvariant(
       isCmd(nestedCmd),
-      'Cmd.map: first argument to Cmd.map must be a function that returns a promise'
+      'Cmd.map: first argument to Cmd.map must be another Cmd'
     )
 
     throwInvariant(
@@ -286,6 +293,7 @@ const map = (
     type: cmdTypes.MAP,
     tagger,
     nestedCmd,
+    args
   })
 }
 
