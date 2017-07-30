@@ -41,12 +41,12 @@ export function install() {
 
     const runEffect = (originalAction, effect) => {
       return effectToPromise(effect)
-        .then((actions) => {
-          return Promise.all(actions.map(dispatch));
-        })
         .catch((error) => {
           console.error(loopPromiseCaughtError(originalAction.type));
           throw error;
+        })
+        .then((actions) => {
+          return Promise.all(actions.map(dispatch));
         });
     };
 
