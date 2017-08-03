@@ -30,7 +30,7 @@ function getMappedCmdArgs(args = [], dispatch, getState){
 
 function handleRunCmd(cmd, dispatch, getState){
   let onSuccess = cmd.successActionCreator || (() => {}),
-      onFail = cmd.failActionCreator || (() => {})
+      onFail = cmd.failActionCreator
 
   try{
     let result = cmd.func(...getMappedCmdArgs(cmd.args, dispatch, getState))
