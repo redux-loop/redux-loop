@@ -5,7 +5,7 @@ import { createStore } from 'redux';
 import { Provider, connect } from 'react-redux';
 import { createAction, createReducer } from 'redux-act';
 import delay from './delay';
-import { Effects, loop, install } from '../../';
+import { Cmd, loop, install } from '../../';
 
 
 /**
@@ -63,14 +63,12 @@ const Actions = {
 const Api = {
   shortIncrement: (amount) => (
     delay(10)
-      .then(() => Actions.shortIncrementSucceed(amount))
-      .catch(() => Actions.shortIncrementFail())
+      .then(() => amount)
   ),
 
   longIncrement: (amount) => (
     delay(3000)
-      .then(() => Actions.longIncrementSucceed(amount))
-      .catch(() => Actions.longIncrementFail())
+      .then(() => amount)
   )
 };
 
@@ -88,47 +86,62 @@ const reducer = createReducer({
    * counter on the short timer. The process starts here and can either fail
    * or succeed randomly, and we've covered both cases.
    */
-  [Actions.shortIncrementStart]: (state, amount) => loop(
-    state
-      .setIn(['short', 'loading'], true)
-      .setIn(['short', 'failed'], false),
-    Effects.promise(Api.shortIncrement, amount)
-  ),
+  [Actions.shortIncrementStart]: (state, amount) => {
+      console.log('short start');
+      return loop(state
+        .setIn(['short', 'loading'], true)
+        .setIn(['short', 'failed'], false),
+        Cmd.run(Api.shortIncrement, {
+          successActionCreator: Actions.shortIncrementSucceed,
+          failActionCreator: Actions.shortIncrementFail,
+          args: [amount]
+        })
+    )
+  },
 
-  [Actions.shortIncrementSucceed]: (state, amount) => (
-    state
+  [Actions.shortIncrementSucceed]: (state, amount) => {
+    console.log('short success');
+    return state
       .setIn(['short', 'loading'], false)
       .updateIn(['short', 'count'], (current) => current + amount)
-  ),
+  },
 
-  [Actions.shortIncrementFail]: (state) => (
-    state
+  [Actions.shortIncrementFail]: (state) => {
+    console.log('short fail');
+    return state
       .setIn(['short', 'loading'], false)
       .setIn(['short', 'failed'], true)
-  ),
+  },
 
   /**
    * The following three reducers perform the same such behavior for the counter
    * on the long timer.
    */
-  [Actions.longIncrementStart]: (state, amount) => loop(
-    state
+  [Actions.longIncrementStart]: (state, amount) => {
+    console.log('long start');
+    return loop(state
       .setIn(['long', 'loading'], true)
       .setIn(['long', 'failed'], false),
-    Effects.promise(Api.longIncrement, amount)
-  ),
+    Cmd.run(Api.longIncrement, {
+      successActionCreator: Actions.longIncrementSucceed,
+      failActionCreator: Actions.longIncrementFail,
+      args: [amount]
+    }))
+  },
 
-  [Actions.longIncrementSucceed]: (state, amount) => (
-    state
+  [Actions.longIncrementSucceed]: (state, amount) => {
+    console.log('long success');
+    return state
       .setIn(['long', 'loading'], false)
       .updateIn(['long', 'count'], (current) => current + amount)
-  ),
+  },
 
-  [Actions.longIncrementFail]: (state) => (
-    state
+  [Actions.longIncrementFail]: (state) => {
+    console.log('log failed');
+    return state
       .setIn(['long', 'loading'], false)
       .setIn(['long', 'failed'], true)
-  ),
+  },
 
   /**
   * This final action groups the two increment start actions with a batch.
@@ -138,13 +151,14 @@ const reducer = createReducer({
   * want both increment paths to procede independently so we use
   * `Effects.constant()` to forward into the starting actions for both paths.
   */
-  [Actions.incrementBothStart]: (state, amount) => loop(
-    state,
-    Effects.batch([
-      Effects.constant(Actions.shortIncrementStart(amount)),
-      Effects.constant(Actions.longIncrementStart(amount)),
-    ])
-  ),
+  [Actions.incrementBothStart]: (state, amount) => {
+    console.log('both start');
+    return loop(state,
+      Cmd.batch([
+        Cmd.action(Actions.shortIncrementStart(amount)),
+        Cmd.action(Actions.longIncrementStart(amount)),
+      ])
+  )},
 }, initialState);
 
 
@@ -203,15 +217,27 @@ const App = connector(({ model, dispatch }) => {
       <Counter
         {...model.short}
         name="Short timeout"
-        onClick={() => dispatch(Actions.shortIncrementStart(1))} />
+        onClick={() => {
+          dispatch(Actions.shortIncrementStart(1)).then(() => {
+            console.log('short');
+          })
+        }}/>
       <Counter
         {...model.long}
         name="Long timeout"
-        onClick={() => dispatch(Actions.longIncrementStart(1))} />
+        onClick={() => {
+          dispatch(Actions.longIncrementStart(1)).then(() => {
+            console.log('long');
+          })
+        }} />
       <div>
         <button
           disabled={anyLoading}
-          onClick={() => dispatch(Actions.incrementBothStart(1))}>
+          onClick={() => {
+            dispatch(Actions.incrementBothStart(1)).then(() => {
+              console.log('both');
+            })
+          }}>
           {anyLoading ? 'Loading...' : 'Add 1 to both and wait'}
         </button>
       </div>

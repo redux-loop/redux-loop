@@ -1,76 +1,34 @@
 import { throwInvariant } from './utils';
-import { isEffect, none } from './effects';
+import Cmd, { isCmd } from './cmd';
 
 
-/**
- * Determines if the object is an array created via `loop()`.
- */
 export const isLoop = (array) => {
-  return Array.isArray(array) && array.length === 2 && isEffect(array[1]);
+  return Array.isArray(array) && array.length === 2 && isCmd(array[1])
 };
 
 
-/**
- * Returns the effect from the loop if it is a loop, otherwise null
- */
-export const getEffect = (loop) => {
-  if (!isLoop(loop)) {
-    return null;
-  }
-
-  return loop[1];
+export const getCmd = (loop) => {
+  return isLoop(loop) ? loop[1] : null
 }
 
 
-/**
- * Returns the model from the loop if it is a loop, otherwise identity
- */
 export const getModel = (loop) => {
-  if (!isLoop(loop)) {
-    return loop;
-  }
-
-  return loop[0];
+  return isLoop(loop) ? loop[0] : loop
 }
 
-/**
- * Attaches an effect to the model.
- *
- *   function reducerWithSingleEffect(state, action) {
- *     // ...
- *     return loop(
- *       newState,
- *       fetchSomeStuff() // returns a promise
- *     );
- *   }
- *
- *   function reducerWithManyEffectsOneAsyncOneNot(state, action) {
- *     // ...
- *     return loop(
- *       newState,
- *       Promise.all([
- *         fetchSomeStuff(),
- *         Promise.resolve(someActionCreator())
- *       ])
- *     );
- *   }
- */
-export const loop = (model, effect) => {
+
+export const loop = (model, cmd) => {
   if(process.env.NODE_ENV === 'development') {
     throwInvariant(
-      isEffect(effect),
-      'Given effect is not an effect instance.'
-    );
+      isCmd(cmd),
+      'Given cmd is not an Cmd instance.'
+    )
   }
 
-  return [model, effect];
+  return [model, cmd]
 }
 
-/**
-* Lifts a state to a looped state if it is not already.
-*/
+
 export const liftState = (state) => {
-  return isLoop(state) ?
-    state :
-    loop(state, none());
+  return isLoop(state) ? state : loop(state, Cmd.none)
 }

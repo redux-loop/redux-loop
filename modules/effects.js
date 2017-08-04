@@ -1,136 +1,103 @@
-import { throwInvariant, flatten } from './utils';
+import Cmd from './cmd';
+import { throwInvariant } from './utils';
 
-const isEffectSymbol = Symbol('isEffect');
-
-const effectTypes = {
-  PROMISE: 'PROMISE',
-  CALL: 'CALL',
-  BATCH: 'BATCH',
-  CONSTANT: 'CONSTANT',
-  NONE: 'NONE',
-  LIFT: 'LIFT',
-};
-
-
-/**
-* Runs an effect and returns the Promise for its completion.
-* @param {Object} effect The effect to convert to a Promise.
-* @returns {Promise} The converted effect Promise.
-*/
-export function effectToPromise(effect) {
-  if(process.env.NODE_ENV === 'development') {
+const promise = (
+  promiseFactory,
+  ...args
+) => {
+  console.warn(`Effects.promise is deprecated. Please
+    use Cmd.run (https://github.com/redux-loop/redux-loop/blob/master/docs/ApiDocs.md#cmdrunfunc-options).
+    Effects.promise will be removed in the next major version.`)
+  if (process.env.NODE_ENV !== 'production') {
     throwInvariant(
-      isEffect(effect),
-      'Given effect is not an effect instance.'
-    );
+      typeof promiseFactory === 'function',
+      'Effects.promise: first argument to Effects.promise must be a function that returns a promise'
+    )
   }
 
-  switch (effect.type) {
-    case effectTypes.PROMISE:
-      return effect.factory(...effect.args).then((action) => [action]);
-    case effectTypes.CALL:
-      return Promise.resolve([effect.factory(...effect.args)]);
-    case effectTypes.BATCH:
-      return Promise.all(effect.effects.map(effectToPromise)).then(flatten);
-    case effectTypes.CONSTANT:
-      return Promise.resolve([effect.action]);
-    case effectTypes.NONE:
-      return Promise.resolve([]);
-    case effectTypes.LIFT:
-      return effectToPromise(effect.effect).then((actions) =>
-        actions.map((action) => effect.factory(...effect.args, action))
-      );
+  return Cmd.run(promiseFactory, {
+    successActionCreator: action => action,
+    failActionCreator: action => action,
+    args
+  })
+}
+
+
+const call = (
+  resultFactory,
+  ...args
+) => {
+  console.warn(`Effects.call is deprecated. Please
+    use Cmd.run (https://github.com/redux-loop/redux-loop/blob/master/docs/ApiDocs.md#cmdrunfunc-options).
+    Effects.call will be removed in the next major version.`)
+  if (process.env.NODE_ENV !== 'production') {
+    throwInvariant(
+      typeof resultFactory === 'function',
+      'Effects.call: first argument to Effects.call must be a function'
+    )
   }
+
+  return Cmd.run(resultFactory, {
+    successActionCreator: action => action,
+    args
+  })
 }
 
-/**
- * Determines if the object was created with an effect creator.
- * @param {Object} object The object to inspect.
- * @returns {Boolean} Whether the object is an effect.
- */
-export function isEffect(object) {
-  return object ? object[isEffectSymbol] : false;
+const constant = (actionToDispatch) => {
+  console.warn(`Effects.constant is deprecated and has been renamed Cmd.action. 
+    Effects.constant will be removed in the next major version.`)
+  if (process.env.NODE_ENV !== 'production') {
+    throwInvariant(
+      typeof actionToDispatch === 'object' && actionToDispatch !== null && typeof actionToDispatch.type !== 'undefined',
+      'Effects.constant: first argument and only argument to Cmd.constant must be an action'
+    )
+  }
+  return Cmd.action(actionToDispatch)
 }
 
-/**
- * Determines id the effect object is of type none
- * @param {Object} The object to inspect.
- * @returns {Boolean} Whether the object is a none effect.
- */
-export function isNone(object) {
-  return object ? object.type === effectTypes.NONE : false;
+const batch = (cmds) => {
+  console.warn(`Effects.batch is deprecated and has been renamed Cmd.batch. 
+    Effects.batch will be removed in the next major version.`)
+  if (process.env.NODE_ENV !== 'production') {
+    throwInvariant(
+      Array.isArray(cmds) && cmds.every(isCmd),
+      'Effects.batch: first and only argument to Effects.batch must be an array of other Cmds/Effects'
+    )
+  }
+
+  return Cmd.batch(cmds)
 }
 
-/**
- * Creates a noop effect.
- * @returns {Object} An effect of type NONE, essentially a no-op.
- */
-export function none() {
-  return {
-    type: effectTypes.NONE,
-    [isEffectSymbol]: true
-  };
-}
+const lift = (
+  nestedCmd,
+  tagger,
+  args
+) => {
+  console.warn(`Effects.lift is deprecated and has been renamed Cmd.map. 
+    Effects.lift will be removed in the next major version.`)
+  if (process.env.NODE_ENV !== 'production') {
+    throwInvariant(
+      isCmd(nestedCmd),
+      'Effects.lift: first argument to Effects.lift must be another Cmd'
+    )
 
-/**
- * Creates an effect for a function that returns a Promise.
- * @param {Function} factory The function to invoke with the given args that returns a Promise for an action.
- * @returns {Object} The wrapped effect of type PROMISE.
- */
-export function promise(factory, ...args) {
-  return {
-    factory,
-    args,
-    type: effectTypes.PROMISE,
-    [isEffectSymbol]: true
-  };
-}
+    throwInvariant(
+      typeof tagger === 'function',
+      'Effects.lift: second argument to Effects.lift must be a function that returns an action'
+    )
+  }
 
-/**
- * Creates an effect for a function that returns an action.
- * @param {Function} factory The function to invoke with the given args that returns an action.
- * @returns {Object} The wrapped effect of type CALL.
- */
-export function call(factory, ...args) {
-  return {
-    factory,
-    args,
-    type: effectTypes.CALL,
-    [isEffectSymbol]: true
-  };
+  return Cmd.map(nestedCmd, tagger, ...args)
 }
+ 
 
-/**
- * Composes an array of effects together.
- */
-export function batch(effects) {
-  return {
-    effects,
-    type: effectTypes.BATCH,
-    [isEffectSymbol]: true
-  };
-}
+const none = {...Cmd.none, isEffect: true}
 
-/**
- * Creates an effect for an already-available action.
- */
-export function constant(action) {
-  return {
-    action,
-    type: effectTypes.CONSTANT,
-    [isEffectSymbol]: true
-  };
-}
-
-/**
- * Transform the return type of a bunch of `Effects`. This is primarily useful for adding tags to route `Actions` to the right place
- */
-export function lift(effect, factory, ...args) {
-  return {
-    effect,
-    factory,
-    args,
-    type: effectTypes.LIFT,
-    [isEffectSymbol]: true
-  };
+export default {
+  promise,
+  call,
+  constant,
+  batch,
+  lift,
+  none
 }

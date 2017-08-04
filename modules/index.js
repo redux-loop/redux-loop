@@ -2,18 +2,11 @@ import {
   loop,
   liftState,
   getModel,
-  getEffect,
+  getCmd,
   isLoop
 } from './loop';
 
-import {
-  batch,
-  none,
-  constant,
-  promise,
-  call,
-  lift,
-} from './effects';
+import Cmd from './cmd';
 
 import {
   install,
@@ -23,23 +16,16 @@ import {
   combineReducers,
 } from './combineReducers';
 
-
-const Effects = {
-  constant,
-  promise,
-  call,
-  batch,
-  none,
-  lift,
-};
+import Effects from './effects';
 
 export {
   combineReducers,
+  Cmd,
   Effects,
   install,
   loop,
-  isLoop,
   liftState,
   getModel,
-  getEffect,
+  getCmd,
+  isLoop
 };
