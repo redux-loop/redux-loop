@@ -1,6 +1,8 @@
 import Cmd from './cmd';
 import { throwInvariant } from './utils';
 
+const returnSelf = action => action;
+
 const promise = (
   promiseFactory,
   ...args
@@ -16,8 +18,8 @@ const promise = (
   }
 
   return Cmd.run(promiseFactory, {
-    successActionCreator: action => action,
-    failActionCreator: action => action,
+    successActionCreator: returnSelf,
+    failActionCreator: returnSelf,
     args
   })
 }
@@ -38,7 +40,7 @@ const call = (
   }
 
   return Cmd.run(resultFactory, {
-    successActionCreator: action => action,
+    successActionCreator: returnSelf,
     args
   })
 }
