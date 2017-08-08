@@ -1,4 +1,4 @@
-import Cmd from './cmd';
+import Cmd, { isCmd } from './cmd';
 import { throwInvariant } from './utils';
 
 const promise = (
