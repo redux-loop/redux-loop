@@ -197,7 +197,7 @@ test('reducer works as expected', (t) => {
   t.deepEqual(result, loop(
     { loading: true },
     Cmd.run(fetchDetails, {
-      sucessActionCreator: loadingSuccess,
+      successActionCreator: loadingSuccess,
       failActionCreator: loadingError,
       args: [1]
     })
