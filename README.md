@@ -111,7 +111,7 @@ function reducer(state = initialState, action) {
       {...state, initStarted: true},
       Cmd.run(fetchUser, {
         successActionCreator: userFetchSuccessfulAction,
-        faiLActionCreator: userFetchFailedAction,
+        failActionCreator: userFetchFailedAction,
         args: ['123']
       })
     );
