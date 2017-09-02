@@ -212,13 +212,13 @@ it doesn't cause any side effects to actually occur.
 // The following two expressions are equivalent when processed by the store.
 
 return loop(
-  { state, someProp: action.payload },
+  { ...state, someProp: action.payload },
   Cmd.none()
 );
 
 // ...
 
-return { state, someProp: action.payload }
+return { ...state, someProp: action.payload }
 ```
 
 ### `Cmd.action(actionToDispatch)`
@@ -240,7 +240,7 @@ Make sure your action creator is pure if creating an action from a reducer.
 // result where `someProp` is set to `action.payload` it will schedule another
 // dispatch for the action SOME_ACTION.
 return loop(
-  { state, someProp: action.payload },
+  { ...state, someProp: action.payload },
   Cmd.action({ type: 'SOME_ACTION' })
 );
 ```
