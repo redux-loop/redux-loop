@@ -282,22 +282,22 @@ does not wait. This can be forced (even if a promise is returned) by using the f
 ```js
 import { loop, Cmd } from 'redux-loop';
 
-function fetchUser(userId){
-    return fetch(`/api/users/${userId}`);
+function fetchUser(userId) {
+  return fetch(`/api/users/${userId}`);
 }
 
-function userFetchSuccessfulAction(user){
-   return {
-      type: 'USER_FETCH_SUCCESSFUL',
-      user
-   };
+function userFetchSuccessfulAction(user) {
+  return {
+    type: 'USER_FETCH_SUCCESSFUL',
+    user
+  };
 }
 
-function userFetchFailedAction(err){
-   return {
-      type: 'USER_FETCH_ERROR',
-      err
-   };
+function userFetchFailedAction(err) {
+  return {
+    type: 'USER_FETCH_ERROR',
+    err
+  };
 }
 
 function reducer(state , action) {
@@ -335,7 +335,7 @@ function reducer(state , action) {
 dispatched. All cmds run in a batch will be executed in parallel, but they
 will not proceed in parallel. For example, if a long-running request is batched
 with an action scheduled with `Cmd.action`, no dispatching of either
-cnd will occur until the long-running request completes.
+cmd will occur until the long-running request completes.
 
 #### Examples
 
@@ -349,14 +349,14 @@ function reducer(state , action) {
       {...state, initStarted: true},
       Cmd.batch([
         Cmd.run(fetchUser, {
-          successActiionCreator: userFetchSuccessfulAction
-            failActionCreator: userFetchFailedAction,
-            args: ['123']
+          successActionCreator: userFetchSuccessfulAction
+          failActionCreator: userFetchFailedAction,
+          args: ['123']
         }),
         Cmd.run(fetchItem, {
-          successActiionCreator: itemFetchSuccessfulAction,
-            failActionCreator: itemFetchFailedAction, =
-            args: ['456']
+          successActionCreator: itemFetchSuccessfulAction,
+          failActionCreator: itemFetchFailedAction,
+          args: ['456']
         })
       ])
     );
@@ -391,7 +391,7 @@ The resulting actions are still dispatched all at once after all cmds are done.
 
 ### `Cmd.map(cmd, higherOrderActionCreator, [...additionalArgs])`
 
-* `cnd: Cmd` &ndash; a cmd, the resulting action of which will be
+* `cmd: Cmd` &ndash; a cmd, the resulting action of which will be
   passed to `higherOrderActionCreator` to be nested into a higher-order action.
 * `higherOrderActionCreator` &ndash; an action creator function which will
   accept an action, or optional some other arguments followed by an action, and
@@ -501,9 +501,9 @@ function reducer(state, action) {
 }
 
 //something.js
-export function doSomething(getState){
-   let value = getState().some.random.value;
-   console.log(value);
+export function doSomething(getState) {
+  let value = getState().some.random.value;
+  console.log(value);
 }
 ```
 
@@ -534,12 +534,12 @@ function reducer(state, action) {
 }
 
 //something.js
-export function doSomething(dispatch){
+export function doSomething(dispatch) {
   let value = someThing();
-    if(value === 123){
-       dispatch(valueIs123Action());
-    }
-    return value;
+  if(value === 123) {
+    dispatch(valueIs123Action());
+  }
+  return value;
 }
 ```
   
