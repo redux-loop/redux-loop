@@ -126,7 +126,7 @@ function reducer(state, action) {
       return loop(
         { ...state, isLoading: true },
         Cmd.run(apiFetch, {
-           sucessActionCreator: resolveActionCreator,
+           successActionCreator: resolveActionCreator,
            failActionCreator: rejectActionCreator,
            args: [action.payload.id]
         })
