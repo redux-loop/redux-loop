@@ -141,7 +141,7 @@ the result. There are several options for cmds, all available under the `Cmd` ob
   - Accepts an array of other cmds and runs them in parallel, dispatching the resulting actions in their original order once all cmds are resolved.
 - `sequence(cmds)`
   - The same as batch, but commands wait for the previous command to finish before starting.
-- `none()`
+- `none`
   - A no-op action, for convenience.
 
 #### Accessing state and dispatching actions from your Cmds
@@ -187,7 +187,7 @@ order does not matter).
 import test from 'tape';
 import reducer, { fetchDetails } from './reducer';
 import { loadingStart, loadingSuccess, loadingError } from './actions';
-import { Effects, loop } from 'redux-loop';
+import { Cmd, loop } from 'redux-loop';
 
 test('reducer works as expected', (t) => {
   const state = { loading: false };

@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": ".",
+    "lib": ["dom", "es2017"],
+    "module": "commonjs",
+    "paths": {
+      "*": ["*"]
+    },
+    "sourceMap": false,
+    "strict": true,
+    "target": "es6",
+    "typeRoots": ["./node_modules/@types", "./index.d.ts"]
+  },
+  "include": ["./modules/**/*", "./test/**/*.ts"]
+}
