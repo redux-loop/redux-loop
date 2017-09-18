@@ -1,8 +1,13 @@
 {
-  "presets": ["es2015"],
+  "presets": [["env", {"modules": false}]],
   "plugins": [
     "transform-object-rest-spread",
     "transform-es3-member-expression-literals",
     "transform-es3-property-literals"
-  ]
+  ],
+  "env": {
+    "commonjs": {
+      "presets": [["env", {"modules": "commonjs"}]]
+    }
+  }
 }
