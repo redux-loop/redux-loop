@@ -1,6 +1,6 @@
 import test from 'tape'
-import { combineReducers } from '../modules'
-import { getModel } from '../modules/loop'
+import { combineReducers } from '../src'
+import { getModel } from '../src/loop'
 import { Map } from 'immutable'
 
 const reducers = {

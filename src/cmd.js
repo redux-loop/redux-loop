@@ -104,6 +104,9 @@ export const cmdToPromise = (cmd, dispatch, getState) => {
             Effects.none will be removed in the next major version.`)
       }
       return null
+
+    default:
+      throw new Error(`Invalid Cmd type ${cmd.type}`);
   }
 }
 

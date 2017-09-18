@@ -1,6 +1,6 @@
 import test from 'tape';
-import { install, loop, Cmd, combineReducers } from '../modules';
-import { createStore, applyMiddleware, compose } from 'redux';
+import { install, loop, Cmd, combineReducers } from '../src';
+import { createStore } from 'redux';
 
 test('a looped action gets dispatched after the action that initiated it is reduced', (t) => {
 
