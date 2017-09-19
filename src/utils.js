@@ -4,7 +4,6 @@ export const flatten = (array) => {
   return concat.apply([], array)
 }
 
-
 export const throwInvariant = (condition, message) => {
   if(!condition) {
     throw Error(message)
