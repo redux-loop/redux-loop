@@ -4,7 +4,6 @@ const isCmdSymbol = Symbol('isCmd');
 const dispatchSymbol = Symbol('dispatch');
 const getStateSymbol = Symbol('getState');
 
-
 const cmdTypes = {
   RUN: 'RUN',
   ACTION: 'ACTION',
@@ -15,7 +14,7 @@ const cmdTypes = {
 }
 
 export const isCmd = (object) => {
-  return object ? object[isCmdSymbol] : false
+  return object ? !!object[isCmdSymbol] : false
 }
 
 function getMappedCmdArgs(args = [], dispatch, getState){
