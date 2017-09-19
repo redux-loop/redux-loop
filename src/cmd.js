@@ -1,6 +1,5 @@
 import { throwInvariant, flatten, isPromiseLike } from './utils';
 
-
 const isCmdSymbol = Symbol('isCmd');
 const dispatchSymbol = Symbol('dispatch');
 const getStateSymbol = Symbol('getState');
@@ -9,7 +8,6 @@ const getStateSymbol = Symbol('getState');
 const cmdTypes = {
   RUN: 'RUN',
   ACTION: 'ACTION',
-  //CALLBACK: 'CALLBACK',
   BATCH: 'BATCH',
   MAP: 'MAP',
   NONE: 'NONE',
@@ -92,17 +90,7 @@ export const cmdToPromise = (cmd, dispatch, getState) => {
         actions.map(action => cmd.tagger(...cmd.args, action))
       );
 
-    /*case cmdTypes.CALLBACK:
-      return promisify(cmd.nodeStyleFunction)(...getMappedCmdArgs(cmd.args, dispatch, getState))
-        .then(cmd.successActionCreator)
-        .catch(cmd.failureActionCreator)
-        .then((action) => [action])*/
-
     case cmdTypes.NONE:
-      if(cmd.isEffect){
-          console.warn(`Effects.none is deprecated and has been renamed Cmd.none. 
-            Effects.none will be removed in the next major version.`)
-      }
       return null
 
     default:
@@ -149,62 +137,6 @@ const run = (
   })
 }
 
-const promise = (
-  promiseFactory,
-  successActionCreator,
-  failureActionCreator,
-  ...args
-) => {
-  console.warn('Cmd.promise is deprecated. Please use Cmd.run (https://github.com/redux-loop/redux-loop/blob/master/docs/ApiDocs.md#cmdrunfunc-options)')
-  if (process.env.NODE_ENV !== 'production') {
-    throwInvariant(
-      typeof promiseFactory === 'function',
-      'Cmd.promise: first argument to Cmd.promise must be a function that returns a promise'
-    )
-
-    throwInvariant(
-      typeof successActionCreator === 'function',
-      'Cmd.promise: second argument to Cmd.promise must be a function that returns an action'
-    )
-
-    throwInvariant(
-      typeof failureActionCreator === 'function',
-      'Cmd.promise: third argument to Cmd.promise must be a function that returns an action'
-    )
-  }
-
-  return run(promiseFactory, {
-    successActionCreator,
-    failActionCreator: failureActionCreator,
-    args
-  })
-}
-
-
-const call = (
-  resultFactory,
-  actionCreator,
-  ...args
-) => {
-  console.warn('Cmd.call is deprecated. Please use Cmd.run (https://github.com/redux-loop/redux-loop/blob/master/docs/ApiDocs.md#cmdrunfunc-options)')
-  if (process.env.NODE_ENV !== 'production') {
-    throwInvariant(
-      typeof resultFactory === 'function',
-      'Cmd.call: first argument to Cmd.call must be a function'
-    )
-
-    throwInvariant(
-      typeof actionCreator === 'function',
-      'Cmd.call: second argument to Cmd.call must be a function that returns an action'
-    )
-  }
-
-  return run(resultFactory, {
-    successActionCreator: actionCreator,
-    args
-  })
-}
-
 const action = (actionToDispatch) => {
   if (process.env.NODE_ENV !== 'production') {
     throwInvariant(
@@ -218,30 +150,6 @@ const action = (actionToDispatch) => {
     type: cmdTypes.ACTION,
     actionToDispatch
   })
-}
-
-const constant = (actionToDispatch) => {
-  console.warn('Cmd.constant has been renamed Cmd.action.')
-  if (process.env.NODE_ENV !== 'production') {
-    throwInvariant(
-      typeof actionToDispatch === 'object' && actionToDispatch !== null && typeof actionToDispatch.type !== 'undefined',
-      'Cmd.constant: first argument and only argument to Cmd.constant must be an action'
-    )
-  }
-  return action(actionToDispatch)
-}
-
-
-const arbitrary = (func, ...args) => {
-  console.warn('Cmd.arbitrary is deprecated. Please use Cmd.run (https://github.com/redux-loop/redux-loop/blob/master/docs/ApiDocs.md#cmdrunfunc-options)')
-  if (process.env.NODE_ENV !== 'production') {
-    throwInvariant(
-      typeof func === 'function',
-      'Cmd.arbitrary: first argument to Cmd.arbitrary must be a function'
-    )
-  }
-
-  return run(func, {args})
 }
 
 const batch = (cmds) => {
@@ -300,42 +208,6 @@ const map = (
   })
 }
 
-/*
-const callback = (
-  nodeStyleFunction,
-  successActionCreator,
-  failureActionCreator,
-  ...args
-) => {
-  if (process.env.NODE_ENV !== 'production') {
-    throwInvariant(
-      typeof nodeStyleFunction === 'function',
-      'Cmd.callback: first argument to Cmd.callback must be a function that accepts a callback'
-    )
-
-    throwInvariant(
-      typeof successActionCreator === 'function',
-      'Cmd.callback: second argument to Cmd.callback must be a function that returns an action'
-    )
-
-    throwInvariant(
-      typeof failureActionCreator === 'function',
-      'Cmd.callback: third argument to Cmd.callback must be a function that returns an action'
-    )
-  }
-
-  return Object.freeze({
-    [isCmdSymbol]: true,
-    type: cmdTypes.CALLBACK,
-    nodeStyleFunction,
-    successActionCreator,
-    failureActionCreator,
-    args,
-  })
-}
-*/
-
-
 const none = Object.freeze({
   [isCmdSymbol]: true,
   type: cmdTypes.NONE,
@@ -344,11 +216,6 @@ const none = Object.freeze({
 export default {
   run,
   action,
-  promise,
-  call,
-  //callback,
-  constant,
-  arbitrary,
   batch,
   sequence,
   map,
