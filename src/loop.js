@@ -11,14 +11,6 @@ export const getCmd = (loop) => {
   return isLoop(loop) ? loop[1] : null
 }
 
-export const getEffect = (loop) => {
-  console.warn(`getEffect is deprecated. Please
-    use getCmd (https://github.com/redux-loop/redux-loop/blob/master/docs/ApiDocs.md#getcmdloop-cmd--null).
-    getEffect will be removed in the next major version.`)
-
-  return getCmd(loop)
-}
-
 export const getModel = (loop) => {
   return isLoop(loop) ? loop[0] : loop
 }
