@@ -1,5 +1,6 @@
 import test from 'tape';
 import { install, loop, Cmd, combineReducers } from '../modules';
+import { loopPromiseCaughtError } from '../modules/errors'
 import { createStore, applyMiddleware, compose } from 'redux';
 
 test('a looped action gets dispatched after the action that initiated it is reduced', (t) => {
@@ -121,3 +122,98 @@ test('a looped action gets dispatched after the action that initiated it is redu
       t.end()
     })
 })
+
+test('when an cmd generates an error, it should be logged, and the error go uncaught', t => {
+  const original = console.error;
+  let logged;
+  console.error = x => logged = x;
+
+  const LOOP_ACTION = 'LOOP_ACTION';
+  const loopAction = () => ({ type: LOOP_ACTION });
+
+  const e = new Error('test error');
+  const uncaughtFactory = () => Promise.reject(e);
+
+  const reducer = state => loop(state, Cmd.run(uncaughtFactory));
+  const store = createStore(reducer, undefined, install());
+
+  store.dispatch(loopAction())
+    .then(() => {
+      console.error = original;
+      t.fail()
+      t.end();
+    })
+    .catch(() => {
+      t.deepEqual(logged, loopPromiseCaughtError(LOOP_ACTION, e));
+      console.error = original;
+      t.end();
+    });
+});
+
+test('when an cmd generates an action that generates an error after dispatch, it should not be logged, and the error go uncaught', t => {
+  const original = console.error;
+  let logged;
+  console.error = x => logged = x;
+
+  const unmatchedAction = () => ({ type: 'ACTION' });
+  const CAUSE_ERROR = 'CAUSE_ERROR';
+  const causeError = () => ({ type: CAUSE_ERROR });
+
+  const unsafeCmd = Cmd.run(
+    () => Promise.resolve(),
+    { successActionCreator: causeError }
+  );
+  const unsafeReducer = (state, action) => {
+    if (action.type === CAUSE_ERROR) {
+      throw new Error('test error');
+    }
+    return loop(state, unsafeCmd);
+  }
+  const store = createStore(unsafeReducer, undefined, install());
+
+  store.dispatch(unmatchedAction())
+    .then(() => {
+      console.error = original;
+      t.fail();
+      t.end();
+    })
+    .catch(() => {
+      console.error = original;
+      t.equal(logged, undefined);
+      t.end();
+    });
+});
+
+test('neither a cmd or dispatch creates an error, there should be none and nothing logged', t => {
+  const original = console.error;
+  let logged;
+  console.error = x => logged = x;
+
+  const unmatchedAction = () => ({ type: 'ACTION' });
+  const NO_ERROR = 'NO_ERROR';
+  const noError = () => ({ type: NO_ERROR });
+
+  const safeCmd = Cmd.run(
+    () => Promise.resolve(),
+    { successActionCreator: noError }
+  );
+  const safeReducer = (state, action) => {
+    if (action.type === NO_ERROR) {
+      return state;
+    }
+    return loop(state, safeCmd);
+  }
+  const store = createStore(safeReducer, undefined, install());
+
+  store.dispatch(unmatchedAction())
+    .then(() => {
+      t.equal(logged, undefined);
+      console.error = original;
+      t.end();
+    })
+    .catch(() => {
+      console.error = original;
+      t.fail();
+      t.end();
+    });
+});

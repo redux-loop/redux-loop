@@ -38,14 +38,14 @@ export function install() {
       if (!cmdPromise) return null
 
       return cmdPromise
-        .then((actions) => {
-          if (!actions.length) return
-          return Promise.all(actions.map(dispatch))
-        })
         .catch((error) => {
           console.error(loopPromiseCaughtError(originalAction.type, error))
           throw error
         })
+        .then((actions) => {
+          if (!actions.length) return
+          return Promise.all(actions.map(dispatch))
+        });
     }
 
     const dispatch = (action) => {
