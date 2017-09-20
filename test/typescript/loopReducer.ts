@@ -94,11 +94,9 @@ type RootState = {
   counter: CounterState;
 };
 
-type SubStates = TodoState | CounterState;
+type RootAction = TodoActions | CounterActions;
 
-type SubActions = TodoActions | CounterActions;
-
-const rootReducer = combineReducers<RootState, SubStates>({
+const rootReducer = combineReducers<RootState, RootAction>({
   todos: todosReducer,
   counter: counterReducer
 });

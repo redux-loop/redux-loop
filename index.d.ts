@@ -93,13 +93,13 @@ declare class Cmd {
   ) => SequenceCmd<A>;
 }
 
-export interface ReducerMapObject<T, A extends Action> {
-  [key: string]: LoopReducer<T, A>;
+export type ReducerMapObject<S, A extends Action = AnyAction> = {
+  [K in keyof S]: LoopReducer<S[K], A>;
 }
 
-declare function combineReducers<S, T>(
-  reducers: ReducerMapObject<T, AnyAction>
-): LiftedLoopReducer<S, AnyAction>;
+declare function combineReducers<S, A extends Action = AnyAction>(
+  reducers: ReducerMapObject<S, A>
+): LiftedLoopReducer<S, A>;
 
 declare function liftState<S, A extends Action>(
   state: S | Loop<S, A>
