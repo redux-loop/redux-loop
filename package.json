@@ -21,7 +21,7 @@
     "index.d.ts"
   ],
   "scripts": {
-    "clean": "rimraf lib dist es",
+    "clear": "rimraf lib dist es",
     "lint": "eslint --max-warnings=0 src test",
     "test": "cross-env BABEL_ENV=commonjs jest",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
@@ -29,7 +29,7 @@
     "build:umd": "cross-env BABEL_ENV=es NODE_ENV=development rollup -c -i src/index.js -o dist/redux-loop.js",
     "build:umd:min": "cross-env BABEL_ENV=es NODE_ENV=production rollup -c -i src/index.js -o dist/redux-loop.min.js",
     "build": "yarn build:commonjs && yarn build:es && yarn build:umd && yarn build:umd:min",
-    "prebuild": "yarn clean",
+    "prebuild": "yarn run clear",
     "prepublishOnly": "yarn lint && yarn test && yarn build"
   },
   "keywords": [
