@@ -1,5 +1,3 @@
-**ATTENTION!** Sorry for the long delay between releases. Version 3.0 has been released. You can see the details about the release [here](https://github.com/redux-loop/redux-loop/releases/tag/v3.0.0) and details about upcoming changes [here](https://github.com/redux-loop/redux-loop/issues/130)
-
 # redux-loop
 
 A port of the [Elm Architecture](https://github.com/evancz/elm-architecture-tutorial) to Redux that allows you to sequence your effects naturally and purely by returning them from your reducers.
