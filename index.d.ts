@@ -46,6 +46,7 @@ export interface RunCmd<A extends Action> {
     args: any[];
     failActionCreator: ActionCreator<A>;
     successActionCreator: ActionCreator<A>;
+    forceSync: boolean;
   };
 }
 
@@ -86,6 +87,7 @@ declare class Cmd {
       args?: any[];
       failActionCreator?: ActionCreator<A>;
       successActionCreator?: ActionCreator<A>;
+      forceSync?: boolean;
     }
   ) => RunCmd<A>;
   static readonly sequence: <A extends Action>(
