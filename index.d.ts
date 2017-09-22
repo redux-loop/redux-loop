@@ -84,7 +84,7 @@ declare class Cmd {
     f: Function,
     options?: {
       args?: any[];
-      failureActionCreator?: ActionCreator<A>;
+      failActionCreator?: ActionCreator<A>;
       successActionCreator?: ActionCreator<A>;
     }
   ) => RunCmd<A>;
