@@ -34,8 +34,8 @@ describe('redux loop store enhancer', () => {
         case 'FIRST_ACTION':
           return loop(
             { ...state, firstRun: true },
-            Cmd.batch([
-              Cmd.batch([
+            Cmd.list([
+              Cmd.list([
                 Cmd.action(secondAction),
                 Cmd.none,
                 Cmd.map(Cmd.action(fourthAction), nestAction)

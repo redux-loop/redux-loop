@@ -144,17 +144,12 @@ const reducer = createReducer({
   },
 
   /**
-  * This final action groups the two increment start actions with a batch.
-  * `Effects.batch()` will wait for all actions in the batch to become available
-  * before proceeding, so only use it if you want to wait for the longest-
-  * running effect to complete before dispatching everything. In our case we
-  * want both increment paths to procede independently so we use
-  * `Effects.constant()` to forward into the starting actions for both paths.
+  * This final action groups the two increment start actions with a list.
   */
   [Actions.incrementBothStart]: (state, amount) => {
     console.log('both start');
     return loop(state,
-      Cmd.batch([
+      Cmd.list([
         Cmd.action(Actions.shortIncrementStart(amount)),
         Cmd.action(Actions.longIncrementStart(amount)),
       ])

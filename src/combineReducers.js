@@ -41,6 +41,6 @@ export const combineReducers = (
 
   return loop(
     hasChanged ? model : state,
-    Cmd.batch(cmds)
+    Cmd.list(cmds, {batch: true}) //todo: remove batch in 5.0
   )
 }

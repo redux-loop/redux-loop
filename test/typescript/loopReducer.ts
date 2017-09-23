@@ -35,7 +35,7 @@ const todosReducer: LoopReducer<TodoState, TodoActions> = (
     case 'ADD_TODO':
       return loop(
         { ...state, todos: [...state.todos, action.text] },
-        Cmd.batch([Cmd.none, Cmd.action(noop())])
+        Cmd.list([Cmd.none, Cmd.action(noop())])
       );
     case 'NOOP':
       return state;
@@ -50,11 +50,11 @@ const todosReducer: LoopReducer<TodoState, TodoActions> = (
     default:
       return loop(
         state,
-        Cmd.sequence([
+        Cmd.list([
           Cmd.none,
           Cmd.run(console.log, { args: ['log this', Cmd.getState] }),
           Cmd.run(dispatchNoop, { args: [Cmd.dispatch] })
-        ])
+        ], {sequence: true})
       );
   }
 };
