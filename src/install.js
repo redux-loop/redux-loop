@@ -1,5 +1,5 @@
 import { liftState } from './loop'
-import { cmdToPromise } from './cmd'
+import { executeCmd } from './cmd'
 import { loopPromiseCaughtError } from './errors'
 
 export function install() {
@@ -28,7 +28,7 @@ export function install() {
     }
 
     const runCmd = ({ originalAction, cmd }) => {
-      const cmdPromise = cmdToPromise(cmd, dispatch, store.getState)
+      const cmdPromise = executeCmd(cmd, dispatch, store.getState)
 
       if (!cmdPromise) return null
 
