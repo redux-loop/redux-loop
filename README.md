@@ -43,6 +43,12 @@ apart and composed back together. This is one of the most powerful features of t
 [Elm architecture](https://github.com/evancz/elm-architecture-tutorial), and with
 `redux-loop` it is a feature of Redux as well.
 
+## Installation
+
+```
+npm install --save redux-loop
+```
+
 ## Tutorial
 
 ### Install the store enhancer
