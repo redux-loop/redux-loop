@@ -43,8 +43,7 @@ incident.
 
 
 This Code of Conduct is adapted from the [Contributor Covenant][homepage],
-version 1.3.0, available at
-[http://contributor-covenant.org/version/1/3/0/][version]
+version 1.4.1, available [here][version]
 
 [homepage]: http://contributor-covenant.org
-[version]: http://contributor-covenant.org/version/1/3/0/
+[version]: https://www.contributor-covenant.org/version/1/4/code-of-conduct.md
