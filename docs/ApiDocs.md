@@ -175,12 +175,12 @@ test them separately.
 
 
 ## `isLoop(object): boolean`
- 
+
  * `object: any` &ndash; any object.
  * returns whether the given object was created with the `loop` function.
- 
+
  #### Notes
- 
+
  `isLoop` lets you determine whether an object returned by a reducer includes an
  cmd. This function is useful for writing custom higher-order functionality on
  top of redux-loop's API, or for just writing your own combineReducers.
@@ -229,7 +229,7 @@ return { ...state, someProp: action.payload }
 
 `action` allows you to schedule a plain action object for dispatch after the
 current dispatch is complete. It can be useful for initiating multiple sequences
-that run in parallel but don't need to communicate or complete at the same time. 
+that run in parallel but don't need to communicate or complete at the same time.
 Make sure your action creator is pure if creating an action from a reducer.
 
 #### Examples
@@ -248,9 +248,9 @@ return loop(
 ### `Cmd.run(func, options)`
 
 * `func: (...Array<any>) => any` &ndash; a function to run
-* `options.successActionCreator: (any) => Action` &ndash; an optional function that that takes the
+* `options.successActionCreator: (any) => Action | [(any, ExtraArgs) => Action, ExtraArgs]` &ndash; an optional function (or tuple of function and extra args) that that takes the
 promise resolution value (if func returns a promise) or the return value (if func does not return a promise) and returns an action which will be dispatched.
-* `options.failActionCreator: (any) => Action` &ndash; an optional function that that takes the
+* `options.failActionCreator: (any) => Action | [(any, ExtraArgs) => Action, ExtraArgs]` &ndash; an optional function (or tuple of function and extra args) that that takes the
 promise rejection value (if func returns a promise) or the thrown error (if func throws) and returns an action which will be dispatched. This should not be omitted if the function is expected to potentially throw an exception. Exceptions are rethrown if there is no fail handler.
 * `options.args: Array<any>` &ndash; an optional array of arguments to call `func` with.
 * `options.forceSync: boolean` &ndash; if true, this Cmd will finish synchronously even if func returns a promise. Useful if the Cmd runs as part of a list with batch set to true but you don't care about the result of this Cmd and want the list to finish faster.
@@ -270,7 +270,7 @@ any side-effect function calls in the process.
 By default, if func returns a promise, that's promises's resolution and rejection
 values are used in the success and fail action creators (if provided). If func does
 not return a promise, the return value is used for the success action creator, and
-the fail action creator is only used if an error is thrown. 
+the fail action creator is only used if an error is thrown.
 
 If a Run Cmd is used in a list with batch set to true and func returns a promise, the list will not
 finish until the returned promise resolves/rejects. If a promise is not returned, the batched list
@@ -292,31 +292,43 @@ function userFetchSuccessfulAction(user) {
   };
 }
 
-function userFetchFailedAction(err) {
+function userFetchFailedAction(err, { userId }) {
   return {
     type: 'USER_FETCH_ERROR',
-    err
+    err,
+    userId
   };
 }
 
 function reducer(state , action) {
   switch(action.type) {
-  case 'INIT':
+  case 'INIT': {
+    const userId = '123';
+
     return loop(
-      {...state, initStarted: true},
+      {...state, initStarted: true, userId},
       Cmd.run(fetchUser, {
         successActionCreator: userFetchSuccessfulAction,
-        failActionCreator: userFetchFailedAction,
-        args: ['123']
+        failActionCreator: [userFetchFailedAction, { userId }],
+        args: [ userId ]
       })
     );
+  }
 
   case 'USER_FETCH_SUCCESSFUL':
+    if (action.user.id !== state.userId) {
+      // ignore fetch result if it's for a different user
+      return state;
+    }
     return {...state, user: action.user};
-    
+
   case 'USER_FETCH_FAILED':
+    if (action.userId !== state.userId) {
+      // ignore fetch error if it's for a different user
+      return state;
+    }
     return {...state, error: action.error};
-    
+
   default:
     return state;
   }
@@ -360,16 +372,16 @@ function reducer(state , action) {
 
   case 'USER_FETCH_SUCCESSFUL':
     return {...state, user: action.user};
-    
+
   case 'USER_FETCH_FAILED':
     return {...state, userError: action.error};
-    
+
   case 'ITEM_FETCH_SUCCESSFUL':
     return {...state, item: action.item};
-    
+
   case 'ITEM_FETCH_FAILED':
     return {...state, itemError: action.error};
-    
+
   default:
     return state;
   }
@@ -531,7 +543,7 @@ export function doSomething(dispatch) {
   return value;
 }
 ```
-  
+
 
 ## `combineReducers(reducersMap, [initialState, accessor, modifier])`
 

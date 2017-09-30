@@ -25,8 +25,20 @@ function getMappedCmdArgs(args = [], dispatch, getState){
 }
 
 function handleRunCmd(cmd, dispatch, getState){
-  let onSuccess = cmd.successActionCreator || (() => {}),
-      onFail = cmd.failActionCreator || (() => {})
+  // let onSuccess = cmd.successActionCreator || (() => {}),
+  //     onFail = cmd.failActionCreator || (() => {})
+
+  let onSuccess = cmd.successActionCreator
+    ? cmd.successActionCreator instanceof Array
+      ? (result) => cmd.successActionCreator[0](result, cmd.successActionCreator[1])
+      : cmd.successActionCreator
+    : (() => {})
+
+  let onFail = cmd.failActionCreator
+    ? cmd.failActionCreator instanceof Array
+      ? (error) => cmd.failActionCreator[0](error, cmd.failActionCreator[1])
+      : cmd.failActionCreator
+    : (() => {})
 
   try{
     let result = cmd.func(...getMappedCmdArgs(cmd.args, dispatch, getState))
@@ -118,7 +130,7 @@ export const executeCmd = (cmd, dispatch, getState) => {
     case cmdTypes.MAP:
       const possiblePromise = executeCmd(cmd.nestedCmd, dispatch, getState)
       if (!possiblePromise) return null
-      return possiblePromise.then((actions) => 
+      return possiblePromise.then((actions) =>
         actions.map(action => cmd.tagger(...cmd.args, action))
       );
 
@@ -143,13 +155,13 @@ const run = (func, options = {}) => {
     )
 
     throwInvariant(
-      !options.successActionCreator || typeof options.successActionCreator === 'function',
-      'Cmd.run: successActionCreator option must be a function if specified'
+      !options.successActionCreator || typeof options.successActionCreator === 'function' || (options.successActionCreator instanceof Array && options.successActionCreator.length === 2 && typeof options.successActionCreator[0] === 'function'),
+      'Cmd.run: successActionCreator option must be a function or a 2 element array with first being a function, second being an extra argument to be applied if specified'
     )
 
     throwInvariant(
-      !options.failActionCreator || typeof options.failActionCreator === 'function',
-      'Cmd.run: failActionCreator option must be a function if specified'
+      !options.failActionCreator || typeof options.failActionCreator === 'function' || (options.failActionCreator instanceof Array && options.failActionCreator.length === 2 && typeof options.failActionCreator[0] === 'function'),
+      'Cmd.run: failActionCreator option must be a function or a 2 element array with first being a function, second being an extra argument to be applied if specified'
     )
 
     throwInvariant(
