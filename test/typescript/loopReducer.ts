@@ -16,11 +16,41 @@ type TodoActions =
       text: string;
     }
   | { type: 'NOOP' }
+  | { type: 'SUCCESS', value: number, extraArgs: Object }
+  | { type: 'FAIL', error: any, extraArgs: Object }
   | { type: 'UPDATE_NESTED_COUNTER'; subAction: CounterActions };
 
 const noop = (): TodoActions => ({
   type: 'NOOP'
 });
+
+type SuccessExtraArgs = {
+  n: number
+}
+
+type FailExtraArgs = {
+  m: string
+}
+
+const success = (result: number): TodoActions => ({
+  type: 'SUCCESS',
+  value: result,
+  extraArgs: {
+    n: 1
+  }
+})
+
+const successWithExtra = (result: number, extraArgs: SuccessExtraArgs): TodoActions => ({
+  type: 'SUCCESS',
+  value: result,
+  extraArgs
+})
+
+const fail = (error: any, extraArgs: FailExtraArgs): TodoActions => ({
+  type: 'FAIL',
+  error,
+  extraArgs
+})
 
 const updateNestedCounter = (subAction: CounterActions): TodoActions => ({
   type: 'UPDATE_NESTED_COUNTER',
@@ -53,7 +83,22 @@ const todosReducer: LoopReducer<TodoState, TodoActions> = (
         Cmd.list([
           Cmd.none,
           Cmd.run(console.log, { args: ['log this', Cmd.getState] }),
-          Cmd.run(dispatchNoop, { args: [Cmd.dispatch] })
+          Cmd.run(dispatchNoop, { args: [Cmd.dispatch] }),
+          Cmd.run(() => 123, {
+            // successActionCreator: success,
+            successActionCreator: [success, {n: 1}], // <-- this is ok because javascript allows extra args to be ignored
+          }),
+          Cmd.run(() => 123, {
+            successActionCreator: [successWithExtra, {n: 1}],
+            // successActionCreator: successWithExtra, // <-- this fails beacuse `success` takes 1 extra arg
+            // successActionCreator: [successWithExtra, {m: "different"}], // <-- this fails because `success` take a different type of extra arg
+          }),
+          Cmd.run(() => 123, {
+            failActionCreator: [fail, {m: "error"}],
+            // failActionCreator: [fail, {n: 1}], // <-- this fails because `fail` takes a different type of extra arg
+            // failActionCreator: fail, // <-- this fails because `fail` requires 1 extra arg
+
+          })
         ], {sequence: true})
       );
   }

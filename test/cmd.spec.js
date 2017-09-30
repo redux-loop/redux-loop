@@ -8,6 +8,14 @@ function actionCreator2(val){
   return {type: 'TYPE2', val};
 }
 
+function actionCreator3(val, extraArgs) {
+  return {type: 'TYPE3', val, extraArgs}
+}
+
+function actionCreator4(val, extraArgs) {
+  return {type: 'TYPE4', val, extraArgs}
+}
+
 describe('Cmds', () => {
   let dispatch, getState, sideEffect;
   beforeEach(() => {
@@ -90,6 +98,17 @@ describe('Cmds', () => {
           await expect(result).resolves.toEqual([actionCreator1(123)]);
         });
 
+        it('runs the result through the success handler and resolves with it in an array, each success handler takes an extra bag of args', async () => {
+          sideEffect.mockReturnValueOnce(123);
+          let cmd = Cmd.run(sideEffect, {
+            successActionCreator: [actionCreator3, {n: 3}],
+            failActionCreator: [actionCreator4, {n: 4}]
+          });
+
+          let result = executeCmd(cmd, dispatch, getState);
+          await expect(result).resolves.toEqual([actionCreator3(123, {n: 3})]);
+        });
+
         it('runs the resolution value (for promises) through the success handler and resolves with it in an array', async () => {
           sideEffect.mockReturnValueOnce(Promise.resolve(123));
           let cmd = Cmd.run(sideEffect, {
@@ -99,6 +118,17 @@ describe('Cmds', () => {
 
           let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator1(123)]);
+        });
+
+        it('runs the resolution value (for promises) through the success handler and resolves with it in an array, each success handler takes an extra bag of args', async () => {
+          sideEffect.mockReturnValueOnce(Promise.resolve(123));
+          let cmd = Cmd.run(sideEffect, {
+            successActionCreator: [actionCreator3, {n: 3}],
+            failActionCreator: [actionCreator4, {n: 4}]
+          });
+
+          let result = executeCmd(cmd, dispatch, getState);
+          await expect(result).resolves.toEqual([actionCreator3(123, {n: 3})]);
         });
 
         it('runs the promise through the success action creator if forceSync is true', async () => {
@@ -111,6 +141,18 @@ describe('Cmds', () => {
 
           let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator1(returnValue)]);
+        });
+
+        it('runs the promise through the success action creator if forceSync is true, each success handler takes an extra bag of args', async () => {
+          let returnValue = Promise.resolve(123);
+          sideEffect.mockReturnValueOnce(returnValue);
+          let cmd = Cmd.run(sideEffect, {
+            forceSync: true,
+            successActionCreator: [actionCreator3, {n: 3}]
+          });
+
+          let result = executeCmd(cmd, dispatch, getState);
+          await expect(result).resolves.toEqual([actionCreator3(returnValue, {n: 3})]);
         });
       });
 
@@ -127,6 +169,18 @@ describe('Cmds', () => {
           await expect(result).resolves.toEqual([actionCreator2(err)]);
         });
 
+        it('runs the thrown value through fail handler and resolves with it in an array, each fail handler takes an extra bag of args', async () => {
+          let err = new Error('foo');
+          sideEffect.mockImplementationOnce(() => {throw err});
+          let cmd = Cmd.run(sideEffect, {
+            successActionCreator: [actionCreator3, {n: 3}],
+            failActionCreator: [actionCreator4, {n: 4}]
+          });
+
+          let result = executeCmd(cmd, dispatch, getState);
+          await expect(result).resolves.toEqual([actionCreator4(err, {n: 4})]);
+        });
+
         it('runs the rejection value (for promises) through the fail handler and resolves with it in an array', async () => {
           sideEffect.mockReturnValueOnce(Promise.reject(123));
           let cmd = Cmd.run(sideEffect, {
@@ -136,6 +190,17 @@ describe('Cmds', () => {
 
           let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator2(123)]);
+        });
+
+        it('runs the rejection value (for promises) through the fail handler and resolves with it in an array, each fail handler takes an extra bag of args', async () => {
+          sideEffect.mockReturnValueOnce(Promise.reject(123));
+          let cmd = Cmd.run(sideEffect, {
+            successActionCreator: [actionCreator3, {n: 3}],
+            failActionCreator: [actionCreator4, {n: 4}]
+          });
+
+          let result = executeCmd(cmd, dispatch, getState);
+          await expect(result).resolves.toEqual([actionCreator4(123, {n: 4})]);
         });
       });
     });

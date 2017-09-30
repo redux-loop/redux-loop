@@ -43,13 +43,18 @@ export interface MapCmd<A extends Action> {
   args: any[];
 }
 
+type ResultActionCreator<A> = (result: any) => A
+type ResultWithArgsActionCreator<A, Extra> = (result: any, extra: Extra) => A
+
+type ResultWithArgsActionCreatorTuple<A, T=any> = [ResultWithArgsActionCreator<A, T>, T]
+
 export interface RunCmd<A extends Action> {
   type: 'RUN';
   func: Function;
   options: {
     args: any[];
-    failActionCreator: ActionCreator<A>;
-    successActionCreator: ActionCreator<A>;
+    failActionCreator: ResultActionCreator<A> | ResultWithArgsActionCreatorTuple<A>;
+    successActionCreator: ResultActionCreator<A> | ResultWithArgsActionCreatorTuple<A>;
     forceSync: boolean;
   };
 }
@@ -67,7 +72,7 @@ export type CmdType<A extends Action> =
   | RunCmd<A>
   | BatchCmd<A>
   | SequenceCmd<A>;
-  
+
 declare function install<S>(): StoreEnhancer<S>;
 
 declare function loop<S, A extends Action>(
@@ -97,12 +102,12 @@ declare class Cmd {
     args?: any[]
   ) => MapCmd<A>;
 
-  static readonly run: <A extends Action>(
+  static readonly run: <A extends Action, TS=any, TF=any>(
     f: Function,
     options?: {
       args?: any[];
-      failActionCreator?: ActionCreator<A>;
-      successActionCreator?: ActionCreator<A>;
+      failActionCreator?: ResultActionCreator<A> | ResultWithArgsActionCreatorTuple<A, TF>;
+      successActionCreator?: ResultActionCreator<A> | ResultWithArgsActionCreatorTuple<A, TS>;
       forceSync?: boolean;
     }
   ) => RunCmd<A>;
