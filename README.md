@@ -1,5 +1,3 @@
-**ATTENTION!** Sorry for the long delay between releases. Version 3.0 has been released. You can see the details about the release [here](https://github.com/redux-loop/redux-loop/releases/tag/v3.0.0) and details about upcoming changes [here](https://github.com/redux-loop/redux-loop/issues/130)
-
 # redux-loop
 
 A port of the [Elm Architecture](https://github.com/evancz/elm-architecture-tutorial) to Redux that allows you to sequence your effects naturally and purely by returning them from your reducers.
@@ -137,12 +135,14 @@ the result. There are several options for cmds, all available under the `Cmd` ob
   - Accepts a function to run and options for how to call it and what to do with the result.
 - `action(actionToDispatch)`
   - Accepts an `actionToDispatch` instance to dispatch immediately once the current dispatch cycle is completed.
-- `batch(cmds)`
-  - Accepts an array of other cmds and runs them in parallel, dispatching the resulting actions in their original order once all cmds are resolved.
-- `sequence(cmds)`
-  - The same as batch, but commands wait for the previous command to finish before starting.
+- `list(cmds, options)`
+  - Accepts an array of other cmds and runs them. Options control whether they run in parallel or in order, and when to dispatch the resulting actions.
+- `map(cmd, higherOrderActionCreator, ...args)`
+  - Accepts a cmd and passes the resulting action(s) through higherOrderActionCreator to create a nested action, optionally passing extra args to higherOrderActionCreator before the nested action.
 - `none`
-  - A no-op action, for convenience.
+  - A no-op cmd, for convenience.
+
+[See detailed documentation about all of the available Cmds](docs/ApiDocs.md)
 
 #### Accessing state and dispatching actions from your Cmds
 
@@ -251,7 +251,7 @@ are using using something other than a plain object as your state, you should
 consider writing your own implementation of combineReducers, using our 
 version as a reference. It's impossible to provide a generic combineReducers
 that will be optimal for all state shapes. As an example, updating an immutable.js
-state would be much faster if you made use of the withMutations method to batch updates. 
+state would be much faster if you made use of the withMutations method to run updates. 
 
 ```js
 import { combineReducers } from 'redux-loop';

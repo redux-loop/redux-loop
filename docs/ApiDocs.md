@@ -7,11 +7,10 @@
 * [`getCmd(loop)`](#getcmdloop-cmd--null)
 * [`isLoop(object)`](#isloopobject-boolean)
 * [`Cmds`](#cmds)
-  * [`Cmd.none()`](#cmdnone)
+  * [`Cmd.none`](#cmdnone)
   * [`Cmd.action(actionToDispatch)`](#cmdactionactiontodispatch)
   * [`Cmd.run(func, options)`](#cmdrunfunc-options)
-  * [`Cmd.batch(cmds)`](#cmdbatchcmds)
-  * [`Cmd.sequence(cmds)`](#cmdsequencecmds)
+  * [`Cmd.list(cmds, options)`](#cmdlistcmds-options)
   * [`Cmd.map(cmd, higherOrderActionCreator, [...additionalArgs])`](#cmdmapcmd-higherorderactioncreator-additionalargs)
 * [`Cmd.getState`](#cmdgetstate)
 * [`Cmd.dispatch`](#cmddispatch)
@@ -198,7 +197,7 @@ cmd is a plain JavaScript object that simply describes to the store how to
 process it. Cmd are never executed in the reducer, leaving your reducer pure
 and testable.
 
-### `Cmd.none()`
+### `Cmd.none`
 
 #### Notes
 
@@ -213,7 +212,7 @@ it doesn't cause any side effects to actually occur.
 
 return loop(
   { ...state, someProp: action.payload },
-  Cmd.none()
+  Cmd.none
 );
 
 // ...
@@ -248,13 +247,13 @@ return loop(
 
 ### `Cmd.run(func, options)`
 
-* `func: (...Array<any>) => Promise<any>` &ndash; a function to run
+* `func: (...Array<any>) => any` &ndash; a function to run
 * `options.successActionCreator: (any) => Action` &ndash; an optional function that that takes the
 promise resolution value (if func returns a promise) or the return value (if func does not return a promise) and returns an action which will be dispatched.
 * `options.failActionCreator: (any) => Action` &ndash; an optional function that that takes the
 promise rejection value (if func returns a promise) or the thrown error (if func throws) and returns an action which will be dispatched. This should not be omitted if the function is expected to potentially throw an exception. Exceptions are rethrown if there is no fail handler.
-* `options.args args: Array<any>` &ndash; an optional array of arguments to call `func` with.
-* `options.forceSync args: Array<any>` &ndash; if true, this Cmd will finish synchronously even if func returns a promise. Useful if the Cmd runs as part of a batch but you don't care about the result and want the batch to finish faster.
+* `options.args: Array<any>` &ndash; an optional array of arguments to call `func` with.
+* `options.forceSync: boolean` &ndash; if true, this Cmd will finish synchronously even if func returns a promise. Useful if the Cmd runs as part of a list with batch set to true but you don't care about the result of this Cmd and want the list to finish faster.
 
 #### Notes
 
@@ -273,9 +272,9 @@ values are used in the success and fail action creators (if provided). If func d
 not return a promise, the return value is used for the success action creator, and
 the fail action creator is only used if an error is thrown. 
 
-If a Run Cmd is used in a batch or sequence and func returns a promise, the batch/sequence will not
-finish until the returned promise resolves/rejects. If a promise is not returned, the batch/sequence
-does not wait. This can be forced (even if a promise is returned) by using the forceSync option.
+If a Run Cmd is used in a list with batch set to true and func returns a promise, the list will not
+finish until the returned promise resolves/rejects. If a promise is not returned, the batched list
+does not wait. You can prevent waiting for a single long-running asynchronous Cmd by using the forceSync option on that individual Cmd. If you do, you won't be able to use the action creator options to handle the result of the Cmd.
 
 #### Examples
 
@@ -324,18 +323,16 @@ function reducer(state , action) {
 }
 ```
 
-### `Cmd.batch(cmds)`
+### `Cmd.list(cmds, options)`
 
 * `cmds: Array<Cmd>` &ndash; an array of cmds returned by any of the
-  other cmd functions, or even nested calls to `Cmd.batch` or `Cmd.sequence`.
+  other cmd functions, or even nested calls to `Cmd.list`.
+* `options.sequence: boolean` &ndash; By default, asynchronous Cmds all run immediately and in parallel. If sequence is true, cmds will wait for the previous cmd to resolve before starting. Note: this does not have an effect if all Cmds are synchronous.
+* `options.batch: boolean` &ndash; By default, actions from nested cmds will be dispatched as soon as that cmd finishes. If batch is true, no actions will be dispatched until all of the cmds are resolved/finished. The actions will then be dispatched all at once in the order of the original cmd array.
 
 #### Notes
 
-`batch` allows you to group cmds as a single cmd to be awaited and
-dispatched. All cmds run in a batch will be executed in parallel, but they
-will not proceed in parallel. For example, if a long-running request is batched
-with an action scheduled with `Cmd.action`, no dispatching of either
-cmd will occur until the long-running request completes.
+`list` allows you to group cmds as a single cmd to be run all together. Use the options to choose when you want the individual cmds to run and when the resulting actions are dispatched. The default behavior is to run each Cmd and dispatch the results as soon as possible.
 
 #### Examples
 
@@ -347,7 +344,7 @@ function reducer(state , action) {
   case 'INIT':
     return loop(
       {...state, initStarted: true},
-      Cmd.batch([
+      Cmd.list([
         Cmd.run(fetchUser, {
           successActionCreator: userFetchSuccessfulAction
           failActionCreator: userFetchFailedAction,
@@ -379,22 +376,12 @@ function reducer(state , action) {
 }
 ```
 
-### `Cmd.sequence(cmds)`
-
-* `cmds: Array<Cmd>` &ndash; an array of cmds returned by any of the
-  other cmd functions, or even nested calls to `Cmd.sequence` or `Cmd.batch`
-
-#### Notes
-
-`sequence` is similar to batch, but the cmds wait for the previous Cmd to finish.
-The resulting actions are still dispatched all at once after all cmds are done.
-
 ### `Cmd.map(cmd, higherOrderActionCreator, [...additionalArgs])`
 
 * `cmd: Cmd` &ndash; a cmd, the resulting action of which will be
   passed to `higherOrderActionCreator` to be nested into a higher-order action.
 * `higherOrderActionCreator` &ndash; an action creator function which will
-  accept an action, or optional some other arguments followed by an action, and
+  accept an action, or optionally some other arguments followed by an action, and
   return a new action in which the previous action was nested.
 * `additionalArgs` &ndash; a list of additional arguments to pass to
   `higherOrderActionCreator` before passing in the action from the cmd.
@@ -407,6 +394,8 @@ state and lift it to a more general action in which the resulting action is
 nested. This enables you to build your reducer in a fractal-like fashion, in
 which all of the logic for a particular slice of your state is totally
 encapsulated and actions can be simply directed to the reducer for that slice.
+
+If you want to `map` a nested `list` Cmd, it's important to enable the `batch` option on the list. Otherwise, the `list` does not return any of the dispatched actions as they are all dispatched while running the `list` Cmd.
 
 #### Examples
 

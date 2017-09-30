@@ -1,4 +1,4 @@
-import Cmd, {isCmd, cmdToPromise} from '../src/cmd';
+import Cmd, {isCmd, executeCmd} from '../src/cmd';
 
 function actionCreator1(val){
   return {type: 'TYPE1', val};
@@ -27,19 +27,19 @@ describe('Cmds', () => {
     });
   });
 
-  describe('cmdToPromise with ', () => {
+  describe('executeCmd with ', () => {
     describe('Cmd.run', () => {
       describe('with no handlers', () => {
         it('runs the passed in function and returns null', () => {
           let cmd = Cmd.run(sideEffect);
-          expect(cmdToPromise(cmd, dispatch, getState)).toBe(null);
+          expect(executeCmd(cmd, dispatch, getState)).toBe(null);
           expect(sideEffect.mock.calls.length).toBe(1);
         });
 
         it('resolves with an empty array if the function returns a resolved promise', async () => {
           sideEffect.mockReturnValueOnce(Promise.resolve(123));
           let cmd = Cmd.run(sideEffect);
-          let result = cmdToPromise(cmd, dispatch, getState);
+          let result = executeCmd(cmd, dispatch, getState);
           expect(sideEffect.mock.calls.length).toBe(1);
           await expect(result).resolves.toEqual([]);
         });
@@ -47,7 +47,7 @@ describe('Cmds', () => {
         it('resolves with an empty array if the function returns a rejected promise', async () => {
           sideEffect.mockReturnValueOnce(Promise.reject(123));
           let cmd = Cmd.run(sideEffect);
-          let result = cmdToPromise(cmd, dispatch, getState);
+          let result = executeCmd(cmd, dispatch, getState);
           expect(sideEffect.mock.calls.length).toBe(1);
           await expect(result).resolves.toEqual([]);
         });
@@ -56,7 +56,7 @@ describe('Cmds', () => {
           let err = new Error('foo');
           sideEffect.mockImplementationOnce(() => {throw err});
           let cmd = Cmd.run(sideEffect);
-          expect(() => cmdToPromise(cmd, dispatch, getState)).toThrow(err);
+          expect(() => executeCmd(cmd, dispatch, getState)).toThrow(err);
         });
       });
 
@@ -65,7 +65,7 @@ describe('Cmds', () => {
           let cmd = Cmd.run(sideEffect, {
             args: [123, 456]
           });
-          cmdToPromise(cmd, dispatch, getState);
+          executeCmd(cmd, dispatch, getState);
           expect(sideEffect.mock.calls[0]).toEqual([123, 456]);
         });
 
@@ -73,7 +73,7 @@ describe('Cmds', () => {
           let cmd = Cmd.run(sideEffect, {
             args: [123, Cmd.getState, Cmd.getState, Cmd.dispatch, 456]
           });
-          cmdToPromise(cmd, dispatch, getState);
+          executeCmd(cmd, dispatch, getState);
           expect(sideEffect.mock.calls[0]).toEqual([123, getState, getState, dispatch, 456]);
         });
       });
@@ -86,7 +86,7 @@ describe('Cmds', () => {
             failActionCreator: actionCreator2
           });
 
-          let result = cmdToPromise(cmd, dispatch, getState);
+          let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator1(123)]);
         });
 
@@ -97,7 +97,7 @@ describe('Cmds', () => {
             failActionCreator: actionCreator2
           });
 
-          let result = cmdToPromise(cmd, dispatch, getState);
+          let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator1(123)]);
         });
 
@@ -109,7 +109,7 @@ describe('Cmds', () => {
             successActionCreator: actionCreator1
           });
 
-          let result = cmdToPromise(cmd, dispatch, getState);
+          let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator1(returnValue)]);
         });
       });
@@ -123,7 +123,7 @@ describe('Cmds', () => {
             failActionCreator: actionCreator2
           });
 
-          let result = cmdToPromise(cmd, dispatch, getState);
+          let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator2(err)]);
         });
 
@@ -134,7 +134,7 @@ describe('Cmds', () => {
             failActionCreator: actionCreator2
           });
 
-          let result = cmdToPromise(cmd, dispatch, getState);
+          let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator2(123)]);
         });
       });
@@ -144,12 +144,12 @@ describe('Cmds', () => {
       it('resolves with the passed action in an array', async () => {
         let action = actionCreator1(123);
         let cmd = Cmd.action(action);
-        let result = cmdToPromise(cmd, dispatch, getState);
+        let result = executeCmd(cmd, dispatch, getState);
         await expect(result).resolves.toEqual([action]);
       });
     });
 
-    describe('Cmd.batch', () => {
+    describe('Cmd.list', () => {
       beforeEach(() => {
         jest.useFakeTimers();
       });
@@ -158,129 +158,236 @@ describe('Cmds', () => {
         jest.useRealTimers();
       });
 
-      it('runs all passed cmds in parallel and resolves with an array of their resolve values', async () => {
-        let cmd1Run = false, cmd4Run = false;
-        sideEffect.mockImplementationOnce(() => {
-          cmd1Run = true;
-          return new Promise(resolve => {
-            setTimeout(() => resolve(123), 100);
+      describe('when sequence is false', () => {
+        describe('when batch is false', () => {
+          const options = {batch: false, sequence: false};
+
+          it('runs all passed cmds in parallel, dispatches all actions, and resolves with empty array', async () => {
+            let promise1, promise4;
+            sideEffect.mockImplementationOnce(() => {
+              promise1 = new Promise(resolve => {
+                setTimeout(() => resolve(123), 100);
+              });
+              return promise1;
+            });
+            sideEffect.mockImplementationOnce(() => 456);
+            sideEffect.mockImplementationOnce(() => {
+              promise4 = new Promise((resolve, reject) => {
+                setTimeout(() => reject(789), 50);
+              });
+              return promise4;
+            });
+
+            let cmd1 = Cmd.run(sideEffect, {
+              successActionCreator: actionCreator1
+            });
+            let cmd2 = Cmd.action(actionCreator1('hello'));
+            let cmd3 = Cmd.run(sideEffect, {
+              successActionCreator: actionCreator2
+            });
+            let cmd4 = Cmd.run(sideEffect, {
+              failActionCreator: actionCreator2
+            });
+
+            //should take 100 ms if running in parallel
+            let batch = Cmd.list([cmd1, cmd2, cmd3, cmd4], options);
+
+            let result = executeCmd(batch, dispatch, getState);
+            await jest.runTimersToTime(0);
+            expect(dispatch).toHaveBeenCalledWith(actionCreator1('hello'));
+            expect(dispatch).toHaveBeenCalledWith(actionCreator2(456));
+
+            expect(dispatch).not.toHaveBeenCalledWith(actionCreator2(789));
+            await jest.runTimersToTime(50);
+            await promise4.catch(() => {}); //flushes the promise chain https://github.com/facebook/jest/issues/2157
+            expect(dispatch).toHaveBeenCalledWith(actionCreator2(789));
+
+            expect(dispatch).not.toHaveBeenCalledWith(actionCreator1(123));
+            await jest.runTimersToTime(50);
+            await promise1.then(() => {});
+            expect(dispatch).toHaveBeenCalledWith(actionCreator1(123));
+
+            await expect(result).resolves.toEqual([]);
           });
-        });
-        sideEffect.mockImplementationOnce(() => 456);
-        sideEffect.mockImplementationOnce(() => {
-          cmd4Run = true;
-          return new Promise((resolve, reject) => {
-            setTimeout(() => reject(789), 100);
-          });
-        });
 
-        let cmd1 = Cmd.run(sideEffect, {
-          successActionCreator: actionCreator1
-        });
-        let cmd2 = Cmd.action(actionCreator1('hello'));
-        let cmd3 = Cmd.run(sideEffect, {
-          successActionCreator: actionCreator2
-        });
-        let cmd4 = Cmd.run(sideEffect, {
-          failActionCreator: actionCreator2
-        });
-
-        //should take 100 ms if running in parallel
-        let batch = Cmd.batch([cmd1, cmd2, cmd3, cmd4]);
-
-        let result = cmdToPromise(batch, dispatch, getState);
-        expect(cmd1Run).toBe(true);
-        expect(cmd4Run).toBe(true);
-        jest.runTimersToTime(100);
-        await expect(result).resolves.toEqual([
-          actionCreator1(123),
-          actionCreator1('hello'),
-          actionCreator2(456),
-          actionCreator2(789)
-        ]);
-      });
-
-      it('filters out items that don\'t resolve with actions', async () => {
-        let action = actionCreator1(123);
-        let run = Cmd.run(() => {});
-        let batch = Cmd.batch([Cmd.action(action), run]);
-
-        let result = cmdToPromise(batch, dispatch, getState);
-        await expect(result).resolves.toEqual([action]);
-      });
-
-      it('returns null if there are no items', () => {
-        let result = cmdToPromise(Cmd.batch([]), dispatch, getState);
-        expect(result).toBe(null);
-      });
-    });
-
-    describe('Cmd.sequence', () => {
-      beforeEach(() => {
-        jest.useFakeTimers();
-      });
-
-      afterEach(() => {
-        jest.useRealTimers();
-      });
-
-      it('runs all passed cmds in series and resolves with an array of their resolve values', async () => {
-        let cmd1Run = false, cmd2Run = false, promise1;
-        sideEffect.mockImplementationOnce(() => {
-          cmd1Run = true;
-          promise1 = new Promise(resolve => {
-            setTimeout(() => resolve(123), 100);
-          });
-          return promise1;
-        });
-        sideEffect.mockImplementationOnce(() => {
-          cmd2Run = true;
-          return new Promise((resolve, reject) => {
-            setTimeout(() => reject(456), 100);
+          it('returns null if there are no items', () => {
+            let result = executeCmd(Cmd.list([], options), dispatch, getState);
+            expect(result).toBe(null);
           });
         });
 
-        let cmd1 = Cmd.run(sideEffect, {
-          successActionCreator: actionCreator1
-        });
-        let cmd2 = Cmd.run(sideEffect, {
-          failActionCreator: actionCreator2
-        });
+        describe('when batch is true', () => {
+          const options = {batch: true, sequence: false};
 
-        //should take 200 ms if running in series
-        let sequence = Cmd.sequence([cmd1, cmd2]);
-        let result = cmdToPromise(sequence, dispatch, getState);
-        expect(cmd1Run).toBe(true);
-        expect(cmd2Run).toBe(false);
-        await jest.runTimersToTime(100);
-        await promise1.then(() => {}); //flushes the promise chain https://github.com/facebook/jest/issues/2157
-        expect(cmd2Run).toBe(true);
-        jest.runTimersToTime(100);
-        await expect(result).resolves.toEqual([
-          actionCreator1(123),
-          actionCreator2(456)
-        ]);
+          it('runs all passed cmds in parallel and resolves with an array of their resolve values', async () => {
+            let cmd1Run = false, cmd4Run = false;
+            sideEffect.mockImplementationOnce(() => {
+              cmd1Run = true;
+              return new Promise(resolve => {
+                setTimeout(() => resolve(123), 100);
+              });
+            });
+            sideEffect.mockImplementationOnce(() => 456);
+            sideEffect.mockImplementationOnce(() => {
+              cmd4Run = true;
+              return new Promise((resolve, reject) => {
+                setTimeout(() => reject(789), 100);
+              });
+            });
+
+            let cmd1 = Cmd.run(sideEffect, {
+              successActionCreator: actionCreator1
+            });
+            let cmd2 = Cmd.action(actionCreator1('hello'));
+            let cmd3 = Cmd.run(sideEffect, {
+              successActionCreator: actionCreator2
+            });
+            let cmd4 = Cmd.run(sideEffect, {
+              failActionCreator: actionCreator2
+            });
+
+            //should take 100 ms if running in parallel
+            let batch = Cmd.list([cmd1, cmd2, cmd3, cmd4], options);
+
+            let result = executeCmd(batch, dispatch, getState);
+            expect(cmd1Run).toBe(true);
+            expect(cmd4Run).toBe(true);
+            jest.runTimersToTime(100);
+            await expect(result).resolves.toEqual([
+              actionCreator1(123),
+              actionCreator1('hello'),
+              actionCreator2(456),
+              actionCreator2(789)
+            ]);
+          });
+
+          it('filters out items that don\'t resolve with actions', async () => {
+            let action = actionCreator1(123);
+            let run = Cmd.run(() => {});
+            let batch = Cmd.list([Cmd.action(action), run], options);
+
+            let result = executeCmd(batch, dispatch, getState);
+            await expect(result).resolves.toEqual([action]);
+          });
+
+          it('returns null if there are no items', () => {
+            let result = executeCmd(Cmd.list([], options), dispatch, getState);
+            expect(result).toBe(null);
+          });
+        });
       });
 
-      it('filters out items that don\'t resolve with actions', async () => {
-        let action = actionCreator1(123);
-        let run = Cmd.run(() => {});
-        let sequence = Cmd.sequence([Cmd.action(action), run]);
+      describe('when sequence is true', () => {
+        describe('when batch is false', () => {
+          const options = {batch: false, sequence: true};
 
-        let result = cmdToPromise(sequence, dispatch, getState);
-        await expect(result).resolves.toEqual([action]);
-      });
+          it('runs all passed cmds in series, dispatches all actions, and resolves with empty array', async () => {
+            let promise1, promise2;
+            sideEffect.mockImplementationOnce(() => {
+              promise1 = new Promise(resolve => {
+                setTimeout(() => resolve(123), 100);
+              });
+              return promise1;
+            });
+            sideEffect.mockImplementationOnce(() => {
+              promise2 = new Promise((resolve, reject) => {
+                setTimeout(() => reject(456), 100);
+              });
+              return promise2;
+            });
 
-      it('returns null if there are no items', () => {
-        let result = cmdToPromise(Cmd.sequence([]), dispatch, getState);
-        expect(result).toBe(null);
+            let cmd1 = Cmd.run(sideEffect, {
+              successActionCreator: actionCreator1
+            });
+            let cmd2 = Cmd.run(sideEffect, {
+              failActionCreator: actionCreator2
+            });
+
+            //should take 200 ms if running in series
+            let sequence = Cmd.list([cmd1, cmd2], options);
+            let result = executeCmd(sequence, dispatch, getState);
+
+            expect(dispatch).not.toHaveBeenCalledWith(actionCreator1(123));
+            await jest.runTimersToTime(100);
+            await promise1.then(() => {}).then(() => {}).then(() => {}); //flushes the promise chain https://github.com/facebook/jest/issues/2157
+            expect(dispatch).toHaveBeenCalledWith(actionCreator1(123));
+
+            expect(dispatch).not.toHaveBeenCalledWith(actionCreator2(456));
+            await jest.runTimersToTime(100);
+            await promise2.catch(() => {});
+            expect(dispatch).toHaveBeenCalledWith(actionCreator2(456));
+
+            await expect(result).resolves.toEqual([]);
+          });
+
+          it('returns null if there are no items', () => {
+            let result = executeCmd(Cmd.list([], options), dispatch, getState);
+            expect(result).toBe(null);
+          });
+        });
+
+        describe('when batch is true', () => {
+          const options = {batch: true, sequence: true};
+
+          it('runs all passed cmds in series and resolves with an array of their resolve values', async () => {
+            let cmd1Run = false, cmd2Run = false, promise1;
+            sideEffect.mockImplementationOnce(() => {
+              cmd1Run = true;
+              promise1 = new Promise(resolve => {
+                setTimeout(() => resolve(123), 100);
+              });
+              return promise1;
+            });
+            sideEffect.mockImplementationOnce(() => {
+              cmd2Run = true;
+              return new Promise((resolve, reject) => {
+                setTimeout(() => reject(456), 100);
+              });
+            });
+
+            let cmd1 = Cmd.run(sideEffect, {
+              successActionCreator: actionCreator1
+            });
+            let cmd2 = Cmd.run(sideEffect, {
+              failActionCreator: actionCreator2
+            });
+
+            //should take 200 ms if running in series
+            let sequence = Cmd.list([cmd1, cmd2], options);
+            let result = executeCmd(sequence, dispatch, getState);
+            expect(cmd1Run).toBe(true);
+            expect(cmd2Run).toBe(false);
+            await jest.runTimersToTime(100);
+            await promise1.then(() => {}).then(() => {}); //flushes the promise chain https://github.com/facebook/jest/issues/2157
+            expect(cmd2Run).toBe(true);
+            jest.runTimersToTime(100);
+            await expect(result).resolves.toEqual([
+              actionCreator1(123),
+              actionCreator2(456)
+            ]);
+          });
+
+          it('filters out items that don\'t resolve with actions', async () => {
+            let action = actionCreator1(123);
+            let run = Cmd.run(() => {});
+            let sequence = Cmd.list([Cmd.action(action), run], options);
+
+            let result = executeCmd(sequence, dispatch, getState);
+            await expect(result).resolves.toEqual([action]);
+          });
+
+          it('returns null if there are no items', () => {
+            let result = executeCmd(Cmd.list([], options), dispatch, getState);
+            expect(result).toBe(null);
+          });
+        });
       });
     });
 
     describe('Cmd.map', () => {
       it('returns null if the nested Cmd returns null', () => {
         let cmd = Cmd.map(Cmd.run(sideEffect), actionCreator1);
-        let result = cmdToPromise(cmd, dispatch, getState);
+        let result = executeCmd(cmd, dispatch, getState);
         expect(result).toBe(null);
       });
 
@@ -297,18 +404,18 @@ describe('Cmds', () => {
 
       it('runs the resulting actions through the tagger function before resolving with them', async () => {
         let action1 = actionCreator1(123), action2 = actionCreator1(456);
-        let batch = Cmd.batch([Cmd.action(action1), Cmd.action(action2)]);
-        let cmd = Cmd.map(batch, noArgTagger);
-        let result = cmdToPromise(cmd, dispatch, getState);
+        let list = Cmd.list([Cmd.action(action1), Cmd.action(action2)], {batch: true});
+        let cmd = Cmd.map(list, noArgTagger);
+        let result = executeCmd(cmd, dispatch, getState);
         await expect(result).resolves.toEqual([actionCreator2(action1), actionCreator2(action2)]);
       });
 
       it('passes the args to the tagger if specified', async () => {
         let action1 = actionCreator1(123), action2 = actionCreator1(456);
-        let batch = Cmd.batch([Cmd.action(action1), Cmd.action(action2)]);
+        let list = Cmd.list([Cmd.action(action1), Cmd.action(action2)], {batch: true});
         let arg1 = 'arg1', arg2 = 'arg2';
-        let cmd = Cmd.map(batch, argTagger, arg1, arg2);
-        let result = cmdToPromise(cmd, dispatch, getState);
+        let cmd = Cmd.map(list, argTagger, arg1, arg2);
+        let result = executeCmd(cmd, dispatch, getState);
         await expect(result).resolves.toEqual([
           {...actionCreator2(action1), arg1, arg2},
           {...actionCreator2(action2), arg1, arg2}
@@ -318,9 +425,43 @@ describe('Cmds', () => {
 
     describe('Cmd.none', () => {
       it('returns null', () => {
-        let result = cmdToPromise(Cmd.none, dispatch, getState);
+        let result = executeCmd(Cmd.none, dispatch, getState);
         expect(result).toBe(null);
       });
+    });
+  });
+
+  describe('Cmd.batch', () => {
+    let warn;
+    beforeEach(() => {
+      warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      warn.mockRestore();
+    });
+
+    it('creates a list with batch set to true and sequence set to false', async () => {
+      let cmd1 = Cmd.run(sideEffect), cmd2 = Cmd.run(sideEffect);
+      let batch = Cmd.batch([cmd1, cmd2]);
+      expect(batch).toEqual(Cmd.list([cmd1, cmd2], {batch: true, sequence: false}));
+    });
+  });
+
+  describe('Cmd.sequence', () => {
+    let warn;
+    beforeEach(() => {
+      warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
+    });
+
+    afterEach(() => {
+      warn.mockRestore();
+    });
+
+    it('creates a list with batch set to true and sequence set to true', async () => {
+      let cmd1 = Cmd.run(sideEffect), cmd2 = Cmd.run(sideEffect);
+      let batch = Cmd.sequence([cmd1, cmd2]);
+      expect(batch).toEqual(Cmd.list([cmd1, cmd2], {batch: true, sequence: true}));
     });
   });
 });

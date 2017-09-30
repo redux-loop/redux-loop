@@ -7,10 +7,9 @@ const getStateSymbol = Symbol('getState');
 const cmdTypes = {
   RUN: 'RUN',
   ACTION: 'ACTION',
-  BATCH: 'BATCH',
+  LIST: 'LIST',
   MAP: 'MAP',
-  NONE: 'NONE',
-  SEQUENCE: 'SEQUENCE'
+  NONE: 'NONE'
 }
 
 export const isCmd = (object) => {
@@ -49,7 +48,63 @@ function handleRunCmd(cmd, dispatch, getState){
   }
 }
 
-export const cmdToPromise = (cmd, dispatch, getState) => {
+function handleParallelList({cmds, batch = false}, dispatch, getState){
+  const promises = cmds.map(nestedCmd => {
+    const possiblePromise = executeCmd(nestedCmd, dispatch, getState);
+    if(!possiblePromise || batch){
+      return possiblePromise;
+    }
+
+    return possiblePromise.then(result => {
+      return Promise.all(result.map(a => dispatch(a)));
+    });
+  }).filter(x => x);
+
+  if (promises.length === 0){
+    return null;
+  }
+
+  return Promise.all(promises).then(flatten).then(actions => {
+    return batch ? actions : [];
+  });
+}
+
+function handleSequenceList({cmds, batch = false}, dispatch, getState){
+  const firstCmd = cmds.length ? cmds[0] : null;
+  if(!firstCmd){
+    return null;
+  }
+
+  const result = new Promise(resolve => {
+    let firstPromise = executeCmd(firstCmd, dispatch, getState);
+    firstPromise = firstPromise || Promise.resolve([]);
+    firstPromise.then(result => {
+      let executePromise;
+      if(!batch){
+        executePromise = Promise.all(result.map(a => dispatch(a)));
+      }
+      else{
+        executePromise = Promise.resolve();
+      }
+      executePromise.then(() => {
+        const remainingSequence = list(cmds.slice(1), {batch, sequence: true});
+        const remainingPromise = executeCmd(remainingSequence, dispatch, getState);
+        if (remainingPromise) {
+          remainingPromise.then(innerResult => {
+            resolve(result.concat(innerResult));
+          });
+        }
+        else{
+          resolve(result);
+        }
+      });
+    })
+  }).then(flatten);
+
+  return batch ? result : result.then(() => []);
+}
+
+export const executeCmd = (cmd, dispatch, getState) => {
   switch (cmd.type) {
     case cmdTypes.RUN:
       return handleRunCmd(cmd, dispatch, getState)
@@ -57,33 +112,11 @@ export const cmdToPromise = (cmd, dispatch, getState) => {
     case cmdTypes.ACTION:
       return Promise.resolve([cmd.actionToDispatch])
 
-    case cmdTypes.BATCH:
-      const batchedPromises = cmd.cmds.map(nestedCmd => cmdToPromise(nestedCmd, dispatch, getState)).filter(x => x)
-      if (batchedPromises.length === 0) return null
-      else if (batchedPromises.length === 1) return batchedPromises[0]
-      else return Promise.all(batchedPromises).then(flatten)
-
-    case cmdTypes.SEQUENCE:
-      const firstCmd = cmd.cmds.length ? cmd.cmds[0] : null
-      if (firstCmd) {
-        return new Promise(resolve => {
-          let firstPromise = cmdToPromise(firstCmd, dispatch, getState)
-          if (!firstPromise) firstPromise = Promise.resolve([])
-          firstPromise.then(result => {
-            const remaining = cmdToPromise(sequence(cmd.cmds.slice(1)), dispatch, getState)
-            if (remaining) {
-              remaining.then(innerResult => {
-                resolve(result.concat(innerResult))
-              })
-            }
-            else resolve(result)
-          })
-        }).then(flatten)
-      }
-      else return null
+    case cmdTypes.LIST:
+      return cmd.sequence ? handleSequenceList(cmd, dispatch, getState) : handleParallelList(cmd, dispatch, getState);
 
     case cmdTypes.MAP:
-      const possiblePromise = cmdToPromise(cmd.nestedCmd, dispatch, getState)
+      const possiblePromise = executeCmd(cmd.nestedCmd, dispatch, getState)
       if (!possiblePromise) return null
       return possiblePromise.then((actions) => 
         actions.map(action => cmd.tagger(...cmd.args, action))
@@ -97,10 +130,7 @@ export const cmdToPromise = (cmd, dispatch, getState) => {
   }
 }
 
-const run = (
-  func,
-  options = {}
-) => {
+const run = (func, options = {}) => {
   if (process.env.NODE_ENV !== 'production') {
     throwInvariant(
       typeof func === 'function',
@@ -151,6 +181,27 @@ const action = (actionToDispatch) => {
   })
 }
 
+const list = (cmds, options = {}) => {
+  if (process.env.NODE_ENV !== 'production') {
+    throwInvariant(
+      Array.isArray(cmds) && cmds.every(isCmd),
+      'Cmd.list: first argument to Cmd.list must be an array of other Cmds'
+    )
+
+    throwInvariant(
+      typeof options === 'object',
+      'Cmd.list: second argument to Cmd.list must be an options object'
+    )
+  }
+
+  return Object.freeze({
+    [isCmdSymbol]: true,
+    type: cmdTypes.LIST,
+    cmds,
+    ...options
+  });
+}
+
 const batch = (cmds) => {
   if (process.env.NODE_ENV !== 'production') {
     throwInvariant(
@@ -159,11 +210,8 @@ const batch = (cmds) => {
     )
   }
 
-  return Object.freeze({
-    [isCmdSymbol]: true,
-    type: cmdTypes.BATCH,
-    cmds,
-  })
+  console.warn('Cmd.batch is deprecated and will be removed in version 5. Please use Cmd.list (https://github.com/redux-loop/redux-loop/blob/master/docs/ApiDocs.md#cmdlistcmds-options)')
+  return list(cmds, {batch: true, sequence: false});
 }
 
 const sequence = (cmds) => {
@@ -171,14 +219,11 @@ const sequence = (cmds) => {
     throwInvariant(
       Array.isArray(cmds) && cmds.every(isCmd),
       'Cmd.sequence: first and only argument to Cmd.sequence must be an array of other Cmds'
-    )
+    );
   }
 
-  return Object.freeze({
-    [isCmdSymbol]: true,
-    type: cmdTypes.SEQUENCE,
-    cmds,
-  })
+  console.warn('Cmd.sequence is deprecated and will be removed in version 5. Please use Cmd.list (https://github.com/redux-loop/redux-loop/blob/master/docs/ApiDocs.md#cmdlistcmds-options)')
+  return list(cmds, {batch: true, sequence: true});
 }
 
 const map = (
@@ -190,12 +235,12 @@ const map = (
     throwInvariant(
       isCmd(nestedCmd),
       'Cmd.map: first argument to Cmd.map must be another Cmd'
-    )
+    );
 
     throwInvariant(
       typeof tagger === 'function',
       'Cmd.map: second argument to Cmd.map must be a function that returns an action'
-    )
+    );
   }
 
   return Object.freeze({
@@ -204,21 +249,22 @@ const map = (
     tagger,
     nestedCmd,
     args
-  })
+  });
 }
 
 const none = Object.freeze({
   [isCmdSymbol]: true,
   type: cmdTypes.NONE,
-})
+});
 
 export default {
   run,
   action,
+  list,
   batch,
   sequence,
   map,
   none,
   dispatch: dispatchSymbol,
   getState: getStateSymbol
-}
+};
