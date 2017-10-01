@@ -130,6 +130,16 @@ export const executeCmd = (cmd, dispatch, getState) => {
   }
 }
 
+function simulateRun({result, success}){
+  if(success && this.successActionCreator){
+    return this.successActionCreator(result);
+  }
+  else if(!success && this.failActionCreator){
+    return this.failActionCreator(result);
+  }
+  return null;
+}
+
 const run = (func, options = {}) => {
   if (process.env.NODE_ENV !== 'production') {
     throwInvariant(
@@ -162,9 +172,12 @@ const run = (func, options = {}) => {
     [isCmdSymbol]: true,
     type: cmdTypes.RUN,
     func,
+    simulate: simulateRun,
     ...options
   })
 }
+
+function simulateAction(){return this.actionToDispatch;}
 
 const action = (actionToDispatch) => {
   if (process.env.NODE_ENV !== 'production') {
@@ -177,8 +190,13 @@ const action = (actionToDispatch) => {
   return Object.freeze({
     [isCmdSymbol]: true,
     type: cmdTypes.ACTION,
-    actionToDispatch
+    actionToDispatch,
+    simulate: simulateAction
   })
+}
+
+function simulateList(simulations){
+  return flatten(this.cmds.map((cmd, i) => cmd.simulate(simulations[i])).filter(a => a));
 }
 
 const list = (cmds, options = {}) => {
@@ -203,6 +221,7 @@ const list = (cmds, options = {}) => {
     [isCmdSymbol]: true,
     type: cmdTypes.LIST,
     cmds,
+    simulate: simulateList,
     ...rest
   });
 }
@@ -231,6 +250,19 @@ const sequence = (cmds) => {
   return list(cmds, {batch: true, sequence: true});
 }
 
+function simulateMap(simulation){
+  let result = this.nestedCmd.simulate(simulation);
+  if(Array.isArray(result)){
+    return result.map(action => this.tagger(...this.args, action))
+  }
+  else if(result){
+    return this.tagger(...this.args, result);
+  }
+  else{
+    return null;
+  }
+}
+
 const map = (
   nestedCmd,
   tagger,
@@ -253,13 +285,15 @@ const map = (
     type: cmdTypes.MAP,
     tagger,
     nestedCmd,
-    args
+    args,
+    simulate: simulateMap
   });
 }
 
 const none = Object.freeze({
   [isCmdSymbol]: true,
   type: cmdTypes.NONE,
+  simulate: () => null
 });
 
 export default {

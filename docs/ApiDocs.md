@@ -200,6 +200,13 @@ and testable.
 
 ### `Cmd.none`
 
+#### Simulation
+Simulating `none` always returns null.
+
+```js
+expect(Cmd.none.simulate()).toBe(null); //parameter is ignored
+```
+
 #### Notes
 
 `none` is a no-op effect that you can use for convenience when building custom
@@ -225,6 +232,15 @@ return { ...state, someProp: action.payload }
 
 * `actionToDispatch: Action` &ndash; a plain object with a `type` property that the store
   can dispatch.
+
+#### Simulation
+Simulating `action` always returns `actionToDispatch`.
+
+```js
+const action = {type: 'type', foo: 123};
+const cmd = Cmd.action(action);
+expect(cmd.simulate()).toEqual(action); //parameter is ignored
+```
 
 #### Notes
 
@@ -255,6 +271,20 @@ promise resolution value (if func returns a promise) or the return value (if fun
 promise rejection value (if func returns a promise) or the thrown error (if func throws) and returns an action which will be dispatched. This should not be omitted if the function is expected to potentially throw an exception. Exceptions are rethrown if there is no fail handler.
 * `options.args: Array<any>` &ndash; an optional array of arguments to call `func` with.
 * `options.forceSync: boolean` &ndash; if true, this Cmd will finish synchronously even if func returns a promise. Useful if the Cmd runs as part of a list with batch set to true but you don't care about the result of this Cmd and want the list to finish faster.
+
+#### Simulation
+`Run` cmd simulations pass the result through the correct action creator (depending on the success property passed) and return the resulting action.
+
+If there is no corresponding action creator on the cmd, null is returned.
+
+
+```js
+const cmd = Cmd.run(sideEffect, {
+  successActionCreator: result => actionCreator(result, 'hard coded');
+});
+expect(cmd.simulate({success: true, result: 123})).toEqual(actionCreator(123, 'hard coded'));
+expect(cmd.simulate({success: false, result: 123})).toBe(null);
+```
 
 #### Notes
 
@@ -332,6 +362,23 @@ function reducer(state , action) {
 * `options.batch: boolean` &ndash; By default, actions from nested cmds will be dispatched as soon as that cmd finishes. If batch is true, no actions will be dispatched until all of the cmds are resolved/finished. The actions will then be dispatched all at once in the order of the original cmd array.
 * `options.testInvariants: boolean` &ndash; Normally, if the first parameter to Cmd.list is not an array of Cmds, an error will be thrown (unless you are in production). You can turn this off in testing environments by using this option. NOTE: ONLY DO THIS IN TESTS. IF YOU DO THIS IN PRODUCTION, IT WILL THROW. This is useful if you want to pass a custom object from your test library to verify a subset of `cmds`, such as `jasmine.arrayContaining(someCmd)`.
 
+#### Simulation
+Simulating a `list` cmd simulates all of its child cmds and returns an array of the results. The resulting array has nulls filtered out and is flattened. 
+
+To simulate a `list`, pass an array of parameters to be passed to the corresponding cmds for simulation.
+
+```js
+const cmd1 = Cmd.run(sideEffect, {
+  successActionCreator: result => actionCreator(result, 'hard coded')
+});
+const cmd2 = Cmd.run(sideEffect, {
+  failActionCreator: result => actionCreator2(result, 'foo')
+});
+const list = Cmd.list([cmd1, cmd2]);
+const result = list.simulate([{success: true, result: 123}, {success: false, result: 456}]);
+expect(result).toEqual([actionCreator(123, 'hard coded'), actionCreator2(456, 'foo')]);
+```
+
 #### Notes
 
 `list` allows you to group cmds as a single cmd to be run all together. Use the options to choose when you want the individual cmds to run and when the resulting actions are dispatched. The default behavior is to run each Cmd and dispatch the results as soon as possible.
@@ -388,6 +435,18 @@ function reducer(state , action) {
 * `additionalArgs` &ndash; a list of additional arguments to pass to
   `higherOrderActionCreator` before passing in the action from the cmd.
 
+#### Simulation
+Simulating a `map` cmd simulates the nested cmd and passes the result through `tagger`. If the result is an array of actions, all of them are passed through `tagger`. If args are provided to the cmd, they are passed to `tagger`.
+
+```js
+const cmd1 = Cmd.run(sideEffect, {
+  successActionCreator: result => actionCreator(result, 'hard coded')
+});
+
+const map = Cmd.map(cmd1, actionCreator2, 'extra arg');
+const result = map.simulate({success: true, result: 123});
+expect(result).toEqual(actionCreator2('extra arg', actionCreator(123, 'hard coded')));
+```
 
 #### Notes
 

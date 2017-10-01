@@ -7,6 +7,7 @@ import {
   liftState,
   LoopReducer
 } from '../../index';
+import { AnyAction } from 'redux';
 
 type TodoState = { todos: string[]; nestedCounter: number };
 
@@ -105,3 +106,18 @@ const rootState: RootState = rootReducer(undefined, {
   type: 'ADD_TODO',
   text: 'test'
 })[0];
+
+let cmd = Cmd.run(() => {}, {
+  successActionCreator: a => ({type: 'FOO', a: 2*a})
+});
+let action: AnyAction = cmd.simulate({success: true, result: 123});
+let listCmd = Cmd.list([cmd, cmd]);
+let actions: AnyAction[] = listCmd.simulate([{success: true, result: 123}, {success: false, result: 456}]);
+let nestedListCmd = Cmd.list([cmd, listCmd]);
+let flattenedActions: AnyAction[] = nestedListCmd.simulate([
+  {success: true, result: 123},
+  [
+    {success: true, result: 456},
+    {success: true, result: 789},
+  ]
+]);
