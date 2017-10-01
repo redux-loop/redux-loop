@@ -184,7 +184,7 @@ const action = (actionToDispatch) => {
 const list = (cmds, options = {}) => {
   if (process.env.NODE_ENV !== 'production') {
     throwInvariant(
-      Array.isArray(cmds) && cmds.every(isCmd),
+      (Array.isArray(cmds) || options.testInvariants) && cmds.every(isCmd),
       'Cmd.list: first argument to Cmd.list must be an array of other Cmds'
     )
 
@@ -193,12 +193,17 @@ const list = (cmds, options = {}) => {
       'Cmd.list: second argument to Cmd.list must be an options object'
     )
   }
+  else if(options.testInvariants){
+    throw Error('Redux Loop: Detected usage of Cmd.list\'s testInvariants option in production code. This should only be used in tests.');
+  }
+
+  const {testInvariants, ...rest} = options;
 
   return Object.freeze({
     [isCmdSymbol]: true,
     type: cmdTypes.LIST,
     cmds,
-    ...options
+    ...rest
   });
 }
 
