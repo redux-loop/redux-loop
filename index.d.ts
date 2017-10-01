@@ -18,8 +18,20 @@ export interface LiftedLoopReducer<S, A extends Action> {
   (state: S | undefined, action: AnyAction): Loop<S, A>;
 }
 
+export type CmdSimulation = {
+  result: any,
+  success: boolean
+};
+export interface MultiCmdSimulation {
+  [index: number]: CmdSimulation | MultiCmdSimulation;
+}
+
+type SingleCmdSimulationFunction<A extends Action> = (simulation?: CmdSimulation) => A;
+type MultiCmdSimulationFunction<A extends Action> = (simulations: MultiCmdSimulation) => A[];
+
 export interface NoneCmd {
   type: 'NONE';
+  simulate: SingleCmdSimulationFunction<AnyAction>;
 }
 
 export interface ListCmd<A extends Action> {
@@ -27,11 +39,13 @@ export interface ListCmd<A extends Action> {
   cmds: CmdType<A>[];
   sequence?: boolean;
   batch?: boolean;
+  simulate: MultiCmdSimulationFunction<A>;
 }
 
 export interface ActionCmd<A extends Action> {
   type: 'ACTION';
   actionToDispatch: A;
+  simulate: SingleCmdSimulationFunction<A>;
 }
 
 export interface MapCmd<A extends Action> {
@@ -39,6 +53,7 @@ export interface MapCmd<A extends Action> {
   tagger: ActionCreator<A>;
   nestedCmd: CmdType<A>;
   args: any[];
+  simulate: SingleCmdSimulationFunction<A> | MultiCmdSimulationFunction<A>;
 }
 
 export interface RunCmd<A extends Action> {
@@ -48,6 +63,7 @@ export interface RunCmd<A extends Action> {
   failActionCreator?: ActionCreator<A>;
   successActionCreator?: ActionCreator<A>;
   forceSync?: boolean;
+  simulate: SingleCmdSimulationFunction<A>;
 }
 
 //deprecated types
@@ -68,7 +84,7 @@ declare function install<S>(): StoreEnhancer<S>;
 
 declare function loop<S, A extends Action>(
   state: S,
-  loop: CmdType<A>
+  cmd: CmdType<A>
 ): Loop<S, A>;
 
 declare class Cmd {

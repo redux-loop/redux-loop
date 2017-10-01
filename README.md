@@ -222,6 +222,40 @@ state and always get a result which is `deepEqual`.
 > not equal within JavaScript, and so are best to avoid if you want to compare
 > effects in your tests.
 
+#### Simulating Cmds
+
+Occasionally you may find yourself in a situation where you need to pass more than one parameter to an action creator, such as:
+
+```js
+Cmd.run(foo, {
+  successActionCreator: foo => actionCreator(foo, state.blah)
+})
+```
+
+You can't do a deep equality check on this because the success action creator is always new. Instead, you can simulate the cmd to test the action creators.
+
+```js
+import { Cmd, getCmd, getModel } from 'redux-loop';
+...
+
+let result = reducer(state, action);
+expect(getModel(result)).toEqual(whatever);
+let cmd = getCmd(result);
+
+//test the rest of the cmd
+expect(cmd).toEqual(Cmd.run(foo, {
+  successActionCreator: jasmine.any(Function) //replace with your testing library's equivalent matcher
+}));
+
+expect(cmd.simulate({success: true, result: 123})).toEqual(actionCreator(123, state.blah));
+expect(cmd.simulate({success: false, result: 123})).toBe(null);
+
+```
+
+You can simulate any Cmd to test the actions returned. Lists take arrays of simulations for their child cmds.
+
+[See detailed documentation about simulating Cmds](docs/ApiDocs.md)
+
 ### Avoid circular loops!
 
 ```js
