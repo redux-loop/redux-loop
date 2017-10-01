@@ -330,6 +330,7 @@ function reducer(state , action) {
   other cmd functions, or even nested calls to `Cmd.list`.
 * `options.sequence: boolean` &ndash; By default, asynchronous Cmds all run immediately and in parallel. If sequence is true, cmds will wait for the previous cmd to resolve before starting. Note: this does not have an effect if all Cmds are synchronous.
 * `options.batch: boolean` &ndash; By default, actions from nested cmds will be dispatched as soon as that cmd finishes. If batch is true, no actions will be dispatched until all of the cmds are resolved/finished. The actions will then be dispatched all at once in the order of the original cmd array.
+* `options.testInvariants: boolean` &ndash; Normally, if the first parameter to Cmd.list is not an array of Cmds, an error will be thrown (unless you are in production). You can turn this off in testing environments by using this option. NOTE: ONLY DO THIS IN TESTS. IF YOU DO THIS IN PRODUCTION, IT WILL THROW. This is useful if you want to pass a custom object from your test library to verify a subset of `cmds`, such as `jasmine.arrayContaining(someCmd)`.
 
 #### Notes
 
