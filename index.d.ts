@@ -25,10 +25,8 @@ export interface NoneCmd {
 export interface ListCmd<A extends Action> {
   type: 'LIST';
   cmds: CmdType<A>[];
-  options: {
-    sequence: boolean;
-    batch: boolean;
-  };
+  sequence?: boolean;
+  batch?: boolean;
 }
 
 export interface ActionCmd<A extends Action> {
@@ -46,12 +44,10 @@ export interface MapCmd<A extends Action> {
 export interface RunCmd<A extends Action> {
   type: 'RUN';
   func: Function;
-  options: {
-    args: any[];
-    failActionCreator: ActionCreator<A>;
-    successActionCreator: ActionCreator<A>;
-    forceSync: boolean;
-  };
+  args?: any[];
+  failActionCreator?: ActionCreator<A>;
+  successActionCreator?: ActionCreator<A>;
+  forceSync?: boolean;
 }
 
 //deprecated types
