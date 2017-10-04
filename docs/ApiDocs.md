@@ -480,7 +480,7 @@ function reducer(state, action) {
     return loop(
       {...state, initStarted: true},
       Cmd.run(doSomething, {
-         successActionCreatro: doSomethingResultAction,
+         successActionCreator: doSomethingResultAction,
          args: [Cmd.getState]
       })
     );
@@ -513,7 +513,7 @@ function reducer(state, action) {
     return loop(
       {...state, initStarted: true},
       Cmd.run(doSomething, {
-         successActionCreatro: doSomethingResultAction,
+         successActionCreator: doSomethingResultAction,
          args: [Cmd.dispatch]
       })
     );
