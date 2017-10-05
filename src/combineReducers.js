@@ -13,34 +13,49 @@ const defaultMutator = (state, key, value) => {
   };
 };
 
+//TODO: change to be implemented using mergeChildReducers in 5.0
+// export default function combineReducers(childMap){
+//   return (rootState = {}, action) => {
+//     return mergeChildReducers(rootState, action, childMap);
+//   };
+// }
+
 export const combineReducers = (
   reducerMap,
-  rootState = {},
-  accessor = defaultAccessor,
-  mutator = defaultMutator
-) => (
-  state = rootState,
-  action
+  rootState,
+  accessor,
+  mutator
 ) => {
-  let hasChanged = false
-  let cmds = []
+  if(accessor || mutator || rootState){
+    console.warn(`Passing customization parameters to combineReducers is deprecated. They will be removed in 5.0. 
+      Integrations with popular libraries are being broken out into separate libraries. 
+      Please see https://github.com/redux-loop/redux-loop/releases/tag/v4.2.0 for more details.`)
+  }
+  rootState = rootState || {};
+  accessor = accessor || defaultAccessor;
+  mutator = mutator || defaultMutator;
 
-  const model = Object.keys(reducerMap).reduce((model, key) => {
-    const reducer = reducerMap[key]
-    const previousStateForKey = accessor(state, key)
-    let nextStateForKey = reducer(previousStateForKey, action)
+  return (state = rootState, action) => {
+    let hasChanged = false
+    let cmds = []
 
-    if (isLoop(nextStateForKey)) {
-      cmds.push(getCmd(nextStateForKey))
-      nextStateForKey = getModel(nextStateForKey)
-    }
+    const model = Object.keys(reducerMap).reduce((model, key) => {
+      const reducer = reducerMap[key]
+      const previousStateForKey = accessor(state, key)
+      let nextStateForKey = reducer(previousStateForKey, action)
 
-    hasChanged = hasChanged || nextStateForKey !== previousStateForKey
-    return mutator(model, key, nextStateForKey)
-  }, rootState)
+      if (isLoop(nextStateForKey)) {
+        cmds.push(getCmd(nextStateForKey))
+        nextStateForKey = getModel(nextStateForKey)
+      }
 
-  return loop(
-    hasChanged ? model : state,
-    Cmd.list(cmds, {batch: true}) //todo: remove batch in 5.0
-  )
+      hasChanged = hasChanged || nextStateForKey !== previousStateForKey
+      return mutator(model, key, nextStateForKey)
+    }, rootState)
+
+    return loop(
+      hasChanged ? model : state,
+      Cmd.list(cmds, {batch: true}) //todo: remove batch in 5.0
+    )
+  }
 }

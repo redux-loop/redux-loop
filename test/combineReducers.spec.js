@@ -41,6 +41,7 @@ describe('combineReducers', () => {
   });
 
   it('works with custom data structure and returns correctly working reducer', () => {
+    let warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
     const appReducer = combineReducers(
       reducers,
       Map(),
@@ -74,5 +75,7 @@ describe('combineReducers', () => {
     action.previous = 2;
     state = getModel(appReducer(state, action));
     expect(state.toJS()).toEqual({ counter: 6, doubler: 32, fibonacci: 5 });
+
+    warn.mockRestore();
   });
 });

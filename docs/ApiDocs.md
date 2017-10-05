@@ -14,7 +14,8 @@
   * [`Cmd.map(cmd, higherOrderActionCreator, [...additionalArgs])`](#cmdmapcmd-higherorderactioncreator-additionalargs)
 * [`Cmd.getState`](#cmdgetstate)
 * [`Cmd.dispatch`](#cmddispatch)
-* [`combineReducers(reducersMap, [initialState, accessor, modifier])`](#combinereducersreducersmap-initialstate-accessor-modifier)
+* [`combineReducers(reducersMap)`](#combinereducersreducersmap)
+* [`mergeChildReducers(parentResult, action, childMap)`](#mergechildreducersparentresult-action-childmap)
 
 ## `install`
 
@@ -533,21 +534,10 @@ export function doSomething(dispatch) {
 ```
   
 
-## `combineReducers(reducersMap, [initialState, accessor, modifier])`
+## `combineReducers(reducersMap)`
 
 * `reducersMap: Object<string, ReducerFunction>` &ndash; a map of keys to nested
   reducers, just like the `combineReducers` you would find in Redux itself.
-* `initialState: any` &ndash; an optional initial value to map over when
-  combining reducer results. Defaults to a plain object `{}`, but could be, for
-  example, an `Immutable.Map`.
-* `accessor: (state: any, key: any) => any` &ndash; a function to use when
-  looking up the existing state for a reducer key on the state atom. Defaults to
-  plain object property access, but can be passed a function to look up a key on
-  an `Immutable.Map`, for example.
-* `modifier: (state: any, key: any, value: any) => any` &ndash; a function to
-  use when updating the existing state atom with the result of a reducer for a
-  given key. Defaults to plain object property setting but can be implemented as
-  a call to `set()` on an `Immutable.Map`, for example.
 
 #### Notes
 
@@ -569,4 +559,50 @@ export default combineReducers({
   withEffects: reducerWithSideEffects,
   plain: plainReducer
 });
+```
+
+## `mergeChildReducers(parentResult, action, childMap)`
+
+`mergeChildReducers` is a more generalized version of `combineReducers` that allows you to nest reducers
+underneath a common parent that has functionality of its own (rather than restricting the parent
+to simply passing actions to its children like `combineReducers` does)
+
+* `parentResult: Object | loop(Object, Cmd)` &ndash; The result from the parent reducer before any child results have been applied.
+* `action: Action` &ndash; a redux action
+* `childMap: Object<string, ReducerFunction>` &ndash; a plain object map of keys to nested reducers, similar
+to the map in combineReducers. However, a key can be given a value of null to have it removed from the state.
+
+#### Examples
+```js
+import {getModel, isLoop, mergeChildReducers} from 'redux-loop';
+import pageReducerMap from './page-reducers';
+
+// a simple reducer that keeps track of your current location and nests the correct
+//child reducer for that location at state.data
+
+const initialState = {
+   location: 'index'
+   //data will be filled in with the result of the child reducer
+};
+
+function parentReducer(state = initialState, action){
+  if(action.type !== 'LOCATION_CHANGE')
+     return state;
+     
+  return {...state, location: action.newLocation};
+}
+
+export default function reducer(state, action){
+  const parentResult = parentReducer(state, action);
+  
+  let location;
+  if(isLoop(parentResult))
+    location = getModel(parentResult).location;
+  else
+    location = parentResult.location;
+   
+  const childMap = {data: pageReducerMap[location]};
+  
+  return mergeChildReducers(parentResult, action, childMap);
+}
 ```

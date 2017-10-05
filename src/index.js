@@ -16,8 +16,11 @@ import {
   combineReducers,
 } from './combineReducers';
 
+import mergeChildReducers from './merge-child-reducers';
+
 export {
   combineReducers,
+  mergeChildReducers,
   Cmd,
   install,
   loop,

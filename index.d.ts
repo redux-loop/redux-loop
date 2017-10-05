@@ -112,6 +112,12 @@ declare function combineReducers<S, A extends Action = AnyAction>(
   reducers: ReducerMapObject<S, A>
 ): LiftedLoopReducer<S, A>;
 
+declare function mergeChildReducers<S, A extends Action = AnyAction>(
+  parentResult: S | Loop<S, A>,
+  action: AnyAction,
+  childMap: ReducerMapObject<S, A>
+): Loop<S, A>;
+
 declare function liftState<S, A extends Action>(
   state: S | Loop<S, A>
 ): Loop<S, A>;
