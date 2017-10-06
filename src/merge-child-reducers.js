@@ -1,4 +1,5 @@
-import {loop, isLoop, getModel, getCmd, Cmd} from '../src';
+import {loop, isLoop, getModel, getCmd} from './loop';
+import Cmd from './cmd';
 
 export default function mergeChildReducers(parentResult, action, childMap){
   let initialState = parentResult, parentCmd;
