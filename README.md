@@ -355,6 +355,9 @@ See the [mergeChildReducers](src/merge-child-reducers.js) and [combineReducers](
 
 If you have a popular use case or library that is not currently supported, please file an issue and we can discuss if it makes sense for us to support a custom integration. 
 
+## Discuss
+[Come join our slack channel.](https://reduxloop-slack.herokuapp.com/)
+
 ## Support
 
 Potential bugs, generally discussion, and proposals or RFCs should be submitted
