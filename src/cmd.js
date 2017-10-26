@@ -41,6 +41,7 @@ function handleRunCmd(cmd, dispatch, getState){
   }
   catch(err){
     if(!cmd.failActionCreator){
+      console.error(err);
       throw err //don't swallow errors if they are not handling them
     }
     let resultAction = onFail(err);

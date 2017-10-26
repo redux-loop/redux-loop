@@ -53,10 +53,13 @@ describe('Cmds', () => {
         });
 
         it('rethrows the thrown error if the function throws', function(){
+          let consoleErr = jest.spyOn(console, 'error').mockImplementation(() => {});
           let err = new Error('foo');
           sideEffect.mockImplementationOnce(() => {throw err});
           let cmd = Cmd.run(sideEffect);
           expect(() => executeCmd(cmd, dispatch, getState)).toThrow(err);
+          expect(consoleErr).toHaveBeenCalledWith(err);
+          consoleErr.mockRestore();
         });
       });
 
