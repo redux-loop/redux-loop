@@ -244,6 +244,7 @@ let cmd = getCmd(result);
 
 //test the rest of the cmd
 expect(cmd).toEqual(Cmd.run(foo, {
+  testInvariants: true,
   successActionCreator: jasmine.any(Function) //replace with your testing library's equivalent matcher
 }));
 

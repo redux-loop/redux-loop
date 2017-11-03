@@ -271,6 +271,16 @@ promise resolution value (if func returns a promise) or the return value (if fun
 promise rejection value (if func returns a promise) or the thrown error (if func throws) and returns an action which will be dispatched. This should not be omitted if the function is expected to potentially throw an exception. Exceptions are rethrown if there is no fail handler.
 * `options.args: Array<any>` &ndash; an optional array of arguments to call `func` with.
 * `options.forceSync: boolean` &ndash; if true, this Cmd will finish synchronously even if func returns a promise. Useful if the Cmd runs as part of a list with batch set to true but you don't care about the result of this Cmd and want the list to finish faster.
+* `options.testInvariants: boolean` &ndash; Normally, if your action creators are not functions or args is not an array, an error will be thrown (unless you are in production). You can turn this off in testing environments by using this option. NOTE: ONLY DO THIS IN TESTS. IF YOU DO THIS IN PRODUCTION, IT WILL THROW. This is useful if you want to do something like 
+
+```js
+expect(cmd).toEqual(Cmd.run(foo, {
+  testInvariants: true,
+  successActionCreator: jasmine.any(Function) //replace with your testing library's equivalent matcher
+}));
+```
+
+because `jasmine.any(Function)` is not a function.
 
 #### Simulation
 `Run` cmd simulations pass the result through the correct action creator (depending on the success property passed) and return the resulting action.
