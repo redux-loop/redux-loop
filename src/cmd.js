@@ -143,38 +143,45 @@ function simulateRun({result, success}){
 
 const run = (func, options = {}) => {
   if (process.env.NODE_ENV !== 'production') {
-    throwInvariant(
-      typeof func === 'function',
-      'Cmd.run: first argument to Cmd.run must be a function'
-    )
+    if(!options.testInvariants){
+      throwInvariant(
+        typeof func === 'function',
+        'Cmd.run: first argument to Cmd.run must be a function'
+      )
 
-    throwInvariant(
-      typeof options === 'object',
-      'Cmd.run: second argument to Cmd.run must be an options object'
-    )
+      throwInvariant(
+        typeof options === 'object',
+        'Cmd.run: second argument to Cmd.run must be an options object'
+      )
 
-    throwInvariant(
-      !options.successActionCreator || typeof options.successActionCreator === 'function',
-      'Cmd.run: successActionCreator option must be a function if specified'
-    )
+      throwInvariant(
+        !options.successActionCreator || typeof options.successActionCreator === 'function',
+        'Cmd.run: successActionCreator option must be a function if specified'
+      )
 
-    throwInvariant(
-      !options.failActionCreator || typeof options.failActionCreator === 'function',
-      'Cmd.run: failActionCreator option must be a function if specified'
-    )
+      throwInvariant(
+        !options.failActionCreator || typeof options.failActionCreator === 'function',
+        'Cmd.run: failActionCreator option must be a function if specified'
+      )
 
-    throwInvariant(
-      !options.args || options.args.constructor === Array,
-      'Cmd.run: args option must be an array if specified'
-    )
+      throwInvariant(
+        !options.args || options.args.constructor === Array,
+        'Cmd.run: args option must be an array if specified'
+      )
+    }
   }
+  else if(options.testInvariants){
+    throw Error('Redux Loop: Detected usage of Cmd.run\'s testInvariants option in production code. This should only be used in tests.');
+  }
+
+  const {testInvariants, ...rest} = options;
 
   return Object.freeze({
     [isCmdSymbol]: true,
     type: cmdTypes.RUN,
     func,
     simulate: simulateRun,
-    ...options
+    ...rest
   })
 }
 
@@ -202,15 +209,17 @@ function simulateList(simulations){
 
 const list = (cmds, options = {}) => {
   if (process.env.NODE_ENV !== 'production') {
-    throwInvariant(
-      (Array.isArray(cmds) || options.testInvariants) && cmds.every(isCmd),
-      'Cmd.list: first argument to Cmd.list must be an array of other Cmds'
-    )
+    if(!options.testInvariants){
+      throwInvariant(
+        Array.isArray(cmds) && cmds.every(isCmd),
+        'Cmd.list: first argument to Cmd.list must be an array of other Cmds'
+      )
 
-    throwInvariant(
-      typeof options === 'object',
-      'Cmd.list: second argument to Cmd.list must be an options object'
-    )
+      throwInvariant(
+        typeof options === 'object',
+        'Cmd.list: second argument to Cmd.list must be an options object'
+      )
+    }
   }
   else if(options.testInvariants){
     throw Error('Redux Loop: Detected usage of Cmd.list\'s testInvariants option in production code. This should only be used in tests.');

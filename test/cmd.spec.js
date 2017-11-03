@@ -623,6 +623,26 @@ describe('Cmds', () => {
     });
   });
 
+  describe('disabling testInvariants', () =>{
+    it('disables invariants on Cmd.run if you pass the disable invariant option', () => {
+      let cmd = Cmd.run(sideEffect, {
+        successActionCreator: () => ({type: '123'}),
+        failActionCreator: () => ({type: '456'})
+      });
+      expect(cmd).toEqual(Cmd.run(sideEffect, {
+        testInvariants: true,
+        successActionCreator: expect.any(Function),
+        failActionCreator: expect.any(Function)
+      }));
+    });
+
+    it('disables invariants on Cmd.list if you pass the disable invariant option', () => {
+      let cmd = Cmd.run(sideEffect);
+      let listCmd = Cmd.list([Cmd.action({type: 'foo'}), cmd, Cmd.action({type: 'bar'})]);
+      expect(listCmd).toEqual(Cmd.list(expect.arrayContaining([cmd]), {testInvariants: true}));
+    });
+  });
+
   describe('Cmd.batch', () => {
     let warn;
     beforeEach(() => {
