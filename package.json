@@ -52,7 +52,7 @@
   "author": "Luke William Westby <luke.westby@raise.com>",
   "license": "MIT",
   "peerDependencies": {
-    "redux": "^3.0.0"
+    "redux": "^3.7.2"
   },
   "devDependencies": {
     "babel-cli": "6.26.0",
