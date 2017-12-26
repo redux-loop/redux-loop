@@ -1,0 +1,19 @@
+{
+  "gitbook": "3.2.2",
+  "title": "Redux-Loop",
+  "plugins": ["edit-link", "prism", "-highlight", "github", "anchorjs"],
+  "pluginsConfig": {
+    "edit-link": {
+      "base": "https://github.com/redux-loop/redux-loop/tree/master",
+      "label": "Edit This Page"
+    },
+    "github": {
+      "url": "https://github.com/redux-loop/redux-loop/"
+    },
+    "theme-default": {
+      "styles": {
+        "website": "build/gitbook.css"
+      }
+    }
+  }
+}
