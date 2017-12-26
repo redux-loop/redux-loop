@@ -244,7 +244,7 @@ const batch = (cmds) => {
     )
   }
 
-  console.warn('Cmd.batch is deprecated and will be removed in version 5. Please use Cmd.list (https://github.com/redux-loop/redux-loop/blob/master/docs/ApiDocs.md#cmdlistcmds-options)')
+  console.warn('Cmd.batch is deprecated and will be removed in version 5. Please use Cmd.list (https://github.com/redux-loop/redux-loop/blob/master/docs/api-docs/cmds.md#cmdlistcmds-options)')
   return list(cmds, {batch: true, sequence: false});
 }
 
@@ -256,7 +256,7 @@ const sequence = (cmds) => {
     );
   }
 
-  console.warn('Cmd.sequence is deprecated and will be removed in version 5. Please use Cmd.list (https://github.com/redux-loop/redux-loop/blob/master/docs/ApiDocs.md#cmdlistcmds-options)')
+  console.warn('Cmd.sequence is deprecated and will be removed in version 5. Please use Cmd.list (https://github.com/redux-loop/redux-loop/blob/master/docs/api-docs/cmds.md#cmdlistcmds-options)')
   return list(cmds, {batch: true, sequence: true});
 }
 
