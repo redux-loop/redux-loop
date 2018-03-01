@@ -51,7 +51,8 @@ export function install() {
     }
 
     const replaceReducer = (reducer) => {
-      return store.replaceReducer(liftReducer(reducer))
+      store.replaceReducer(liftReducer(reducer))
+      cmdsQueue = []
     }
 
     runCmd({
