@@ -42,7 +42,7 @@ export const combineReducers = (
     const model = Object.keys(reducerMap).reduce((model, key) => {
       const reducer = reducerMap[key]
       const previousStateForKey = accessor(state, key)
-      let nextStateForKey = reducer(previousStateForKey, action)
+      let nextStateForKey = reducer(previousStateForKey, action, state)
 
       if (isLoop(nextStateForKey)) {
         cmds.push(getCmd(nextStateForKey))
