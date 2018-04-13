@@ -29,7 +29,7 @@ const updateNestedCounter = (subAction: CounterActions): TodoActions => ({
 });
 
 const todosReducer: LoopReducer<TodoState, TodoActions> = (
-  state: TodoState,
+  state: TodoState = { todos: [], nestedCounter: 0 },
   action: TodoActions
 ): TodoState | Loop<TodoState, TodoActions> => {
   switch (action.type) {
@@ -79,7 +79,7 @@ type CounterActions = {
 };
 
 const counterReducer: LoopReducer<CounterState, CounterActions> = (
-  state: CounterState,
+  state: CounterState = 0,
   action: CounterActions
 ): CounterState => {
   switch (action.type) {

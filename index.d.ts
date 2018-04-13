@@ -79,7 +79,7 @@ export type CmdType<A extends Action> =
   | RunCmd<A>
   | BatchCmd<A>
   | SequenceCmd<A>;
-  
+
 declare function install<S>(): StoreEnhancer<S>;
 
 declare function loop<S, A extends Action>(
@@ -87,29 +87,29 @@ declare function loop<S, A extends Action>(
   cmd: CmdType<A>
 ): Loop<S, A>;
 
-declare class Cmd {
-  static readonly dispatch: (action: Action) => void;
-  static readonly getState: any;
-  static readonly none: NoneCmd;
-  static readonly action: <A extends Action>(action: A) => ActionCmd<A>;
-  static readonly batch: <A extends Action>(cmds: CmdType<A>[]) => BatchCmd<A>;
-  static readonly sequence: <A extends Action>(cmds: CmdType<A>[]) => SequenceCmd<A>;
+declare namespace Cmd {
+  export const dispatch: unique symbol;
+  export const getState: unique symbol;
+  export const none: NoneCmd;
+  export const action: <A extends Action>(action: A) => ActionCmd<A>;
+  export const batch: <A extends Action>(cmds: CmdType<A>[]) => BatchCmd<A>;
+  export const sequence: <A extends Action>(cmds: CmdType<A>[]) => SequenceCmd<A>;
 
-  static readonly list: <A extends Action>(
+  export function list<A extends Action>(
     cmds: CmdType<A>[],
     options?: {
       batch?: boolean;
       sequence?: boolean;
     }
-  ) => ListCmd<A>;
+  ): ListCmd<A>;
 
-  static readonly map: <A extends Action, B extends Action>(
+  export function map<A extends Action, B extends Action>(
     cmd: CmdType<B>,
     tagger: (subAction: B) => A,
     args?: any[]
-  ) => MapCmd<A>;
+  ): MapCmd<A>;
 
-  static readonly run: <A extends Action>(
+  export function run<A extends Action>(
     f: Function,
     options?: {
       args?: any[];
@@ -117,7 +117,7 @@ declare class Cmd {
       successActionCreator?: ActionCreator<A>;
       forceSync?: boolean;
     }
-  ) => RunCmd<A>;
+  ): RunCmd<A>;
 }
 
 export type ReducerMapObject<S, A extends Action = AnyAction> = {
