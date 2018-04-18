@@ -5,6 +5,8 @@
   * [Tutorial](/docs/tutorial/Tutorial.md)
   * [Testing](/docs/tutorial/Testing.md)
   * [Advanced topics](/docs/tutorial/AdvancedTopics.md)
+* [Recipes](/docs/recipes/README.md)
+  * [Action Queue](/docs/recipes/ActionQueue.md)
 * [API Docs](/docs/api-docs/README.md)
   * [`install`](/docs/api-docs/install.md)
   * [`loop`](/docs/api-docs/loop.md)
