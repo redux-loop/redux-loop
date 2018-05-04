@@ -34,5 +34,9 @@ describe('utils', () => {
       expect(isPromiseLike(p2)).toBe(false);
       expect(isPromiseLike(p3)).toBe(false);
     });
+
+    it('returns false if the item is null', () => {
+      expect(isPromiseLike(null)).toBe(false);
+    });
   });
 });

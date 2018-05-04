@@ -11,5 +11,5 @@ export const throwInvariant = (condition, message) => {
 }
 
 export const isPromiseLike = (obj) => {
-  return typeof obj === 'object' && typeof obj.then === 'function'
+  return !!obj && typeof obj === 'object' && typeof obj.then === 'function'
 }
