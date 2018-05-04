@@ -1,6 +1,6 @@
 {
   "name": "redux-loop",
-  "version": "4.2.4",
+  "version": "4.2.5",
   "description": "Sequence your effects naturally and purely by returning them from your reducers.",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -93,8 +93,7 @@
     "typescript": "^2.5.3",
     "typescript-definition-tester": "^0.0.5"
   },
-  "dependencies": {
-  },
+  "dependencies": {},
   "jest": {
     "testRegex": "(/test/.*\\.spec.js)$"
   }
