@@ -119,7 +119,7 @@ export const executeCmd = (cmd, dispatch, getState) => {
     case cmdTypes.MAP:
       const possiblePromise = executeCmd(cmd.nestedCmd, dispatch, getState)
       if (!possiblePromise) return null
-      return possiblePromise.then((actions) => 
+      return possiblePromise.then((actions) =>
         actions.map(action => cmd.tagger(...cmd.args, action))
       );
 
