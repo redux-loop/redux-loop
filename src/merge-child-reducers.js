@@ -37,10 +37,10 @@ export default function mergeChildReducers(parentResult, action, childMap){
     return prev;
   }, initialState);
 
-  return loop(newState, getListCmdIfNeeded(cmds)); 
+  return loop(newState, batchCmds(cmds)); 
 }
 
-function getListCmdIfNeeded(cmds) {
+export const batchCmds = cmds => {
   switch(cmds.length) {
     case 0:
       return Cmd.none;

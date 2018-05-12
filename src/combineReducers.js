@@ -51,7 +51,7 @@ export const combineReducers = (
 
       hasChanged = hasChanged || nextStateForKey !== previousStateForKey
       return mutator(model, key, nextStateForKey)
-    }, rootState)
+    }, state)
 
     return loop(
       hasChanged ? model : state,

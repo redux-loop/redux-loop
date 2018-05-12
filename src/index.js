@@ -17,10 +17,12 @@ import {
 } from './combineReducers';
 
 import mergeChildReducers from './merge-child-reducers';
+import reduceReducers from './reduce-reducers';
 
 export {
   combineReducers,
   mergeChildReducers,
+  reduceReducers,
   Cmd,
   install,
   loop,

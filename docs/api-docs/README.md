@@ -14,3 +14,6 @@ Detailed documentation of the API is provided here. For a more gentle introducti
   * [`Cmd.run(func, options)`](cmds.md#cmdrunfunc-options)
   * [`Cmd.list(cmds, options)`](cmds.md#cmdlistcmds-options)
   * [`Cmd.map(cmd, higherOrderActionCreator, [...additionalArgs])`](cmds.md#cmdmapcmd-higherorderactioncreator-additionalargs)
+* [`combineReducers(reducerMap)`](combine-reducers.md)
+* [`reduceReducers(...reducers)`](reduce-reducers.md)
+* [`mergeChildReducers(parentResult, action, childMap)`](merge-child-reducers.md)
