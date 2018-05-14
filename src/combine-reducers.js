@@ -20,12 +20,7 @@ const defaultMutator = (state, key, value) => {
 //   };
 // }
 
-export const combineReducers = (
-  reducerMap,
-  rootState,
-  accessor,
-  mutator
-) => {
+export default function(reducerMap, rootState, accessor, mutator){
   if(accessor || mutator || rootState){
     console.warn(`Passing customization parameters to combineReducers is deprecated. They will be removed in 5.0. 
       Integrations with popular libraries are being broken out into separate libraries. 

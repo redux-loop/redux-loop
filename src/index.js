@@ -12,17 +12,7 @@ import {
   install,
 } from './install';
 
-import {
-  combineReducers,
-} from './combineReducers';
-
-import mergeChildReducers from './merge-child-reducers';
-import reduceReducers from './reduce-reducers';
-
 export {
-  combineReducers,
-  mergeChildReducers,
-  reduceReducers,
   Cmd,
   install,
   loop,
@@ -31,3 +21,14 @@ export {
   getCmd,
   isLoop
 };
+
+
+import c from './combine-reducers';
+import m from './merge-child-reducers';
+import r from './reduce-reducers';
+
+//by exporting functions, these are able to be spied on
+//should be unnecessary after https://github.com/rollup/rollup/issues/826
+export function combineReducers(...args){return c(...args);}
+export function mergeChildReducers(...args){return m(...args);}
+export function reduceReducers(...args){return r(...args);}
