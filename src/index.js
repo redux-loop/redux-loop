@@ -12,17 +12,6 @@ import {
   install,
 } from './install';
 
-export {
-  Cmd,
-  install,
-  loop,
-  liftState,
-  getModel,
-  getCmd,
-  isLoop
-};
-
-
 import c from './combine-reducers';
 import m from './merge-child-reducers';
 import r from './reduce-reducers';
@@ -32,3 +21,13 @@ import r from './reduce-reducers';
 export function combineReducers(...args){return c(...args);}
 export function mergeChildReducers(...args){return m(...args);}
 export function reduceReducers(...args){return r(...args);}
+
+export {
+  Cmd,
+  install,
+  loop,
+  liftState,
+  getModel,
+  getCmd,
+  isLoop
+};
