@@ -98,7 +98,7 @@ under the `Cmd` module:
 - `none`
   - A no-op cmd, for convenience.
 
-[See detailed documentation about all of the available methods from the Cmd modules](docs/api-docs/SUMMARY.md)
+[See detailed documentation about all of the available methods from the Cmd modules](/docs/api-docs/SUMMARY.md)
 
 ## combineReducers with redux-loop
 
