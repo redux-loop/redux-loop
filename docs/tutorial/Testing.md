@@ -70,4 +70,4 @@ expect(cmd.simulate({success: false, result: 123})).toBe(null);
 You can simulate any cmd object to test the actions returned. Lists take
 arrays of simulations for their child cmds.
 
-[See detailed documentation about simulating Cmds](docs/api-docs/SUMMARY.md)
+[See detailed documentation about simulating Cmds](docs/api-docs/cmds.md)

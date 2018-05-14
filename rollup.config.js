@@ -6,9 +6,9 @@ import uglify from 'rollup-plugin-uglify';
 var env = process.env.NODE_ENV
 var config = {
   output: {
-    format: 'umd'
+    format: 'umd',
+    name: 'ReduxLoop'
   },
-  name: 'ReduxLoop',
   plugins: [
     nodeResolve({
       jsnext: true

@@ -45,56 +45,52 @@ compose reducers so that the number of actions you deal with at one time is
 small. A small set of actions which initiate a `loop` will help reduce the
 likelihood of causing circular dispatches.
 
-## Nest reducers inside parents with their own functionality
+## Combining reducers without nesting them
 
-`combineReducers` is great for the case where your parent reducer has no functionality of its own, just children.
-However, it's often the case that you want to nest a specific reducer inside a generic parent reducer.
-
-`mergeChildReducers` lets you do this. It merges child reducer state into the parent state while
-composing any Cmds returned by any of the reducers and passing them along to the store.
+`combineReducers` is great for the case where you want to nest reducers under a common parent. However, sometimes you want to split up reducers but still let them act on the same slice of state. `reduceReducers` lets you do this. It is a loop-friendly version of [the original](https://github.com/redux-utilities/reduce-reducers). It runs multiple reducers over the same piece of state (from left to right) and combines the Cmds in those reducers similar to how combineReducers does.
 
 ```js
+import {reduceReducers, Cmd, loop, install} from 'redux-loop';
+import {createStore} from 'redux';
 
-const initialState = {foo: null};
+const addReducer = (state = initialState, {value}) => {
+  if(action.type !== 'change'){
+    return state;
+  }
+  return loop({...state, add: state.add + value}, Cmd.run(foo))
+};
 
-function parentReducer(state = initialState, action){
-  //typical reducer
-}
+const multReducer = (state = initialState, {value}) => {
+  if(action.type !== 'change'){
+    return state;
+  }
+  return loop({...state, mult: state.mult * value}, Cmd.run(bar))
+};
 
-export default function reducer(state, action){
-   let parentResult = parentReducer(state, action);
-   return mergeChildReducers(parentResult, action, {child: childReducer});
-}
+const reducer = reduceReducers(addReducer, multReducer);
 
-//final state shape is {foo, child}; foo.child is state returned by childReducer
+const initialState = { add: 5, mult: 7 };
+const store = createStore(reducer, initialState, install());
+
+dispatch({type: 'change', value: 6});
+// state is { add: 30, mult: 42 }
+// foo and bar have run
 ```
-
-`combineReducers` just returns a reducer with a specific usage of
-`mergeChildReducers` (one in which the child map never changes, the parent
-state is an empty object, and all children always get called). By using
-`mergeChildReducers` in your reducer, you can choose which children are used
-when and under what key names.
-
-By using `combineReducers` or `mergeChildReducers` everywhere your reducer
-tree nests, all cmd objects resulting from a single dispatched action will
-always be batched up into a single Cmd at the top of the tree and processed
-correctly by the store.
 
 ## Using `combineReducers` and `mergeChildReducers` with ImmutableJS and other libraries
 
 It's impossible to write a version of `combineReducers` or `mergeChildReducers` that supports all use cases well.
 You may want your parent state to be an array or you may be using a library such as ImmutableJS with non-standard data structures. [Like redux's implementation of combineReducers](http://redux.js.org/docs/recipes/reducers/BeyondCombineReducers.html), redux-loop's are designed to only work with plain JS objects.
 Certain implementations may be generic enough to handle many use cases, but chances are that they will be
-sub-optimal in most scenarios. For example, when iterating over properties of an Immutable Map to update children,
-unless you use withMutations, you will create a new parent object for each key that you iterate over and will
-have worse performance.
+sub-optimal in most scenarios. For example, when iterating over properties of an Immutable Map to update children, unless you use withMutations, you will create a new parent object for each key that you iterate over and will have worse performance.
 
 For this reason, we have broken out integrations with popular libraries into separate packages.
 
-- [ImmutableJS](https://github.com/redux-loop/redux-loop-immutable)
+- [ImmutableJS](https://github.com/redux-loop/redux-loop-immutable) 
 
-If your use case is not currently supported, we encourage you to write your own helpers to compose reducers that
-fit your specific needs. The only requirement for redux-loop is that they pull the commands out of the child results and batch them together into a single cmd object to be passed along in the resulting loop object.
+If your use case is not currently supported, we encourage you to write your own helpers to compose reducers that fit your specific needs. The only requirement for redux-loop is that they pull the commands out of the child results and batch them together into a single cmd object to be passed along in the resulting loop object.
 See the [mergeChildReducers](src/merge-child-reducers.js) and [combineReducers](src/combineReducers.js) implementations for reference.
 
 If you have a popular use case or library that is not currently supported, please file an issue and we can discuss if it makes sense for us to support a custom integration. 
+
+NOTE: reduceReducers does not currently need custom integrations with libraries like immutable. The base version should be generic because it does not make assumptions about the shape of your state.

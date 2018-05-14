@@ -4,6 +4,8 @@
 underneath a common parent that has functionality of its own (rather than restricting the parent
 to simply passing actions to its children like `combineReducers` does)
 
+NOTE: `mergeChildReducers` will likely be removed in a future release due to its awkward API. `combineReducers` and `reduceReducers` should cover most cases where `mergeChildReducers` is needed.
+
 * `parentResult: Object | loop(Object, Cmd)` &ndash; The result from the parent reducer before any child results have been applied.
 
 * `action: Action` &ndash; a redux action
