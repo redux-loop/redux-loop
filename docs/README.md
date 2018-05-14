@@ -1,6 +1,6 @@
 # Summary
 
-* [Read me](/README.md)
+* [Intro](/README.md)
 * [Getting started](/docs/tutorial/README.md)
   * [Tutorial](/docs/tutorial/Tutorial.md)
   * [Testing](/docs/tutorial/Testing.md)
