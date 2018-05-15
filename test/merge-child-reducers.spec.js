@@ -92,4 +92,21 @@ describe('mergeChildReducers', function(){
     };
     expect(result).toEqual(loop(newState, Cmd.none));
   });
+
+  it('passes extra params through to the child reducers', function(){
+    let state = {
+      foo: 'bar'
+    };
+      
+    const r1 = (state = [], action = {}, ...extra) => state.concat(extra);
+    const r2 = (state = 0, action = {}, extra) => state + extra;
+
+    const result = mergeChildReducers(state, {type: 'foo', value: 5}, {r1, r2}, 5, 6);
+    let newState = {
+      foo: 'bar',
+      r1: [5, 6],
+      r2: 5
+    };
+    expect(result).toEqual(loop(newState, Cmd.none));
+  });
 });

@@ -17,3 +17,22 @@ import plainReducer from './plain-reducer';
 
 export default reduceReducers(reducerWithSideEffects, plainReducer);
 ```
+
+### Passing extra params
+If you pass extra parameters to the reducer returned by combineReducers, they will be passed through to each nested reducer.
+
+```js
+function reducer1(state = {}, action, arg){
+  console.log(arg);
+  return state;
+}
+
+function reducer2(state, action, arg){
+  console.log(arg); 
+  return state;
+}
+
+const reducer = reduceReducers(reducer1, reducer2);
+reducer(undefined, {type: 'foo'}, 'abc');
+//abc will be logged twice (once for reducer1 and once for reducer2)
+```

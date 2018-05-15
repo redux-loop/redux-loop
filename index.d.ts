@@ -11,11 +11,11 @@ export interface StoreCreator {
 export type Loop<S, A extends Action> = [S, CmdType<A>];
 
 export interface LoopReducer<S, A extends Action> {
-  (state: S | undefined, action: AnyAction): S | Loop<S, A>;
+  (state: S | undefined, action: AnyAction, ...args: any[]): S | Loop<S, A>;
 }
 
 export interface LiftedLoopReducer<S, A extends Action> {
-  (state: S | undefined, action: AnyAction): Loop<S, A>;
+  (state: S | undefined, action: AnyAction, ...args: any[]): Loop<S, A>;
 }
 
 export type CmdSimulation = {

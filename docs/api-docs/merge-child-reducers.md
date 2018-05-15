@@ -48,3 +48,5 @@ export default function reducer(state, action){
   return mergeChildReducers(parentResult, action, childMap);
 }
 ```
+### Passing extra params
+If you pass extra parameters to mergeChildReducers, they will be passed through to each nested reducer.

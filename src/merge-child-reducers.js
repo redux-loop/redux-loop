@@ -1,7 +1,7 @@
 import {loop, isLoop, getModel, getCmd} from './loop';
 import Cmd from './cmd';
 
-export default function mergeChildReducers(parentResult, action, childMap){
+export default function mergeChildReducers(parentResult, action, childMap, ...args){
   let initialState = parentResult, parentCmd;
   if(isLoop(initialState)){
     parentCmd = getCmd(initialState);
@@ -21,7 +21,7 @@ export default function mergeChildReducers(parentResult, action, childMap){
       delete prev[key];
       return prev;
     }
-    let currentChild = childReducer(prev[key], action);
+    let currentChild = childReducer(prev[key], action, ...args);
     if(isLoop(currentChild)){
       cmds.push(getCmd(currentChild));
       currentChild = getModel(currentChild);

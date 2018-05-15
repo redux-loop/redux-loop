@@ -58,4 +58,23 @@ describe('reduceReducers', function(){
     };
     expect(reducer(initialState, action)).toEqual(loop(newState, multCmd));
   });
+
+  it('passes extra params through to each child reducer', function(){
+    const state = {
+      r1: [],
+      r2: 0
+    };
+
+    const r1 = (state, action = {}, ...extra) => ({...state, r1: state.r1.concat(extra)});
+    const r2 = (state, action = {}, extra) => ({...state, r2: state.r2 + extra});
+
+    const reducer = reduceReducers(r1, r2);
+    const newState = {
+      r1: [5, 6],
+      r2: 5
+    };
+    const action = {type: 'change', value: 5};
+    expect(reducer(state, action, 5, 6)).toEqual(loop(newState, Cmd.none));
+  });
+
 });

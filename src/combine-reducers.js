@@ -15,8 +15,8 @@ const defaultMutator = (state, key, value) => {
 
 //TODO: change to be implemented using mergeChildReducers in 5.0
 // export default function combineReducers(childMap){
-//   return (rootState = {}, action) => {
-//     return mergeChildReducers(rootState, action, childMap);
+//   return (rootState = {}, action, ...args) => {
+//     return mergeChildReducers(rootState, action, childMap, ...args);
 //   };
 // }
 
@@ -30,14 +30,14 @@ export default function(reducerMap, rootState, accessor, mutator){
   accessor = accessor || defaultAccessor;
   mutator = mutator || defaultMutator;
 
-  return (state = rootState, action) => {
+  return (state = rootState, action, ...args) => {
     let hasChanged = false
     let cmds = []
 
     const model = Object.keys(reducerMap).reduce((model, key) => {
       const reducer = reducerMap[key]
       const previousStateForKey = accessor(state, key)
-      let nextStateForKey = reducer(previousStateForKey, action)
+      let nextStateForKey = reducer(previousStateForKey, action, ...args)
 
       if (isLoop(nextStateForKey)) {
         cmds.push(getCmd(nextStateForKey))
