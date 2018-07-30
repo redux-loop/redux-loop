@@ -95,6 +95,7 @@
   },
   "dependencies": {},
   "jest": {
-    "testRegex": "(/test/.*\\.spec.js)$"
+    "testRegex": "(/test/.*\\.spec.js)$",
+    "testURL": "http://localhost"
   }
 }
