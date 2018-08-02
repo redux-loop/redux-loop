@@ -46,6 +46,7 @@ const todosReducer: LoopReducer<TodoState, TodoActions> = (
       );
       return loop(
         { ...state, nestedCounter: model },
+        // checks third argument
         Cmd.map(cmd, updateNestedCounter)
       );
     default:
@@ -54,6 +55,7 @@ const todosReducer: LoopReducer<TodoState, TodoActions> = (
         Cmd.list([
           Cmd.none,
           Cmd.run(console.log, { args: ['log this', Cmd.getState] }),
+          // checks types of args
           Cmd.run(dispatchNoop, { args: [Cmd.dispatch] })
         ], {sequence: true})
       );
@@ -107,9 +109,12 @@ const rootState: RootState = rootReducer(undefined, {
   text: 'test'
 })[0];
 
-let cmd = Cmd.run(() => {}, {
+// checks return value of the function
+// checks param of the successActionCreator
+let cmd = Cmd.run(() => 1, {
   successActionCreator: a => ({type: 'FOO', a: 2*a})
 });
+// checks result
 let action: AnyAction = cmd.simulate({success: true, result: 123});
 let listCmd = Cmd.list([cmd, cmd]);
 let actions: AnyAction[] = listCmd.simulate([{success: true, result: 123}, {success: false, result: 456}]);

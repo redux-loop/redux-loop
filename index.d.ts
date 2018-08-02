@@ -18,8 +18,8 @@ export interface LiftedLoopReducer<S, A extends Action> {
   (state: S | undefined, action: AnyAction, ...args: any[]): Loop<S, A>;
 }
 
-export type CmdSimulation = {
-  result: any,
+export type CmdSimulation<R = any> = {
+  result: R,
   success: boolean
 };
 export interface MultiCmdSimulation {
@@ -53,14 +53,14 @@ export interface MapCmd<A extends Action> {
   simulate(simulations?: CmdSimulation | MultiCmdSimulation): A[] | A | null
 }
 
-export interface RunCmd<A extends Action> {
+export interface RunCmd<A extends Action, B = any, C = any> {
   readonly type: 'RUN';
-  readonly func: Function;
-  readonly args?: any[];
-  readonly failActionCreator?: ActionCreator<A>;
-  readonly successActionCreator?: ActionCreator<A>;
+  readonly func: (...args:C[]) => Promise<B> | B;
+  readonly args?: C[];
+  readonly failActionCreator?: (...args: any[]) => A;
+  readonly successActionCreator?: (...args: B[]) => A;
   readonly forceSync?: boolean;
-  simulate(simulation: CmdSimulation): A
+  simulate(simulation: CmdSimulation<B>): A
 }
 
 //deprecated types
@@ -84,9 +84,13 @@ declare function loop<S, A extends Action>(
   cmd: CmdType<A>
 ): Loop<S, A>;
 
+type Opaque<K, T> = T & { __TYPE__: K };
+type Dispatch = { (dispatch: (a: any) => void): any } & Opaque<'Dispatch', symbol>
+type GetState = { (getState: () => any): any } & Opaque<'GetState', symbol>
+
 declare namespace Cmd {
-  export const dispatch: symbol;
-  export const getState: symbol;
+  export const dispatch: Dispatch;
+  export const getState: GetState;
   export const none: NoneCmd;
   export function action<A extends Action>(action: A): ActionCmd<A>;
   export function batch<A extends Action>(cmds: CmdType<A>[]): BatchCmd<A>;
@@ -103,19 +107,35 @@ declare namespace Cmd {
 
   export function map<A extends Action, B extends Action>(
     cmd: CmdType<B>,
-    tagger: (subAction: B) => A,
-    args?: any[]
+    tagger: (subAction: B) => A
   ): MapCmd<A>;
 
-  export function run<A extends Action>(
-    f: Function,
+  export function map<A extends Action, B extends Action, C = any>(
+    cmd: CmdType<B>,
+    tagger: (arg1: C, subAction: B) => A,
+    args: C[]
+  ): MapCmd<A>;
+  export function map<A extends Action, B extends Action, C = any>(
+    cmd: CmdType<B>,
+    tagger: (arg1: C, arg2: C, subAction: B) => A,
+    args: C[]
+  ): MapCmd<A>;
+  export function map<A extends Action, B extends Action, C = any>(
+    cmd: CmdType<B>,
+    tagger: (arg1: C, arg2: C, arg3: C, subAction: B) => A,
+    args: C[]
+  ): MapCmd<A>;
+  // etc
+
+  export function run<A extends Action, B = any, C = any>(
+    f: (...args:C[]) => Promise<B> | B,
     options?: {
-      args?: any[];
-      failActionCreator?: ActionCreator<A>;
-      successActionCreator?: ActionCreator<A>;
+      args?: C[];
+      failActionCreator?: (...args: any[]) => A;
+      successActionCreator?: (...args: B[]) => A;
       forceSync?: boolean;
     }
-  ): RunCmd<A>;
+  ): RunCmd<A, B, C>;
 }
 
 export type ReducerMapObject<S, A extends Action = AnyAction> = {
