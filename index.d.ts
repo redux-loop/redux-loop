@@ -84,6 +84,10 @@ declare function loop<S, A extends Action>(
   cmd: CmdType<A>
 ): Loop<S, A>;
 
+type UnwrapPromise<T> = T extends Promise<infer U> ? U : T;
+type UnwrappedReturn<F> = F extends (...args: any[]) => infer R ? UnwrapPromise<R> : never; 
+type FunctionArgs<F> = F extends (...args: infer T) => any ? T : never;
+
 declare namespace Cmd {
   export const dispatch: symbol;
   export const getState: symbol;
@@ -107,12 +111,21 @@ declare namespace Cmd {
     args?: any[]
   ): MapCmd<A>;
 
-  export function run<A extends Action>(
-    f: Function,
+  export function run<A extends Action, F extends () => any>(
+    f: F,
     options?: {
-      args?: any[];
       failActionCreator?: ActionCreator<A>;
-      successActionCreator?: ActionCreator<A>;
+      successActionCreator?: (arg: UnwrappedReturn<F>) => A;
+      forceSync?: boolean;
+    }
+  ) : RunCmd<A>;
+
+  export function run<A extends Action, F extends Function>(
+    f: F,
+    options: {
+      args: FunctionArgs<F>;
+      failActionCreator?: ActionCreator<A>;
+      successActionCreator?: (arg: UnwrappedReturn<F>) => A;
       forceSync?: boolean;
     }
   ): RunCmd<A>;
