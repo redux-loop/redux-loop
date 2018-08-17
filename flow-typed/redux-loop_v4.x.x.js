@@ -1,6 +1,6 @@
 // @flow
 
-import type { ActionCreator, StoreEnhancer, Store } from "redux";
+import type { ActionCreator, StoreEnhancer, Store, Reducer } from "redux";
 
 declare module "redux-loop" {
   declare export type StoreCreator = <S, A>(
@@ -147,14 +147,17 @@ declare module "redux-loop" {
     none: NoneCmd
   };
 
+  declare export type ExtractState = <S>(
+    Reducer<S, any> | LoopReducer<S, any> | LiftedLoopReducer<S, any>
+  ) => S;
+  declare export type ExtractLiftedState = <S>(LiftedLoopReducer<S, any>) => S;
+  declare export function combineReducers<O: Object, A>(
+    reducers: O
+  ): LiftedLoopReducer<$ObjMap<O, ExtractState>, A>;
+
   declare export type ReducerMapObject<S, A> = {
     [K: $Keys<S>]: LoopReducer<$Values<S>, A>
   };
-
-  declare export function combineReducers<S, A>(
-    /* This can be improved. ReducerMapObject<S, A> doesn't work as expected */
-    reducers: { [string]: Function }
-  ): LiftedLoopReducer<S, A>;
 
   declare export function mergeChildReducers<S, A>(
     parentResult: Loop<S, A> | S,
