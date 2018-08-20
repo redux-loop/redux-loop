@@ -2,7 +2,13 @@ import { liftState } from './loop'
 import { executeCmd } from './cmd'
 import { loopPromiseCaughtError } from './errors'
 
-export function install() {
+const defaultLoopConfig = {
+  DONT_LOG_ERRORS_ON_HANDLED_FAILURES: false
+}
+
+export function install(config={}) {
+  const loopConfig = Object.assign({}, defaultLoopConfig, config)
+
   return (next) => (reducer, initialState, enhancer) => {
     const [initialModel, initialCmd] = liftState(initialState)
     let cmdsQueue = []
@@ -28,7 +34,7 @@ export function install() {
     }
 
     const runCmd = ({ originalAction, cmd }) => {
-      const cmdPromise = executeCmd(cmd, dispatch, store.getState)
+      const cmdPromise = executeCmd(cmd, dispatch, store.getState, loopConfig)
 
       if (!cmdPromise) return null
 

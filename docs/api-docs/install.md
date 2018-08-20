@@ -1,4 +1,11 @@
-# `install`
+# `install(config)`
+
+* `config: Object<string, Boolean>` &ndash; an optional map of config values to override default
+ redux-loop configs
+*  Currently the only option is `DONT_LOG_ERRORS_ON_HANDLED_FAILURES` which is set 
+   to false by default. This means that by default, redux-loop will log errors in your 
+   effects even if you pass in a failActionCreator to a command (passing in a 
+   failActionCreator does not swallow errors like how `catch` is used for Promises). 
 
 ## Notes
 
@@ -41,4 +48,17 @@ const enhancer = compose(
 );
 
 const store = createStore(reducer, initialState, enhancer);
+```
+
+### With config option to not log errors on handled failures
+```js
+import { createStore } from 'redux';
+import { install } from 'redux-loop';
+import reducer from './reducer';
+const initialState = { /* ... */ };
+
+const config = { DONT_LOG_ERRORS_ON_HANDLED_FAILURES: true };
+const store = createStore(reducer, initialState, install(config));
+const reducer = combineReducers({reducer1, reducer2});
+reducer(undefined, {type: 'foo'}, 'abc');
 ```

@@ -51,7 +51,6 @@ describe('Cmds', () => {
           let result = executeCmd(cmd, dispatch, getState);
           expect(sideEffect.mock.calls.length).toBe(1);
           await expect(result).resolves.toEqual([]);
-          expect(consoleErr).toHaveBeenCalled();
           consoleErr.mockRestore();
         });
 
@@ -64,15 +63,18 @@ describe('Cmds', () => {
           consoleErr.mockRestore();
         });
 
-        it('calls console.error if the sideEffect has an error instead of swallowing the error completely', async function(){
+        it('always logs the error if the sideEffect has an error and no fail handler is passed in', async function(){
           let consoleErr = jest.spyOn(console, 'error').mockImplementation(() => {});
-          let err = new Error("foo")
+          let err = new Error("foo");
           sideEffect.mockReturnValueOnce(Promise.reject(err));
           let cmd = Cmd.run(sideEffect);
-          await executeCmd(cmd, dispatch, getState)
+          let loopConfig = { DONT_LOG_ERRORS_ON_HANDLED_FAILURES: true }; // note: logs even when set to true as no fail handler passed in
+
+          await executeCmd(cmd, dispatch, getState, loopConfig);
           expect(consoleErr).toHaveBeenCalledWith(err);
           consoleErr.mockRestore();
         });
+
       });
 
       describe('arguments', () => {
@@ -130,6 +132,16 @@ describe('Cmds', () => {
       });
 
       describe('fail handlers', () => {
+        let consoleError;
+
+        beforeEach(() => {
+          consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+        });
+
+        afterEach(() => {
+          consoleError.mockRestore();
+        });
+
         it('runs the thrown value through fail handler and resolves with it in an array', async () => {
           let err = new Error('foo');
           sideEffect.mockImplementationOnce(() => {throw err});
@@ -140,10 +152,10 @@ describe('Cmds', () => {
 
           let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator2(err)]);
+          expect(consoleError).toHaveBeenCalledWith(err);
         });
 
         it('runs the rejection value (for promises) through the fail handler and resolves with it in an array', async () => {
-          let consoleErr = jest.spyOn(console, 'error').mockImplementation(() => {});
           sideEffect.mockReturnValueOnce(Promise.reject(123));
           let cmd = Cmd.run(sideEffect, {
             successActionCreator: actionCreator1,
@@ -152,7 +164,37 @@ describe('Cmds', () => {
 
           let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator2(123)]);
-          consoleErr.mockRestore();
+          expect(consoleError).toHaveBeenCalledWith(123);
+        });
+
+        it('logs the error if DONT_LOG_ERRORS_ON_HANDLED_FAILURES config is false and failActionCreator is passed in', async () => {
+          let err = new Error('foo');
+          sideEffect.mockImplementationOnce(() => {throw err});
+          let cmd = Cmd.run(sideEffect, {
+            successActionCreator: actionCreator1,
+            failActionCreator: actionCreator2
+          });
+          let loopConfig = { DONT_LOG_ERRORS_ON_HANDLED_FAILURES: false };
+
+
+          let result = executeCmd(cmd, dispatch, getState, loopConfig);
+          await expect(result).resolves.toEqual([actionCreator2(err)]);
+          expect(consoleError).toHaveBeenCalledWith(err);
+        });
+
+        it('swallows the console error if DONT_LOG_ERRORS_ON_HANDLED_FAILURES config is true and failActionCreator is passed in', async () => {
+          let err = new Error('foo');
+          sideEffect.mockImplementationOnce(() => {throw err});
+          let cmd = Cmd.run(sideEffect, {
+            successActionCreator: actionCreator1,
+            failActionCreator: actionCreator2
+          });
+          let loopConfig = { DONT_LOG_ERRORS_ON_HANDLED_FAILURES: true };
+
+
+          let result = executeCmd(cmd, dispatch, getState, loopConfig);
+          await expect(result).resolves.toEqual([actionCreator2(err)]);
+          expect(consoleError).not.toHaveBeenCalledWith(err);
         });
       });
     });
@@ -167,16 +209,16 @@ describe('Cmds', () => {
     });
 
     describe('Cmd.list', () => {
-      let error;
+      let consoleError;
 
       beforeEach(() => {
+        consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
         jest.useFakeTimers();
-        error = jest.spyOn(console, 'error').mockImplementation(() => {});
       });
 
       afterEach(() => {
         jest.useRealTimers();
-        error.mockRestore();
+        consoleError.mockRestore();
       });
 
       describe('when sequence is false', () => {
