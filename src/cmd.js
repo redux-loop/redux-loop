@@ -24,23 +24,33 @@ function getMappedCmdArgs(args = [], dispatch, getState){
   })
 }
 
-function handleRunCmd(cmd, dispatch, getState){
-  let onSuccess = cmd.successActionCreator || (() => {}),
-      onFail = cmd.failActionCreator || (() => {})
+function handleRunCmd(cmd, dispatch, getState, loopConfig={}){
+  let onSuccess = cmd.successActionCreator || (() => {});
+
+  let onFail;
+  if (cmd.failActionCreator) {
+    onFail = error => {
+      if (!loopConfig.DONT_LOG_ERRORS_ON_HANDLED_FAILURES) {
+        console.error(error)
+      }
+      return cmd.failActionCreator(error)
+    }
+  } else {
+    onFail = console.error
+  }
 
   try{
     let result = cmd.func(...getMappedCmdArgs(cmd.args, dispatch, getState))
 
     if (isPromiseLike(result) && !cmd.forceSync){
-      return result.then( onSuccess, (error) => {
-        console.error(error);
-        return onFail(error);
+      return result.then(onSuccess, onFail).then(action => {
+        return action ? [action] : [];
       })
-      .then(action => action ? [action] : [])
     }
     let resultAction = onSuccess(result);
     return resultAction ? Promise.resolve([resultAction]) : null;
-  } catch(err){
+  }
+  catch(err){
     if(!cmd.failActionCreator){
       console.error(err);
       throw err //don't swallow errors if they are not handling them
@@ -50,9 +60,9 @@ function handleRunCmd(cmd, dispatch, getState){
   }
 }
 
-function handleParallelList({cmds, batch = false}, dispatch, getState){
+function handleParallelList({cmds, batch = false}, dispatch, getState, loopConfig={}){
   const promises = cmds.map(nestedCmd => {
-    const possiblePromise = executeCmd(nestedCmd, dispatch, getState);
+    const possiblePromise = executeCmd(nestedCmd, dispatch, getState, loopConfig);
     if(!possiblePromise || batch){
       return possiblePromise;
     }
@@ -71,14 +81,14 @@ function handleParallelList({cmds, batch = false}, dispatch, getState){
   });
 }
 
-function handleSequenceList({cmds, batch = false}, dispatch, getState){
+function handleSequenceList({cmds, batch = false}, dispatch, getState, loopConfig={}){
   const firstCmd = cmds.length ? cmds[0] : null;
   if(!firstCmd){
     return null;
   }
 
   const result = new Promise(resolve => {
-    let firstPromise = executeCmd(firstCmd, dispatch, getState);
+    let firstPromise = executeCmd(firstCmd, dispatch, getState, loopConfig);
     firstPromise = firstPromise || Promise.resolve([]);
     firstPromise.then(result => {
       let executePromise;
@@ -90,7 +100,7 @@ function handleSequenceList({cmds, batch = false}, dispatch, getState){
       }
       executePromise.then(() => {
         const remainingSequence = list(cmds.slice(1), {batch, sequence: true});
-        const remainingPromise = executeCmd(remainingSequence, dispatch, getState);
+        const remainingPromise = executeCmd(remainingSequence, dispatch, getState, loopConfig);
         if (remainingPromise) {
           remainingPromise.then(innerResult => {
             resolve(result.concat(innerResult));
@@ -106,19 +116,19 @@ function handleSequenceList({cmds, batch = false}, dispatch, getState){
   return batch ? result : result.then(() => []);
 }
 
-export const executeCmd = (cmd, dispatch, getState) => {
+export const executeCmd = (cmd, dispatch, getState, loopConfig={}) => {
   switch (cmd.type) {
     case cmdTypes.RUN:
-      return handleRunCmd(cmd, dispatch, getState)
+      return handleRunCmd(cmd, dispatch, getState, loopConfig)
 
     case cmdTypes.ACTION:
       return Promise.resolve([cmd.actionToDispatch])
 
     case cmdTypes.LIST:
-      return cmd.sequence ? handleSequenceList(cmd, dispatch, getState) : handleParallelList(cmd, dispatch, getState);
+      return cmd.sequence ? handleSequenceList(cmd, dispatch, getState, loopConfig) : handleParallelList(cmd, dispatch, getState, loopConfig);
 
     case cmdTypes.MAP:
-      const possiblePromise = executeCmd(cmd.nestedCmd, dispatch, getState)
+      const possiblePromise = executeCmd(cmd.nestedCmd, dispatch, getState, loopConfig)
       if (!possiblePromise) return null
       return possiblePromise.then((actions) =>
         actions.map(action => cmd.tagger(...cmd.args, action))
@@ -317,4 +327,4 @@ export default {
   none,
   dispatch: dispatchSymbol,
   getState: getStateSymbol
-};
+}; 
