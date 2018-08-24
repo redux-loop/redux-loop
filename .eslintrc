@@ -1,3 +1,7 @@
 {
   "extends": "react-app",
+  "parser": "babel-eslint",
+  "plugins": [
+    "flowtype"
+  ]
 }

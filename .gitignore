@@ -5,3 +5,4 @@ dist
 lib
 es
 _book
+flow-typed/npm
