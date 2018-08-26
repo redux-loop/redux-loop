@@ -45,11 +45,14 @@ describe('Cmds', () => {
         });
 
         it('resolves with an empty array if the function returns a rejected promise', async () => {
+          let consoleErr = jest.spyOn(console, 'error').mockImplementation(() => {});
           sideEffect.mockReturnValueOnce(Promise.reject(123));
           let cmd = Cmd.run(sideEffect);
           let result = executeCmd(cmd, dispatch, getState);
           expect(sideEffect.mock.calls.length).toBe(1);
           await expect(result).resolves.toEqual([]);
+          expect(consoleErr).toHaveBeenCalled();
+          consoleErr.mockRestore();
         });
 
         it('rethrows the thrown error if the function throws', function(){
@@ -58,6 +61,15 @@ describe('Cmds', () => {
           sideEffect.mockImplementationOnce(() => {throw err});
           let cmd = Cmd.run(sideEffect);
           expect(() => executeCmd(cmd, dispatch, getState)).toThrow(err);
+          consoleErr.mockRestore();
+        });
+
+        it('calls console.error if the sideEffect has an error instead of swallowing the error completely', async function(){
+          let consoleErr = jest.spyOn(console, 'error').mockImplementation(() => {});
+          let err = new Error("foo")
+          sideEffect.mockReturnValueOnce(Promise.reject(err));
+          let cmd = Cmd.run(sideEffect);
+          await executeCmd(cmd, dispatch, getState)
           expect(consoleErr).toHaveBeenCalledWith(err);
           consoleErr.mockRestore();
         });
@@ -131,6 +143,7 @@ describe('Cmds', () => {
         });
 
         it('runs the rejection value (for promises) through the fail handler and resolves with it in an array', async () => {
+          let consoleErr = jest.spyOn(console, 'error').mockImplementation(() => {});
           sideEffect.mockReturnValueOnce(Promise.reject(123));
           let cmd = Cmd.run(sideEffect, {
             successActionCreator: actionCreator1,
@@ -139,6 +152,7 @@ describe('Cmds', () => {
 
           let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator2(123)]);
+          consoleErr.mockRestore();
         });
       });
     });
@@ -153,12 +167,16 @@ describe('Cmds', () => {
     });
 
     describe('Cmd.list', () => {
+      let error;
+
       beforeEach(() => {
         jest.useFakeTimers();
+        error = jest.spyOn(console, 'error').mockImplementation(() => {});
       });
 
       afterEach(() => {
         jest.useRealTimers();
+        error.mockRestore();
       });
 
       describe('when sequence is false', () => {

@@ -32,14 +32,15 @@ function handleRunCmd(cmd, dispatch, getState){
     let result = cmd.func(...getMappedCmdArgs(cmd.args, dispatch, getState))
 
     if (isPromiseLike(result) && !cmd.forceSync){
-      return result.then(onSuccess, onFail).then(action => {
-        return action ? [action] : [];
+      return result.then( onSuccess, (error) => {
+        console.error(error);
+        return onFail(error);
       })
+      .then(action => action ? [action] : [])
     }
     let resultAction = onSuccess(result);
     return resultAction ? Promise.resolve([resultAction]) : null;
-  }
-  catch(err){
+  } catch(err){
     if(!cmd.failActionCreator){
       console.error(err);
       throw err //don't swallow errors if they are not handling them
