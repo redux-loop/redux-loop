@@ -33,7 +33,9 @@ function handleRunCmd(cmd, dispatch, getState){
 
     if (isPromiseLike(result) && !cmd.forceSync){
       return result.then( onSuccess, (error) => {
-        console.error(error);
+        if(!cmd.failActionCreator){
+          console.error(error);
+        }
         return onFail(error);
       })
       .then(action => action ? [action] : [])
