@@ -14,6 +14,7 @@ just the model internally.
 ## Example
 
 ```js
+import { compose } from 'redux';
 function reducer(state, action) {
   switch(action.type) {
     case 'LOAD_START':
@@ -39,5 +40,5 @@ function reducer(state, action) {
 // regardless of if it was set as such in the reducer implementation. This makes
 // it much easier to manually compose reducers without cluttering reducer
 // implementations with `loop(state, Cmd.none)`.
-export default compose(reducer, liftState);
+export default compose(liftState, reducer);
 ```
