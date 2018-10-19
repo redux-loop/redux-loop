@@ -78,7 +78,7 @@ describe('reduceReducers', function(){
   });
 
   describe('used together with combineReducers', function(){
-    const divideCmd = Cmd.action({type: 'power'});
+    const divideCmd = Cmd.action({type: 'divide'});
     const sideEffectCmd = Cmd.action({type: 'side-effect'});
     let multiplierCmd = (state, {value}) => loop(state * value, multCmd);
     let adderCmd = (state, {value}) => loop(state + value, addCmd);
