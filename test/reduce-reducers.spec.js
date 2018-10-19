@@ -1,4 +1,4 @@
-import {loop, Cmd, reduceReducers} from '../src';
+import {loop, Cmd, reduceReducers, combineReducers} from '../src';
 
 const initialState = {
   add: 0,
@@ -75,6 +75,66 @@ describe('reduceReducers', function(){
     };
     const action = {type: 'change', value: 5};
     expect(reducer(state, action, 5, 6)).toEqual(loop(newState, Cmd.none));
+  });
+
+  describe('used together with combineReducers', function(){
+    const divideCmd = Cmd.action({type: 'power'});
+    const sideEffectCmd = Cmd.action({type: 'side-effect'});
+    let multiplierCmd = (state, {value}) => loop(state * value, multCmd);
+    let adderCmd = (state, {value}) => loop(state + value, addCmd);
+    let dividerCmd = (state, {value}) =>  {
+      const newState = Object.keys(state).reduce((acc, key) => ({...acc, [key]: state[key] / value}), {});
+      return loop(newState, Cmd.list([divideCmd, sideEffectCmd]));
+    };
+    const initialState = {
+      add: 9,
+      mult: 27
+    };
+    const combinedReducer = combineReducers({
+      add: adderCmd,
+      mult: multiplierCmd
+    });
+    const action =  {type: 'change', value: 3};
+
+    it('works when combined reducer follows other reducer', () => {
+      const reducer = reduceReducers(dividerCmd, combinedReducer);
+      const newState = {
+        add: 6,
+        mult: 27
+      }; 
+      const cmd = Cmd.list([
+        Cmd.list([divideCmd, sideEffectCmd]),
+        Cmd.list([addCmd, multCmd], {batch: true})
+      ]);
+      expect(reducer(initialState, action)).toEqual(loop(newState, cmd));
+    });
+
+    it('works when combined reducer precedes other reducer', () => {
+      const reducer = reduceReducers(combinedReducer, dividerCmd);
+      const newState = {
+        add: 4, 
+        mult: 27
+      }; 
+      const cmd = Cmd.list([
+        Cmd.list([addCmd, multCmd], {batch: true}),
+        Cmd.list([divideCmd, sideEffectCmd])
+      ]);
+      expect(reducer(initialState, action)).toEqual(loop(newState, cmd));
+    });
+
+    it('works when the other reducer both follow and precedes combined reducer', () => {
+      const reducer = reduceReducers(dividerCmd, combinedReducer, dividerCmd);
+      const newState = {
+        add: 2, 
+        mult: 9
+      }; 
+      const cmd = Cmd.list([
+        Cmd.list([divideCmd, sideEffectCmd]),
+        Cmd.list([addCmd, multCmd], {batch: true}),
+        Cmd.list([divideCmd, sideEffectCmd])
+      ]);
+      expect(reducer(initialState, action)).toEqual(loop(newState, cmd));
+    });
   });
 
 });
