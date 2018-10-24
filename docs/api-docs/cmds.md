@@ -193,12 +193,6 @@ function reducer(state , action) {
 * `cmds: Array<Cmd>` &ndash; an array of cmd objects returned by any of the other cmd functions, or even nested calls to `Cmd.list`.
 * `options.sequence: boolean` &ndash; By default, asynchronous cmd objects all run immediately and in parallel. If `sequence` is `true`, each cmd object will wait for the previous cmd object to resolve before starting. Note: this does not have an effect if all cmd objects are synchronous.
 * `options.batch: boolean` &ndash; By default, actions from nested cmd objects will be dispatched as soon as that cmd object finishes. If `batch` is `true`, no actions will be dispatched until all of the cmd objects are resolved/finished. The actions will then be dispatched all at once in the order of the original cmd array.
-On the picture below you can see the difference.
-
-![batch: true](./figures/batch-true.svg)
-
-![batch: false](./figures/batch-false.svg)
-
 * `options.testInvariants: boolean` &ndash; Normally, if the first parameter to `Cmd.list()` is not an array of cmd objects, an error will be thrown (unless you are in production). You can turn this off in testing environments by using this option. NOTE: ONLY DO THIS IN TESTS. IF YOU DO THIS IN PRODUCTION, IT WILL THROW. This is useful if you want to pass a custom object from your test library to verify a subset of cmd objects, such as `jasmine.arrayContaining(someCmd)`.
 
 #### Simulation
@@ -260,6 +254,16 @@ function reducer(state , action) {
   }
 }
 ```
+
+#### `batch` option
+
+If you find the difference between `batch` options confusing, the picture below may help.
+
+`{batch: false}` (default) - dispatches the action as soon as the individual cmd Promise is resolved (or immediately for synchronous operations)
+![batch: false](./figures/batch-false.svg)
+
+`{batch: true}` - waits for all the individual Promises in the list to be resolved, before dispatching any action
+![batch: true](./figures/batch-true.svg)
 
 ### `Cmd.map(cmd, higherOrderActionCreator, [...additionalArgs])`
 
