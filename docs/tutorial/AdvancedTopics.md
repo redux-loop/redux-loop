@@ -73,7 +73,7 @@ const initialState = { add: 5, mult: 7 };
 const store = createStore(reducer, initialState, install());
 
 dispatch({type: 'change', value: 6});
-// state is { add: 30, mult: 42 }
+// state is { add: 11, mult: 42 }
 // foo and bar have run
 ```
 
