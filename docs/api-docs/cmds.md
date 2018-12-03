@@ -255,6 +255,16 @@ function reducer(state , action) {
 }
 ```
 
+#### `batch` option
+
+If you find the difference between `batch` options confusing, the picture below may help.
+
+`{batch: false}` (default) - dispatches the action as soon as the individual cmd Promise is resolved (or immediately for synchronous operations)
+![batch: false](./figures/batch-false.svg)
+
+`{batch: true}` - waits for all the individual Promises in the list to be resolved, before dispatching any action
+![batch: true](./figures/batch-true.svg)
+
 ### `Cmd.map(cmd, higherOrderActionCreator, [...additionalArgs])`
 
 `map()` allows you to take an existing cmd object from a nested reducer in your

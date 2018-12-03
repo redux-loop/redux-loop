@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 549 167">
+  <defs>
+    <style>
+      .cls-1 {
+        fill: none;
+        stroke: #afafaf;
+      }
+
+      .cls-2 {
+        fill: #2aa3ff;
+      }
+
+      .cls-3 {
+        fill: #fc0;
+      }
+
+      .cls-4 {
+        fill: #d4d4d4;
+      }
+
+      .cls-5, .cls-6 {
+        fill: #707070;
+        font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif,"Apple Color Emoji","Segoe UI Emoji","Segoe UI Symbol";
+      }
+
+      .cls-5 {
+        font-size: 18px;
+      }
+
+      .cls-6 {
+        font-size: 10px;
+      }
+    </style>
+  </defs>
+  <g id="true" transform="translate(-116 -349)">
+    <line id="Line_4" data-name="Line 4" class="cls-1" y2="164.795" transform="translate(180 351.205)"/>
+    <line id="Line_5" data-name="Line 5" class="cls-1" y2="164.795" transform="translate(280 351.205)"/>
+    <line id="Line_6" data-name="Line 6" class="cls-1" y2="164.795" transform="translate(380 351.205)"/>
+    <rect id="Rectangle_9" data-name="Rectangle 9" class="cls-2" width="200" height="30" transform="translate(180 371)"/>
+    <rect id="Rectangle_10" data-name="Rectangle 10" class="cls-2" width="100" height="30" transform="translate(180 426)"/>
+    <rect id="Rectangle_11" data-name="Rectangle 11" class="cls-3" width="5" height="30" transform="translate(380 426)"/>
+    <rect id="Rectangle_12" data-name="Rectangle 12" class="cls-3" width="5" height="30" transform="translate(380 481)"/>
+    <rect id="Rectangle_13" data-name="Rectangle 13" class="cls-3" width="5" height="30" transform="translate(380 371)"/>
+    <rect id="Rectangle_14" data-name="Rectangle 14" class="cls-2" width="30" height="30" transform="translate(448 367)"/>
+    <rect id="Rectangle_15" data-name="Rectangle 15" class="cls-3" width="30" height="30" transform="translate(448 405)"/>
+    <rect id="Rectangle_16" data-name="Rectangle 16" class="cls-4" width="30" height="30" transform="translate(448 443)"/>
+    <text id="Resolving_the_Promise" data-name="Resolving the Promise" class="cls-5" transform="translate(486 389)"><tspan x="0" y="0">Resolving the Promise</tspan></text>
+    <text id="Dispatching_the_Action" data-name="Dispatching the Action" class="cls-5" transform="translate(484 427)"><tspan x="0" y="0">Dispatching the Action</tspan></text>
+    <text id="Idle" class="cls-5" transform="translate(483 465)"><tspan x="0" y="0">Idle</tspan></text>
+    <text id="_200ms" data-name="200ms" class="cls-6" transform="translate(277 362)"><tspan x="-29.028" y="0">200ms</tspan></text>
+    <text id="_400ms" data-name="400ms" class="cls-6" transform="translate(377 360)"><tspan x="-29.028" y="0">400ms</tspan></text>
+    <rect id="Rectangle_17" data-name="Rectangle 17" class="cls-4" width="200" height="30" transform="translate(180 481)"/>
+    <rect id="Rectangle_18" data-name="Rectangle 18" class="cls-4" width="100" height="30" transform="translate(280 426)"/>
+    <text id="Async_Cmd_A" data-name="Async Cmd A" class="cls-6" transform="translate(175 391)"><tspan x="-58.433" y="0">Async Cmd A</tspan></text>
+    <text id="Asnyc_Cmd_B" data-name="Asnyc Cmd B" class="cls-6" transform="translate(174 446)"><tspan x="-57.715" y="0">Asnyc Cmd B</tspan></text>
+    <text id="Sync_Cmd_C" data-name="Sync Cmd C" class="cls-6" transform="translate(174 499)"><tspan x="-52.5" y="0">Sync Cmd C</tspan></text>
+  </g>
+</svg>
