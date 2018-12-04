@@ -77,7 +77,11 @@ export type CmdType<A extends Action> =
   | BatchCmd<A>
   | SequenceCmd<A>;
 
-declare function install<S>(): StoreEnhancer<S>;
+export interface LoopConfig {
+  readonly DONT_LOG_ERRORS_ON_HANDLED_FAILURES: boolean;
+}
+  
+declare function install<S>(config?: LoopConfig): StoreEnhancer<S>;
 
 declare function loop<S, A extends Action>(
   state: S,
