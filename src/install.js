@@ -50,10 +50,10 @@ export function install(config={}) {
     }
 
     const dispatch = (action) => {
-      store.dispatch(action)
+      const result = store.dispatch(action)
       const cmdsToRun = cmdsQueue
       cmdsQueue = []
-      return runCmds(cmdsToRun)
+      return runCmds(cmdsToRun).then(() => result);
     }
 
     const replaceReducer = (reducer) => {
