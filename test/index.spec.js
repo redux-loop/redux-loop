@@ -114,4 +114,41 @@ describe('redux loop store enhancer', () => {
       done();
     });
   });
+
+  describe('dispatch', () => {
+    it('should return the provided action after the dispatch promise resolves', (done) => {
+      const firstAction = {type: 'FIRST_ACTION'};
+      const downstreamAction = {type: 'DOWNSTREAM_ACTION'};
+      const thunk = (dispatch) => Promise.resolve(dispatch(downstreamAction));
+      const initialState = {
+        firstRun: false,
+        secondRun: false,
+        thirdRun: false,
+        fourthRun: false
+      };
+      const reducer = (state = initialState, action) => {
+        switch (action.type) {
+          case 'FIRST_ACTION':
+            return loop(
+              state,
+              Cmd.run(thunk, {args: [Cmd.dispatch]})
+            );
+
+          case 'DOWNSTREAM_ACTION':
+            return {...state, secondRun: true};
+
+          default:
+            return state;
+        }
+      };
+      const store = createStore(reducer, initialState, install());
+
+      store.dispatch(firstAction).then((result) => {
+        expect(result).toEqual(firstAction);
+        expect(store.getState().secondRun).toEqual(true);
+
+        done();
+      });
+    });
+  });
 });
