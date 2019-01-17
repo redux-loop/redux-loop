@@ -2,7 +2,7 @@ import {
   reduceReducers,
   Loop,
   LoopReducer,
-  NonInitialLoopReducer,
+  LoopReducerWithDefinedState,
   getModel,
   getCmd,
   CmdType
@@ -32,7 +32,7 @@ const addReducer: LoopReducer<ReducedState, ReducedActions> = (
   return state;
 };
 
-const multReducer: NonInitialLoopReducer<ReducedState, ReducedActions> = (
+const multReducer: LoopReducerWithDefinedState<ReducedState, ReducedActions> = (
   state,
   action: AnyAction
 ) => {

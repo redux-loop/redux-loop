@@ -14,7 +14,7 @@ export interface LoopReducer<S, A extends Action> {
   (state: S | undefined, action: AnyAction, ...args: any[]): S | Loop<S, A>;
 }
 
-export interface NonInitialLoopReducer<S, A extends Action> {
+export interface LoopReducerWithDefinedState<S, A extends Action> {
   (state: S, action: AnyAction, ...args: any[]): S | Loop<S, A>;
 }
 
@@ -142,7 +142,7 @@ declare function mergeChildReducers<S, A extends Action = AnyAction>(
 
 declare function reduceReducers<S, A extends Action = AnyAction>(
   initialReducer: LoopReducer<S, A>,
-  ...reducers: Array<NonInitialLoopReducer<S, A>>
+  ...reducers: Array<LoopReducerWithDefinedState<S, A>>
 ): LiftedLoopReducer<S, A>;
 
 declare function liftState<S, A extends Action>(
