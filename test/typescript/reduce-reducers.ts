@@ -2,6 +2,7 @@ import {
   reduceReducers,
   Loop,
   LoopReducer,
+  LoopReducerWithDefinedState,
   getModel,
   getCmd,
   CmdType
@@ -31,8 +32,8 @@ const addReducer: LoopReducer<ReducedState, ReducedActions> = (
   return state;
 };
 
-const multReducer: LoopReducer<ReducedState, ReducedActions> = (
-  state = initialState,
+const multReducer: LoopReducerWithDefinedState<ReducedState, ReducedActions> = (
+  state,
   action: AnyAction
 ) => {
   if(action.type === 'change'){
