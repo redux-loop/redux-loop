@@ -9,6 +9,10 @@ import {
 } from '../../index';
 import { AnyAction } from 'redux';
 
+const FETCH_FOO_REQUEST = 'FETCH_FOO_REQUEST'
+const FETCH_FOO_SUCCESS = 'FETCH_FOO_SUCCESS'
+const FETCH_FOO_FAILURE = 'FETCH_FOO_FAILURE'
+
 type TodoState = { todos: string[]; nestedCounter: number };
 
 type TodoActions =
@@ -17,7 +21,10 @@ type TodoActions =
       text: string;
     }
   | { type: 'NOOP' }
-  | { type: 'UPDATE_NESTED_COUNTER'; subAction: CounterActions };
+  | { type: 'UPDATE_NESTED_COUNTER'; subAction: CounterActions }
+  | IFetchFooRequest
+  | IFetchFooSuccess
+  | IFetchFooFailure
 
 const noop = (): TodoActions => ({
   type: 'NOOP'
@@ -27,6 +34,28 @@ const updateNestedCounter = (subAction: CounterActions): TodoActions => ({
   type: 'UPDATE_NESTED_COUNTER',
   subAction
 });
+
+interface IFetchFooRequest {
+  type: typeof FETCH_FOO_REQUEST
+}
+
+interface IFetchFooSuccess {
+  type: typeof FETCH_FOO_SUCCESS
+}
+
+const fetchFooSuccess = (): IFetchFooSuccess => ({
+  type: FETCH_FOO_SUCCESS,
+})
+
+interface IFetchFooFailure {
+  type: typeof FETCH_FOO_FAILURE
+}
+
+const fetchFooFailure = (): IFetchFooFailure => ({
+  type: FETCH_FOO_FAILURE,
+})
+
+const apiFetchFoo = () => Promise.resolve("foo")
 
 const todosReducer: LoopReducer<TodoState, TodoActions> = (
   state: TodoState = { todos: [], nestedCounter: 0 },
@@ -48,6 +77,14 @@ const todosReducer: LoopReducer<TodoState, TodoActions> = (
         { ...state, nestedCounter: model },
         Cmd.map(cmd, updateNestedCounter)
       );
+    case FETCH_FOO_REQUEST:
+      return loop(
+        state,
+        Cmd.run(apiFetchFoo, {
+          successActionCreator: fetchFooSuccess,
+          failActionCreator: fetchFooFailure,
+        })
+      )
     default:
       return loop(
         state,
