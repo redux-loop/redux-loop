@@ -1,19 +1,23 @@
 import {
   Cmd,
   combineReducers,
+  install,
   loop,
   Loop,
   LiftedLoopReducer,
   liftState,
-  LoopReducer
+  LoopReducer,
+  StoreCreator,
 } from '../../index';
-import { AnyAction } from 'redux';
+import { AnyAction, compose, createStore } from 'redux';
 
 const FETCH_FOO_REQUEST = 'FETCH_FOO_REQUEST'
 const FETCH_FOO_SUCCESS = 'FETCH_FOO_SUCCESS'
 const FETCH_FOO_FAILURE = 'FETCH_FOO_FAILURE'
 
 type TodoState = { todos: string[]; nestedCounter: number };
+
+const initialTodoState: TodoState = { todos: [], nestedCounter: 0 };
 
 type TodoActions =
   | {
@@ -58,7 +62,7 @@ const fetchFooFailure = (): IFetchFooFailure => ({
 const apiFetchFoo = () => Promise.resolve("foo")
 
 const todosReducer: LoopReducer<TodoState, TodoActions> = (
-  state: TodoState = { todos: [], nestedCounter: 0 },
+  state: TodoState = initialTodoState,
   action: AnyAction
 ) => {
   switch (action.type) {
@@ -158,3 +162,14 @@ let flattenedActions: AnyAction[] = nestedListCmd.simulate([
     {success: true, result: 789},
   ]
 ]);
+
+const enhancedCreateStore = createStore as StoreCreator;
+const enhancer = compose(install<TodoState>());
+
+const storeWithPreloadedState = enhancedCreateStore(
+  todosReducer, initialTodoState, enhancer
+);
+
+const storeWithoutPreloadedState = enhancedCreateStore(
+  todosReducer, undefined, enhancer
+);

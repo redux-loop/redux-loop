@@ -3,7 +3,7 @@ import { Action, ActionCreator, AnyAction, StoreEnhancer, Store } from 'redux';
 export interface StoreCreator {
   <S, A extends Action>(
     reducer: LoopReducer<S, A>,
-    preloadedState: S,
+    preloadedState: S | undefined,
     enhancer: StoreEnhancer<S>
   ): Store<S>;
 }
@@ -84,7 +84,7 @@ export type CmdType<A extends Action> =
 export interface LoopConfig {
   readonly DONT_LOG_ERRORS_ON_HANDLED_FAILURES: boolean;
 }
-  
+
 declare function install<S>(config?: LoopConfig): StoreEnhancer<S>;
 
 declare function loop<S, A extends Action>(
