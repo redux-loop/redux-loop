@@ -9,7 +9,7 @@ import {
   LoopReducer,
   StoreCreator,
 } from '../../index';
-import { AnyAction, compose, createStore } from 'redux';
+import { AnyAction, createStore } from 'redux';
 
 const FETCH_FOO_REQUEST = 'FETCH_FOO_REQUEST'
 const FETCH_FOO_SUCCESS = 'FETCH_FOO_SUCCESS'
@@ -164,7 +164,7 @@ let flattenedActions: AnyAction[] = nestedListCmd.simulate([
 ]);
 
 const enhancedCreateStore = createStore as StoreCreator;
-const enhancer = compose(install<TodoState>());
+const enhancer = install<TodoState>();
 
 const storeWithPreloadedState = enhancedCreateStore(
   todosReducer, initialTodoState, enhancer
