@@ -10,16 +10,16 @@ export interface StoreCreator {
 
 export type Loop<S, A extends Action> = [S, CmdType<A>];
 
-export interface LoopReducer<S, A extends Action> {
-  (state: S | undefined, action: AnyAction, ...args: any[]): S | Loop<S, A>;
+export interface LoopReducer<S, A extends Action = AnyAction> {
+  (state: S | undefined, action: A, ...args: any[]): S | Loop<S, A>;
 }
 
-export interface LoopReducerWithDefinedState<S, A extends Action> {
-  (state: S, action: AnyAction, ...args: any[]): S | Loop<S, A>;
+export interface LoopReducerWithDefinedState<S, A extends Action = AnyAction> {
+  (state: S, action: A, ...args: any[]): S | Loop<S, A>;
 }
 
-export interface LiftedLoopReducer<S, A extends Action> {
-  (state: S | undefined, action: AnyAction, ...args: any[]): Loop<S, A>;
+export interface LiftedLoopReducer<S, A extends Action = AnyAction> {
+  (state: S | undefined, action: A, ...args: any[]): Loop<S, A>;
 }
 
 export type CmdSimulation = {
