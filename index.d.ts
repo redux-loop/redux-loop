@@ -115,12 +115,12 @@ declare namespace Cmd {
     args?: any[]
   ): MapCmd<A>;
 
-  export function run<A extends Action, B extends Action>(
-    f: Function,
+  export function run<A extends Action, B extends Action, R>(
+    f: (...args: any[]) => R | Promise<R>,
     options?: {
       args?: any[];
-      failActionCreator?: ActionCreator<A>;
-      successActionCreator?: ActionCreator<B>;
+      failActionCreator?: (...args: any[]) => A;
+      successActionCreator?: (res: R) => B;
       forceSync?: boolean;
     }
   ): RunCmd<A>;
