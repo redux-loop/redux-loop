@@ -1,4 +1,4 @@
-import {flatten, throwInvariant, isPromiseLike} from '../src/utils';
+import { flatten, throwInvariant, isPromiseLike } from '../src/utils';
 
 describe('utils', () => {
   describe('flatten', () => {
@@ -10,7 +10,9 @@ describe('utils', () => {
 
   describe('throwInvariant', () => {
     it('throws an error with the supplied message if the condition is false', () => {
-      expect(() => throwInvariant(false, 'sad panda')).toThrow(new Error('sad panda'));
+      expect(() => throwInvariant(false, 'sad panda')).toThrow(
+        new Error('sad panda')
+      );
     });
 
     it('does not throw an error if the condition is true', () => {
@@ -21,15 +23,15 @@ describe('utils', () => {
   describe('isPromiseLike', () => {
     it('returns true if the item is an object with a then function', () => {
       let p1 = new Promise(() => {});
-      let p2 = {then: () => {}};
+      let p2 = { then: () => {} };
       expect(isPromiseLike(p1)).toBe(true);
       expect(isPromiseLike(p2)).toBe(true);
     });
 
     it('returns false if the item is not an object or has no then function', () => {
       let p1 = 'foo';
-      let p2 = {wrong: () => {}};
-      let p3 = {then: 'abc'};
+      let p2 = { wrong: () => {} };
+      let p3 = { then: 'abc' };
       expect(isPromiseLike(p1)).toBe(false);
       expect(isPromiseLike(p2)).toBe(false);
       expect(isPromiseLike(p3)).toBe(false);

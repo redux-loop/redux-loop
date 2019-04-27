@@ -3,9 +3,10 @@ import { getModel } from '../src/loop';
 import { Map } from 'immutable';
 
 const reducers = {
-  counter: (state = 0, action = {}) => state + 1,
-  doubler: (state, action = {}) => state ? state + state : 1,
-  fibonacci: (state = 1, action = {}) => action.previous ? action.previous + state : state
+  counter: (state = 0) => state + 1,
+  doubler: state => (state ? state + state : 1),
+  fibonacci: (state = 1, action = {}) =>
+    action.previous ? action.previous + state : state
 };
 
 describe('combineReducers', () => {
@@ -42,8 +43,8 @@ describe('combineReducers', () => {
 
   it('passes through extra params to each child reducer', () => {
     const extraParamReducers = {
-      r1: (state = [], action = {}, ...extra) => state.concat(extra),
-      r2: (state = 0, action = {}, extra) => state + extra
+      r1: (state = [], action, ...extra) => state.concat(extra),
+      r2: (state = 0, action, extra) => state + extra
     };
     const appReducer = combineReducers(extraParamReducers);
 
@@ -61,7 +62,7 @@ describe('combineReducers', () => {
       Map(),
       (child, key) => child.get(key),
       (child, key, value) => child.set(key, value)
-    )
+    );
 
     expect(typeof appReducer).toBe('function');
 

@@ -10,80 +10,102 @@ const cmdTypes = {
   LIST: 'LIST',
   MAP: 'MAP',
   NONE: 'NONE'
+};
+
+export function isCmd(object) {
+  return object ? !!object[isCmdSymbol] : false;
 }
 
-export const isCmd = (object) => {
-  return object ? !!object[isCmdSymbol] : false
-}
-
-function getMappedCmdArgs(args = [], dispatch, getState){
+function getMappedCmdArgs(args = [], dispatch, getState) {
   return args.map(arg => {
-    if (arg === dispatchSymbol) return dispatch
-    else if (arg === getStateSymbol) return getState
-    else return arg
-  })
+    if (arg === dispatchSymbol) {
+      return dispatch;
+    } else if (arg === getStateSymbol) {
+      return getState;
+    } else {
+      return arg;
+    }
+  });
 }
 
-function handleRunCmd(cmd, dispatch, getState, loopConfig={}){
+function handleRunCmd(cmd, dispatch, getState, loopConfig = {}) {
   let onSuccess = cmd.successActionCreator || (() => {});
 
   let onFail;
   if (cmd.failActionCreator) {
     onFail = error => {
       if (!loopConfig.DONT_LOG_ERRORS_ON_HANDLED_FAILURES) {
-        console.error(error)
+        console.error(error);
       }
-      return cmd.failActionCreator(error)
-    }
+      return cmd.failActionCreator(error);
+    };
   } else {
-    onFail = console.error
+    onFail = console.error;
   }
 
-  try{
-    let result = cmd.func(...getMappedCmdArgs(cmd.args, dispatch, getState))
+  try {
+    let result = cmd.func(...getMappedCmdArgs(cmd.args, dispatch, getState));
 
-    if (isPromiseLike(result) && !cmd.forceSync){
+    if (isPromiseLike(result) && !cmd.forceSync) {
       return result.then(onSuccess, onFail).then(action => {
         return action ? [action] : [];
-      })
+      });
     }
     let resultAction = onSuccess(result);
     return resultAction ? Promise.resolve([resultAction]) : null;
-  }
-  catch(err){
-    if(!cmd.failActionCreator){
+  } catch (err) {
+    if (!cmd.failActionCreator) {
       console.error(err);
-      throw err //don't swallow errors if they are not handling them
+      throw err; //don't swallow errors if they are not handling them
     }
     let resultAction = onFail(err);
     return resultAction ? Promise.resolve([resultAction]) : null;
   }
 }
 
-function handleParallelList({cmds, batch = false}, dispatch, getState, loopConfig={}){
-  const promises = cmds.map(nestedCmd => {
-    const possiblePromise = executeCmd(nestedCmd, dispatch, getState, loopConfig);
-    if(!possiblePromise || batch){
-      return possiblePromise;
-    }
+function handleParallelList(
+  { cmds, batch = false },
+  dispatch,
+  getState,
+  loopConfig = {}
+) {
+  const promises = cmds
+    .map(nestedCmd => {
+      const possiblePromise = executeCmd(
+        nestedCmd,
+        dispatch,
+        getState,
+        loopConfig
+      );
+      if (!possiblePromise || batch) {
+        return possiblePromise;
+      }
 
-    return possiblePromise.then(result => {
-      return Promise.all(result.map(a => dispatch(a)));
-    });
-  }).filter(x => x);
+      return possiblePromise.then(result => {
+        return Promise.all(result.map(a => dispatch(a)));
+      });
+    })
+    .filter(x => x);
 
-  if (promises.length === 0){
+  if (promises.length === 0) {
     return null;
   }
 
-  return Promise.all(promises).then(flatten).then(actions => {
-    return batch ? actions : [];
-  });
+  return Promise.all(promises)
+    .then(flatten)
+    .then(actions => {
+      return batch ? actions : [];
+    });
 }
 
-function handleSequenceList({cmds, batch = false}, dispatch, getState, loopConfig={}){
+function handleSequenceList(
+  { cmds, batch = false },
+  dispatch,
+  getState,
+  loopConfig = {}
+) {
   const firstCmd = cmds.length ? cmds[0] : null;
-  if(!firstCmd){
+  if (!firstCmd) {
     return null;
   }
 
@@ -92,100 +114,118 @@ function handleSequenceList({cmds, batch = false}, dispatch, getState, loopConfi
     firstPromise = firstPromise || Promise.resolve([]);
     firstPromise.then(result => {
       let executePromise;
-      if(!batch){
+      if (!batch) {
         executePromise = Promise.all(result.map(a => dispatch(a)));
-      }
-      else{
+      } else {
         executePromise = Promise.resolve();
       }
       executePromise.then(() => {
-        const remainingSequence = list(cmds.slice(1), {batch, sequence: true});
-        const remainingPromise = executeCmd(remainingSequence, dispatch, getState, loopConfig);
+        const remainingSequence = list(cmds.slice(1), {
+          batch,
+          sequence: true
+        });
+        const remainingPromise = executeCmd(
+          remainingSequence,
+          dispatch,
+          getState,
+          loopConfig
+        );
         if (remainingPromise) {
           remainingPromise.then(innerResult => {
             resolve(result.concat(innerResult));
           });
-        }
-        else{
+        } else {
           resolve(result);
         }
       });
-    })
+    });
   }).then(flatten);
 
   return batch ? result : result.then(() => []);
 }
 
-export const executeCmd = (cmd, dispatch, getState, loopConfig={}) => {
+export function executeCmd(cmd, dispatch, getState, loopConfig = {}) {
   switch (cmd.type) {
     case cmdTypes.RUN:
-      return handleRunCmd(cmd, dispatch, getState, loopConfig)
+      return handleRunCmd(cmd, dispatch, getState, loopConfig);
 
     case cmdTypes.ACTION:
-      return Promise.resolve([cmd.actionToDispatch])
+      return Promise.resolve([cmd.actionToDispatch]);
 
     case cmdTypes.LIST:
-      return cmd.sequence ? handleSequenceList(cmd, dispatch, getState, loopConfig) : handleParallelList(cmd, dispatch, getState, loopConfig);
+      return cmd.sequence
+        ? handleSequenceList(cmd, dispatch, getState, loopConfig)
+        : handleParallelList(cmd, dispatch, getState, loopConfig);
 
-    case cmdTypes.MAP:
-      const possiblePromise = executeCmd(cmd.nestedCmd, dispatch, getState, loopConfig)
-      if (!possiblePromise) return null
-      return possiblePromise.then((actions) =>
+    case cmdTypes.MAP: {
+      const possiblePromise = executeCmd(
+        cmd.nestedCmd,
+        dispatch,
+        getState,
+        loopConfig
+      );
+      if (!possiblePromise) {
+        return null;
+      }
+      return possiblePromise.then(actions =>
         actions.map(action => cmd.tagger(...cmd.args, action))
       );
+    }
 
     case cmdTypes.NONE:
-      return null
+      return null;
 
     default:
       throw new Error(`Invalid Cmd type ${cmd.type}`);
   }
 }
 
-function simulateRun({result, success}){
-  if(success && this.successActionCreator){
+function simulateRun({ result, success }) {
+  if (success && this.successActionCreator) {
     return this.successActionCreator(result);
-  }
-  else if(!success && this.failActionCreator){
+  } else if (!success && this.failActionCreator) {
     return this.failActionCreator(result);
   }
   return null;
 }
 
-const run = (func, options = {}) => {
+function run(func, options = {}) {
   if (process.env.NODE_ENV !== 'production') {
-    if(!options.testInvariants){
+    if (!options.testInvariants) {
       throwInvariant(
         typeof func === 'function',
         'Cmd.run: first argument to Cmd.run must be a function'
-      )
+      );
 
       throwInvariant(
         typeof options === 'object',
         'Cmd.run: second argument to Cmd.run must be an options object'
-      )
+      );
 
       throwInvariant(
-        !options.successActionCreator || typeof options.successActionCreator === 'function',
+        !options.successActionCreator ||
+          typeof options.successActionCreator === 'function',
         'Cmd.run: successActionCreator option must be a function if specified'
-      )
+      );
 
       throwInvariant(
-        !options.failActionCreator || typeof options.failActionCreator === 'function',
+        !options.failActionCreator ||
+          typeof options.failActionCreator === 'function',
         'Cmd.run: failActionCreator option must be a function if specified'
-      )
+      );
 
       throwInvariant(
         !options.args || options.args.constructor === Array,
         'Cmd.run: args option must be an array if specified'
-      )
+      );
     }
-  }
-  else if(options.testInvariants){
-    throw Error('Redux Loop: Detected usage of Cmd.run\'s testInvariants option in production code. This should only be used in tests.');
+  } else if (options.testInvariants) {
+    throw Error(
+      "Redux Loop: Detected usage of Cmd.run's testInvariants option in production code. This should only be used in tests."
+    );
   }
 
-  const {testInvariants, ...rest} = options;
+  const { testInvariants, ...rest } = options;
 
   return Object.freeze({
     [isCmdSymbol]: true,
@@ -193,17 +233,21 @@ const run = (func, options = {}) => {
     func,
     simulate: simulateRun,
     ...rest
-  })
+  });
 }
 
-function simulateAction(){return this.actionToDispatch;}
+function simulateAction() {
+  return this.actionToDispatch;
+}
 
-const action = (actionToDispatch) => {
+function action(actionToDispatch) {
   if (process.env.NODE_ENV !== 'production') {
     throwInvariant(
-      typeof actionToDispatch === 'object' && actionToDispatch !== null && typeof actionToDispatch.type !== 'undefined',
+      typeof actionToDispatch === 'object' &&
+        actionToDispatch !== null &&
+        typeof actionToDispatch.type !== 'undefined',
       'Cmd.action: first argument and only argument to Cmd.action must be an action'
-    )
+    );
   }
 
   return Object.freeze({
@@ -211,32 +255,35 @@ const action = (actionToDispatch) => {
     type: cmdTypes.ACTION,
     actionToDispatch,
     simulate: simulateAction
-  })
+  });
 }
 
-function simulateList(simulations){
-  return flatten(this.cmds.map((cmd, i) => cmd.simulate(simulations[i])).filter(a => a));
+function simulateList(simulations) {
+  return flatten(
+    this.cmds.map((cmd, i) => cmd.simulate(simulations[i])).filter(a => a)
+  );
 }
 
-const list = (cmds, options = {}) => {
+function list(cmds, options = {}) {
   if (process.env.NODE_ENV !== 'production') {
-    if(!options.testInvariants){
+    if (!options.testInvariants) {
       throwInvariant(
         Array.isArray(cmds) && cmds.every(isCmd),
         'Cmd.list: first argument to Cmd.list must be an array of other Cmds'
-      )
+      );
 
       throwInvariant(
         typeof options === 'object',
         'Cmd.list: second argument to Cmd.list must be an options object'
-      )
+      );
     }
-  }
-  else if(options.testInvariants){
-    throw Error('Redux Loop: Detected usage of Cmd.list\'s testInvariants option in production code. This should only be used in tests.');
+  } else if (options.testInvariants) {
+    throw Error(
+      "Redux Loop: Detected usage of Cmd.list's testInvariants option in production code. This should only be used in tests."
+    );
   }
 
-  const {testInvariants, ...rest} = options;
+  const { testInvariants, ...rest } = options;
 
   return Object.freeze({
     [isCmdSymbol]: true,
@@ -247,19 +294,21 @@ const list = (cmds, options = {}) => {
   });
 }
 
-const batch = (cmds) => {
+function batch(cmds) {
   if (process.env.NODE_ENV !== 'production') {
     throwInvariant(
       Array.isArray(cmds) && cmds.every(isCmd),
       'Cmd.batch: first and only argument to Cmd.batch must be an array of other Cmds'
-    )
+    );
   }
 
-  console.warn('Cmd.batch is deprecated and will be removed in version 5. Please use Cmd.list (https://github.com/redux-loop/redux-loop/blob/master/docs/api-docs/cmds.md#cmdlistcmds-options)')
-  return list(cmds, {batch: true, sequence: false});
+  console.warn(
+    'Cmd.batch is deprecated and will be removed in version 5. Please use Cmd.list (https://github.com/redux-loop/redux-loop/blob/master/docs/api-docs/cmds.md#cmdlistcmds-options)'
+  );
+  return list(cmds, { batch: true, sequence: false });
 }
 
-const sequence = (cmds) => {
+function sequence(cmds) {
   if (process.env.NODE_ENV !== 'production') {
     throwInvariant(
       Array.isArray(cmds) && cmds.every(isCmd),
@@ -267,28 +316,24 @@ const sequence = (cmds) => {
     );
   }
 
-  console.warn('Cmd.sequence is deprecated and will be removed in version 5. Please use Cmd.list (https://github.com/redux-loop/redux-loop/blob/master/docs/api-docs/cmds.md#cmdlistcmds-options)')
-  return list(cmds, {batch: true, sequence: true});
+  console.warn(
+    'Cmd.sequence is deprecated and will be removed in version 5. Please use Cmd.list (https://github.com/redux-loop/redux-loop/blob/master/docs/api-docs/cmds.md#cmdlistcmds-options)'
+  );
+  return list(cmds, { batch: true, sequence: true });
 }
 
-function simulateMap(simulation){
+function simulateMap(simulation) {
   let result = this.nestedCmd.simulate(simulation);
-  if(Array.isArray(result)){
-    return result.map(action => this.tagger(...this.args, action))
-  }
-  else if(result){
+  if (Array.isArray(result)) {
+    return result.map(action => this.tagger(...this.args, action));
+  } else if (result) {
     return this.tagger(...this.args, result);
-  }
-  else{
+  } else {
     return null;
   }
 }
 
-const map = (
-  nestedCmd,
-  tagger,
-  ...args
-) => {
+function map(nestedCmd, tagger, ...args) {
   if (process.env.NODE_ENV !== 'production') {
     throwInvariant(
       isCmd(nestedCmd),
@@ -327,4 +372,4 @@ export default {
   none,
   dispatch: dispatchSymbol,
   getState: getStateSymbol
-}; 
+};

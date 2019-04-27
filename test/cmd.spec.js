@@ -1,11 +1,11 @@
-import Cmd, {isCmd, executeCmd} from '../src/cmd';
+import Cmd, { isCmd, executeCmd } from '../src/cmd';
 
-function actionCreator1(val){
-  return {type: 'TYPE1', val};
+function actionCreator1(val) {
+  return { type: 'TYPE1', val };
 }
 
-function actionCreator2(val){
-  return {type: 'TYPE2', val};
+function actionCreator2(val) {
+  return { type: 'TYPE2', val };
 }
 
 describe('Cmds', () => {
@@ -20,7 +20,7 @@ describe('Cmds', () => {
     it('returns true if and only if the object is a Cmd', () => {
       let cmd = Cmd.run(() => {});
       let cmd2 = Cmd.none;
-      let notCmd = {foo: 'bar'};
+      let notCmd = { foo: 'bar' };
       expect(isCmd(cmd)).toBe(true);
       expect(isCmd(cmd2)).toBe(true);
       expect(isCmd(notCmd)).toBe(false);
@@ -45,7 +45,9 @@ describe('Cmds', () => {
         });
 
         it('resolves with an empty array if the function returns a rejected promise', async () => {
-          let consoleErr = jest.spyOn(console, 'error').mockImplementation(() => {});
+          let consoleErr = jest
+            .spyOn(console, 'error')
+            .mockImplementation(() => {});
           sideEffect.mockReturnValueOnce(Promise.reject(123));
           let cmd = Cmd.run(sideEffect);
           let result = executeCmd(cmd, dispatch, getState);
@@ -54,18 +56,24 @@ describe('Cmds', () => {
           consoleErr.mockRestore();
         });
 
-        it('rethrows the thrown error if the function throws', function(){
-          let consoleErr = jest.spyOn(console, 'error').mockImplementation(() => {});
+        it('rethrows the thrown error if the function throws', function() {
+          let consoleErr = jest
+            .spyOn(console, 'error')
+            .mockImplementation(() => {});
           let err = new Error('foo');
-          sideEffect.mockImplementationOnce(() => {throw err});
+          sideEffect.mockImplementationOnce(() => {
+            throw err;
+          });
           let cmd = Cmd.run(sideEffect);
           expect(() => executeCmd(cmd, dispatch, getState)).toThrow(err);
           consoleErr.mockRestore();
         });
 
-        it('always logs the error if the sideEffect has an error and no fail handler is passed in', async function(){
-          let consoleErr = jest.spyOn(console, 'error').mockImplementation(() => {});
-          let err = new Error("foo");
+        it('always logs the error if the sideEffect has an error and no fail handler is passed in', async function() {
+          let consoleErr = jest
+            .spyOn(console, 'error')
+            .mockImplementation(() => {});
+          let err = new Error('foo');
           sideEffect.mockReturnValueOnce(Promise.reject(err));
           let cmd = Cmd.run(sideEffect);
           let loopConfig = { DONT_LOG_ERRORS_ON_HANDLED_FAILURES: true }; // note: logs even when set to true as no fail handler passed in
@@ -74,7 +82,6 @@ describe('Cmds', () => {
           expect(consoleErr).toHaveBeenCalledWith(err);
           consoleErr.mockRestore();
         });
-
       });
 
       describe('arguments', () => {
@@ -91,7 +98,13 @@ describe('Cmds', () => {
             args: [123, Cmd.getState, Cmd.getState, Cmd.dispatch, 456]
           });
           executeCmd(cmd, dispatch, getState);
-          expect(sideEffect.mock.calls[0]).toEqual([123, getState, getState, dispatch, 456]);
+          expect(sideEffect.mock.calls[0]).toEqual([
+            123,
+            getState,
+            getState,
+            dispatch,
+            456
+          ]);
         });
       });
 
@@ -135,7 +148,9 @@ describe('Cmds', () => {
         let consoleError;
 
         beforeEach(() => {
-          consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+          consoleError = jest
+            .spyOn(console, 'error')
+            .mockImplementation(() => {});
         });
 
         afterEach(() => {
@@ -144,7 +159,9 @@ describe('Cmds', () => {
 
         it('runs the thrown value through fail handler and resolves with it in an array', async () => {
           let err = new Error('foo');
-          sideEffect.mockImplementationOnce(() => {throw err});
+          sideEffect.mockImplementationOnce(() => {
+            throw err;
+          });
           let cmd = Cmd.run(sideEffect, {
             successActionCreator: actionCreator1,
             failActionCreator: actionCreator2
@@ -169,13 +186,14 @@ describe('Cmds', () => {
 
         it('logs the error if DONT_LOG_ERRORS_ON_HANDLED_FAILURES config is false and failActionCreator is passed in', async () => {
           let err = new Error('foo');
-          sideEffect.mockImplementationOnce(() => {throw err});
+          sideEffect.mockImplementationOnce(() => {
+            throw err;
+          });
           let cmd = Cmd.run(sideEffect, {
             successActionCreator: actionCreator1,
             failActionCreator: actionCreator2
           });
           let loopConfig = { DONT_LOG_ERRORS_ON_HANDLED_FAILURES: false };
-
 
           let result = executeCmd(cmd, dispatch, getState, loopConfig);
           await expect(result).resolves.toEqual([actionCreator2(err)]);
@@ -184,13 +202,14 @@ describe('Cmds', () => {
 
         it('swallows the console error if DONT_LOG_ERRORS_ON_HANDLED_FAILURES config is true and failActionCreator is passed in', async () => {
           let err = new Error('foo');
-          sideEffect.mockImplementationOnce(() => {throw err});
+          sideEffect.mockImplementationOnce(() => {
+            throw err;
+          });
           let cmd = Cmd.run(sideEffect, {
             successActionCreator: actionCreator1,
             failActionCreator: actionCreator2
           });
           let loopConfig = { DONT_LOG_ERRORS_ON_HANDLED_FAILURES: true };
-
 
           let result = executeCmd(cmd, dispatch, getState, loopConfig);
           await expect(result).resolves.toEqual([actionCreator2(err)]);
@@ -212,7 +231,9 @@ describe('Cmds', () => {
       let consoleError;
 
       beforeEach(() => {
-        consoleError = jest.spyOn(console, 'error').mockImplementation(() => {});
+        consoleError = jest
+          .spyOn(console, 'error')
+          .mockImplementation(() => {});
         jest.useFakeTimers();
       });
 
@@ -223,7 +244,7 @@ describe('Cmds', () => {
 
       describe('when sequence is false', () => {
         describe('when batch is false', () => {
-          const options = {batch: false, sequence: false};
+          const options = { batch: false, sequence: false };
 
           it('runs all passed cmds in parallel, dispatches all actions, and resolves with empty array', async () => {
             let promise1, promise4;
@@ -280,10 +301,11 @@ describe('Cmds', () => {
         });
 
         describe('when batch is true', () => {
-          const options = {batch: true, sequence: false};
+          const options = { batch: true, sequence: false };
 
           it('runs all passed cmds in parallel and resolves with an array of their resolve values', async () => {
-            let cmd1Run = false, cmd4Run = false;
+            let cmd1Run = false,
+              cmd4Run = false;
             sideEffect.mockImplementationOnce(() => {
               cmd1Run = true;
               return new Promise(resolve => {
@@ -324,7 +346,7 @@ describe('Cmds', () => {
             ]);
           });
 
-          it('filters out items that don\'t resolve with actions', async () => {
+          it("filters out items that don't resolve with actions", async () => {
             let action = actionCreator1(123);
             let run = Cmd.run(() => {});
             let listCmd = Cmd.list([Cmd.action(action), run], options);
@@ -342,7 +364,7 @@ describe('Cmds', () => {
 
       describe('when sequence is true', () => {
         describe('when batch is false', () => {
-          const options = {batch: false, sequence: true};
+          const options = { batch: false, sequence: true };
 
           it('runs all passed cmds in series, dispatches all actions, and resolves with empty array', async () => {
             let promise1, promise2;
@@ -372,7 +394,10 @@ describe('Cmds', () => {
 
             expect(dispatch).not.toHaveBeenCalledWith(actionCreator1(123));
             await jest.runTimersToTime(100);
-            await promise1.then(() => {}).then(() => {}).then(() => {}); //flushes the promise chain https://github.com/facebook/jest/issues/2157
+            await promise1
+              .then(() => {})
+              .then(() => {})
+              .then(() => {}); //flushes the promise chain https://github.com/facebook/jest/issues/2157
             expect(dispatch).toHaveBeenCalledWith(actionCreator1(123));
 
             expect(dispatch).not.toHaveBeenCalledWith(actionCreator2(456));
@@ -390,10 +415,12 @@ describe('Cmds', () => {
         });
 
         describe('when batch is true', () => {
-          const options = {batch: true, sequence: true};
+          const options = { batch: true, sequence: true };
 
           it('runs all passed cmds in series and resolves with an array of their resolve values', async () => {
-            let cmd1Run = false, cmd2Run = false, promise1;
+            let cmd1Run = false,
+              cmd2Run = false,
+              promise1;
             sideEffect.mockImplementationOnce(() => {
               cmd1Run = true;
               promise1 = new Promise(resolve => {
@@ -430,7 +457,7 @@ describe('Cmds', () => {
             ]);
           });
 
-          it('filters out items that don\'t resolve with actions', async () => {
+          it("filters out items that don't resolve with actions", async () => {
             let action = actionCreator1(123);
             let run = Cmd.run(() => {});
             let listCmd = Cmd.list([Cmd.action(action), run], options);
@@ -454,11 +481,11 @@ describe('Cmds', () => {
         expect(result).toBe(null);
       });
 
-      function noArgTagger(action){
-        return actionCreator2(action)
+      function noArgTagger(action) {
+        return actionCreator2(action);
       }
 
-      function argTagger(arg1, arg2, action){
+      function argTagger(arg1, arg2, action) {
         let res = actionCreator2(action);
         res.arg1 = arg1;
         res.arg2 = arg2;
@@ -466,22 +493,32 @@ describe('Cmds', () => {
       }
 
       it('runs the resulting actions through the tagger function before resolving with them', async () => {
-        let action1 = actionCreator1(123), action2 = actionCreator1(456);
-        let list = Cmd.list([Cmd.action(action1), Cmd.action(action2)], {batch: true});
+        let action1 = actionCreator1(123),
+          action2 = actionCreator1(456);
+        let list = Cmd.list([Cmd.action(action1), Cmd.action(action2)], {
+          batch: true
+        });
         let cmd = Cmd.map(list, noArgTagger);
         let result = executeCmd(cmd, dispatch, getState);
-        await expect(result).resolves.toEqual([actionCreator2(action1), actionCreator2(action2)]);
+        await expect(result).resolves.toEqual([
+          actionCreator2(action1),
+          actionCreator2(action2)
+        ]);
       });
 
       it('passes the args to the tagger if specified', async () => {
-        let action1 = actionCreator1(123), action2 = actionCreator1(456);
-        let list = Cmd.list([Cmd.action(action1), Cmd.action(action2)], {batch: true});
-        let arg1 = 'arg1', arg2 = 'arg2';
+        let action1 = actionCreator1(123),
+          action2 = actionCreator1(456);
+        let list = Cmd.list([Cmd.action(action1), Cmd.action(action2)], {
+          batch: true
+        });
+        let arg1 = 'arg1',
+          arg2 = 'arg2';
         let cmd = Cmd.map(list, argTagger, arg1, arg2);
         let result = executeCmd(cmd, dispatch, getState);
         await expect(result).resolves.toEqual([
-          {...actionCreator2(action1), arg1, arg2},
-          {...actionCreator2(action2), arg1, arg2}
+          { ...actionCreator2(action1), arg1, arg2 },
+          { ...actionCreator2(action2), arg1, arg2 }
         ]);
       });
     });
@@ -499,7 +536,7 @@ describe('Cmds', () => {
       describe('with no handlers', () => {
         it('returns null', () => {
           let cmd = Cmd.run(sideEffect);
-          expect(cmd.simulate({result: 123, success: true})).toBe(null);
+          expect(cmd.simulate({ result: 123, success: true })).toBe(null);
         });
       });
 
@@ -510,7 +547,9 @@ describe('Cmds', () => {
             failActionCreator: actionCreator2
           });
 
-          expect(cmd.simulate({result: 123, success: true})).toEqual(actionCreator1(123));
+          expect(cmd.simulate({ result: 123, success: true })).toEqual(
+            actionCreator1(123)
+          );
         });
 
         it('returns null if there is no success hanlder', () => {
@@ -518,7 +557,7 @@ describe('Cmds', () => {
             failActionCreator: actionCreator2
           });
 
-          expect(cmd.simulate({result: 123, success: true})).toBe(null);
+          expect(cmd.simulate({ result: 123, success: true })).toBe(null);
         });
       });
 
@@ -529,7 +568,9 @@ describe('Cmds', () => {
             failActionCreator: actionCreator2
           });
 
-          expect(cmd.simulate({result: 123, success: false})).toEqual(actionCreator2(123));
+          expect(cmd.simulate({ result: 123, success: false })).toEqual(
+            actionCreator2(123)
+          );
         });
 
         it('returns null if there is no fail hanlder', () => {
@@ -537,7 +578,7 @@ describe('Cmds', () => {
             successActionCreator: actionCreator2
           });
 
-          expect(cmd.simulate({result: 123, success: false})).toBe(null);
+          expect(cmd.simulate({ result: 123, success: false })).toBe(null);
         });
       });
     });
@@ -562,7 +603,11 @@ describe('Cmds', () => {
 
         let listCmd = Cmd.list([cmd1, cmd2, cmd3]);
 
-        let simulations = [{success: true, result: 123}, {succes: false, result: 'ignored'}, {success: false, result: 456}];
+        let simulations = [
+          { success: true, result: 123 },
+          { succes: false, result: 'ignored' },
+          { success: false, result: 456 }
+        ];
         let result = listCmd.simulate(simulations);
 
         expect(result).toEqual([
@@ -581,13 +626,14 @@ describe('Cmds', () => {
 
         let listCmd = Cmd.list([cmd1, cmd2, cmd3]);
 
-        let simulations = [{success: true, result: 123}, {succes: false, result: 'ignored'}, {success: false, result: 456}];
+        let simulations = [
+          { success: true, result: 123 },
+          { succes: false, result: 'ignored' },
+          { success: false, result: 456 }
+        ];
         let result = listCmd.simulate(simulations);
 
-        expect(result).toEqual([
-          actionCreator1(123),
-          actionCreator1('hello')
-        ]);
+        expect(result).toEqual([actionCreator1(123), actionCreator1('hello')]);
       });
 
       it('flattens nested results', () => {
@@ -595,18 +641,15 @@ describe('Cmds', () => {
           successActionCreator: actionCreator1
         });
         let cmd2 = Cmd.list([
-          Cmd.run(sideEffect, {failActionCreator: actionCreator2}),
-          Cmd.run(sideEffect, {failActionCreator: actionCreator1})
+          Cmd.run(sideEffect, { failActionCreator: actionCreator2 }),
+          Cmd.run(sideEffect, { failActionCreator: actionCreator1 })
         ]);
 
         let listCmd = Cmd.list([cmd1, cmd2]);
 
         let simulations = [
-          {success: true, result: 123},
-          [
-            {succes: false, result: 456},
-            {success: false, result: 789}
-          ]
+          { success: true, result: 123 },
+          [{ succes: false, result: 456 }, { success: false, result: 789 }]
         ];
         let result = listCmd.simulate(simulations);
 
@@ -619,11 +662,11 @@ describe('Cmds', () => {
     });
 
     describe('Cmd.map', () => {
-      function noArgTagger(action){
-        return actionCreator2(action)
+      function noArgTagger(action) {
+        return actionCreator2(action);
       }
 
-      function argTagger(arg1, arg2, action){
+      function argTagger(arg1, arg2, action) {
         let res = actionCreator2(action);
         res.arg1 = arg1;
         res.arg2 = arg2;
@@ -631,43 +674,60 @@ describe('Cmds', () => {
       }
 
       it('simulates the nested cmd and runs the result through the tagger function', () => {
-        let runCmd = Cmd.run(sideEffect, {successActionCreator: actionCreator1});
+        let runCmd = Cmd.run(sideEffect, {
+          successActionCreator: actionCreator1
+        });
         let cmd = Cmd.map(runCmd, noArgTagger);
-        expect(cmd.simulate({success: true, result: 123})).toEqual(noArgTagger(actionCreator1(123)));
+        expect(cmd.simulate({ success: true, result: 123 })).toEqual(
+          noArgTagger(actionCreator1(123))
+        );
       });
 
       it('returns null if the nested cmd simulates to null', () => {
         let runCmd = Cmd.run(sideEffect);
         let cmd = Cmd.map(runCmd, noArgTagger);
-        expect(cmd.simulate({success: true, result: 123})).toBe(null);
+        expect(cmd.simulate({ success: true, result: 123 })).toBe(null);
       });
 
       it('passes the args through to the tagger if there are args', () => {
-        let runCmd = Cmd.run(sideEffect, {successActionCreator: actionCreator1});
+        let runCmd = Cmd.run(sideEffect, {
+          successActionCreator: actionCreator1
+        });
         let cmd = Cmd.map(runCmd, argTagger, 456, 789);
-        expect(cmd.simulate({success: true, result: 123})).toEqual(argTagger(456, 789, actionCreator1(123)));
+        expect(cmd.simulate({ success: true, result: 123 })).toEqual(
+          argTagger(456, 789, actionCreator1(123))
+        );
       });
 
       describe('when the nested simulation returns an array', () => {
         it('simulates the nested cmd and runs all of the result actions through the tagger function', () => {
           let list = Cmd.list([
-            Cmd.run(sideEffect, {successActionCreator: actionCreator1}),
-            Cmd.run(sideEffect, {failActionCreator: actionCreator2}),
+            Cmd.run(sideEffect, { successActionCreator: actionCreator1 }),
+            Cmd.run(sideEffect, { failActionCreator: actionCreator2 })
           ]);
 
           let cmd = Cmd.map(list, noArgTagger);
-          let result = cmd.simulate([{success: true, result: 123}, {success: false, result: 456}]);
-          expect(result).toEqual([noArgTagger(actionCreator1(123)), noArgTagger(actionCreator2(456))]);
+          let result = cmd.simulate([
+            { success: true, result: 123 },
+            { success: false, result: 456 }
+          ]);
+          expect(result).toEqual([
+            noArgTagger(actionCreator1(123)),
+            noArgTagger(actionCreator2(456))
+          ]);
         });
 
         it('passes the args through to the tagger if there are args', () => {
           let list = Cmd.list([
-            Cmd.run(sideEffect, {successActionCreator: actionCreator1}),
-            Cmd.run(sideEffect, {failActionCreator: actionCreator2}),
+            Cmd.run(sideEffect, { successActionCreator: actionCreator1 }),
+            Cmd.run(sideEffect, { failActionCreator: actionCreator2 })
           ]);
 
           let cmd = Cmd.map(list, argTagger, 'p1', 'p2');
-          let result = cmd.simulate([{success: true, result: 123}, {success: false, result: 456}]);
+          let result = cmd.simulate([
+            { success: true, result: 123 },
+            { success: false, result: 456 }
+          ]);
           expect(result).toEqual([
             argTagger('p1', 'p2', actionCreator1(123)),
             argTagger('p1', 'p2', actionCreator2(456))
@@ -678,28 +738,36 @@ describe('Cmds', () => {
 
     describe('Cmd.none', () => {
       it('returns null', () => {
-        expect(Cmd.none.simulate({success: true, result: 123})).toBe(null);
+        expect(Cmd.none.simulate({ success: true, result: 123 })).toBe(null);
       });
     });
   });
 
-  describe('disabling testInvariants', () =>{
+  describe('disabling testInvariants', () => {
     it('disables invariants on Cmd.run if you pass the disable invariant option', () => {
       let cmd = Cmd.run(sideEffect, {
-        successActionCreator: () => ({type: '123'}),
-        failActionCreator: () => ({type: '456'})
+        successActionCreator: () => ({ type: '123' }),
+        failActionCreator: () => ({ type: '456' })
       });
-      expect(cmd).toEqual(Cmd.run(sideEffect, {
-        testInvariants: true,
-        successActionCreator: expect.any(Function),
-        failActionCreator: expect.any(Function)
-      }));
+      expect(cmd).toEqual(
+        Cmd.run(sideEffect, {
+          testInvariants: true,
+          successActionCreator: expect.any(Function),
+          failActionCreator: expect.any(Function)
+        })
+      );
     });
 
     it('disables invariants on Cmd.list if you pass the disable invariant option', () => {
       let cmd = Cmd.run(sideEffect);
-      let listCmd = Cmd.list([Cmd.action({type: 'foo'}), cmd, Cmd.action({type: 'bar'})]);
-      expect(listCmd).toEqual(Cmd.list(expect.arrayContaining([cmd]), {testInvariants: true}));
+      let listCmd = Cmd.list([
+        Cmd.action({ type: 'foo' }),
+        cmd,
+        Cmd.action({ type: 'bar' })
+      ]);
+      expect(listCmd).toEqual(
+        Cmd.list(expect.arrayContaining([cmd]), { testInvariants: true })
+      );
     });
   });
 
@@ -714,9 +782,12 @@ describe('Cmds', () => {
     });
 
     it('creates a list with batch set to true and sequence set to false', async () => {
-      let cmd1 = Cmd.run(sideEffect), cmd2 = Cmd.run(sideEffect);
+      let cmd1 = Cmd.run(sideEffect),
+        cmd2 = Cmd.run(sideEffect);
       let batch = Cmd.batch([cmd1, cmd2]);
-      expect(batch).toEqual(Cmd.list([cmd1, cmd2], {batch: true, sequence: false}));
+      expect(batch).toEqual(
+        Cmd.list([cmd1, cmd2], { batch: true, sequence: false })
+      );
     });
   });
 
@@ -731,9 +802,12 @@ describe('Cmds', () => {
     });
 
     it('creates a list with batch set to true and sequence set to true', async () => {
-      let cmd1 = Cmd.run(sideEffect), cmd2 = Cmd.run(sideEffect);
+      let cmd1 = Cmd.run(sideEffect),
+        cmd2 = Cmd.run(sideEffect);
       let batch = Cmd.sequence([cmd1, cmd2]);
-      expect(batch).toEqual(Cmd.list([cmd1, cmd2], {batch: true, sequence: true}));
+      expect(batch).toEqual(
+        Cmd.list([cmd1, cmd2], { batch: true, sequence: true })
+      );
     });
   });
 });

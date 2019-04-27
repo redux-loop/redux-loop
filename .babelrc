@@ -1,13 +1,15 @@
 {
-  "presets": [["env", {"modules": false}]],
+  "presets": [["@babel/preset-env", {"modules": false}]],
   "plugins": [
-    "transform-object-rest-spread",
-    "transform-es3-member-expression-literals",
-    "transform-es3-property-literals"
+    "@babel/transform-member-expression-literals",
+    "@babel/transform-property-literals"
   ],
   "env": {
     "commonjs": {
-      "presets": [["env", {"modules": "commonjs"}]]
+      "presets": [["@babel/preset-env", {"modules": "commonjs"}]]
+    },
+    "test": {
+      "presets": [["@babel/preset-env", {"targets": { "node": "current" }}]]
     }
   }
 }

@@ -1,7 +1,43 @@
 {
-  "extends": "react-app",
+  "extends": ["eslint:recommended", "prettier"],
+  "env": {
+    "browser": true,
+    "jest": true,
+    "es6": true,
+    "node": true
+  },
+  "parserOptions": {
+    "ecmaVersion": 2019,
+    "ecmaFeatures": {
+      "impliedStrict": true
+    },
+    "sourceType": "module"
+  },
   "parser": "babel-eslint",
   "plugins": [
-    "flowtype"
-  ]
+    "flowtype",
+    "prettier"
+  ],
+  "rules": {
+    "camelcase": "error",
+    "curly": ["error", "all"],
+    "dot-notation": "error",
+    "eqeqeq": "error",
+    "guard-for-in": "error",
+    "no-bitwise": "error",
+    "no-console": "off",
+    "no-use-before-define": ["error", { "functions": false }],
+    "no-iterator": "error",
+    "no-loop-func": "error",
+    "no-multi-str": "error",
+    "no-sequences": "error",
+    "no-var": "error",
+    "no-with": "error",
+    "no-unused-vars": ["error", {"ignoreRestSiblings": true, "args": "after-used" }],
+    "strict": "error",
+    "prettier/prettier": ["error", {
+      singleQuote: true,
+      tabWidth: 2
+    }]
+  }
 }
