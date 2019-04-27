@@ -122,7 +122,7 @@ declare namespace Cmd {
       failActionCreator?: ActionCreator<A>;
       successActionCreator?: ActionCreator<B>;
       forceSync?: boolean;
-      testInvariants? boolean;
+      testInvariants?: boolean;
     }
   ): RunCmd<A>;
 }
