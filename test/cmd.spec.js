@@ -770,44 +770,4 @@ describe('Cmds', () => {
       );
     });
   });
-
-  describe('Cmd.batch', () => {
-    let warn;
-    beforeEach(() => {
-      warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    });
-
-    afterEach(() => {
-      warn.mockRestore();
-    });
-
-    it('creates a list with batch set to true and sequence set to false', async () => {
-      let cmd1 = Cmd.run(sideEffect),
-        cmd2 = Cmd.run(sideEffect);
-      let batch = Cmd.batch([cmd1, cmd2]);
-      expect(batch).toEqual(
-        Cmd.list([cmd1, cmd2], { batch: true, sequence: false })
-      );
-    });
-  });
-
-  describe('Cmd.sequence', () => {
-    let warn;
-    beforeEach(() => {
-      warn = jest.spyOn(console, 'warn').mockImplementation(() => {});
-    });
-
-    afterEach(() => {
-      warn.mockRestore();
-    });
-
-    it('creates a list with batch set to true and sequence set to true', async () => {
-      let cmd1 = Cmd.run(sideEffect),
-        cmd2 = Cmd.run(sideEffect);
-      let batch = Cmd.sequence([cmd1, cmd2]);
-      expect(batch).toEqual(
-        Cmd.list([cmd1, cmd2], { batch: true, sequence: true })
-      );
-    });
-  });
 });

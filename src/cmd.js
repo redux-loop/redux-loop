@@ -294,34 +294,6 @@ function list(cmds, options = {}) {
   });
 }
 
-function batch(cmds) {
-  if (process.env.NODE_ENV !== 'production') {
-    throwInvariant(
-      Array.isArray(cmds) && cmds.every(isCmd),
-      'Cmd.batch: first and only argument to Cmd.batch must be an array of other Cmds'
-    );
-  }
-
-  console.warn(
-    'Cmd.batch is deprecated and will be removed in version 5. Please use Cmd.list (https://github.com/redux-loop/redux-loop/blob/master/docs/api-docs/cmds.md#cmdlistcmds-options)'
-  );
-  return list(cmds, { batch: true, sequence: false });
-}
-
-function sequence(cmds) {
-  if (process.env.NODE_ENV !== 'production') {
-    throwInvariant(
-      Array.isArray(cmds) && cmds.every(isCmd),
-      'Cmd.sequence: first and only argument to Cmd.sequence must be an array of other Cmds'
-    );
-  }
-
-  console.warn(
-    'Cmd.sequence is deprecated and will be removed in version 5. Please use Cmd.list (https://github.com/redux-loop/redux-loop/blob/master/docs/api-docs/cmds.md#cmdlistcmds-options)'
-  );
-  return list(cmds, { batch: true, sequence: true });
-}
-
 function simulateMap(simulation) {
   let result = this.nestedCmd.simulate(simulation);
   if (Array.isArray(result)) {
@@ -366,8 +338,6 @@ export default {
   run,
   action,
   list,
-  batch,
-  sequence,
   map,
   none,
   dispatch: dispatchSymbol,

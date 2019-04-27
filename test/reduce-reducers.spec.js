@@ -118,7 +118,7 @@ describe('reduceReducers', function() {
       };
       const cmd = Cmd.list([
         Cmd.list([divideCmd, sideEffectCmd]),
-        Cmd.list([addCmd, multCmd], { batch: true })
+        Cmd.list([addCmd, multCmd])
       ]);
       expect(reducer(initialState, action)).toEqual(loop(newState, cmd));
     });
@@ -130,7 +130,7 @@ describe('reduceReducers', function() {
         mult: 27
       };
       const cmd = Cmd.list([
-        Cmd.list([addCmd, multCmd], { batch: true }),
+        Cmd.list([addCmd, multCmd]),
         Cmd.list([divideCmd, sideEffectCmd])
       ]);
       expect(reducer(initialState, action)).toEqual(loop(newState, cmd));
@@ -144,7 +144,7 @@ describe('reduceReducers', function() {
       };
       const cmd = Cmd.list([
         Cmd.list([divideCmd, sideEffectCmd]),
-        Cmd.list([addCmd, multCmd], { batch: true }),
+        Cmd.list([addCmd, multCmd]),
         Cmd.list([divideCmd, sideEffectCmd])
       ]);
       expect(reducer(initialState, action)).toEqual(loop(newState, cmd));
