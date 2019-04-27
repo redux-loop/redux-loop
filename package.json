@@ -1,6 +1,6 @@
 {
   "name": "redux-loop",
-  "version": "4.5.4",
+  "version": "5.0.0",
   "description": "Sequence your effects naturally and purely by returning them from your reducers.",
   "main": "lib/index.js",
   "module": "es/index.js",
@@ -97,7 +97,9 @@
   },
   "jest": {
     "testRegex": "(test/.*\\.spec.js)$",
-    "testPathIgnorePatterns": ["_book"],
+    "testPathIgnorePatterns": [
+      "_book"
+    ],
     "testURL": "http://localhost"
   }
 }
