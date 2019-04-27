@@ -1,6 +1,5 @@
 import { combineReducers } from '../src';
 import { getModel } from '../src/loop';
-import { Map } from 'immutable';
 
 const reducers = {
   counter: (state = 0) => state + 1,
