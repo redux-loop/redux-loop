@@ -1,5 +1,13 @@
 import { Action, ActionCreator, AnyAction, StoreEnhancer, Store } from 'redux';
 
+export type PromiseResult<T> = T extends Promise<infer U> ? U : never;
+
+export type FinalReturnType<T extends (...args: any) => any> = T extends (
+  ...args: any
+) => Promise<any>
+  ? PromiseResult<ReturnType<T>>
+  : ReturnType<T>;
+
 export interface StoreCreator {
   <S, A extends Action>(
     reducer: LoopReducer<S, A>,
@@ -115,16 +123,22 @@ declare namespace Cmd {
     args?: any[]
   ): MapCmd<A>;
 
-  export function run<A extends Action, B extends Action>(
-    f: Function,
+  export function run<
+    TSuccessAction extends Action,
+    TFailAction extends Action,
+    TFunction extends (...args: any[]) => any | Promise<any>
+  >(
+    f: TFunction,
     options?: {
       args?: any[];
-      failActionCreator?: ActionCreator<A>;
-      successActionCreator?: ActionCreator<B>;
+      failActionCreator?: (error: Error) => TFailAction;
+      successActionCreator?: (
+        arg: FinalReturnType<TFunction>
+      ) => TSuccessAction;
       forceSync?: boolean;
       testInvariants?: boolean;
     }
-  ): RunCmd<A>;
+  ): RunCmd<TSuccessAction | TFailAction>;
 }
 
 export type ReducerMapObject<S, A extends Action = AnyAction> = {

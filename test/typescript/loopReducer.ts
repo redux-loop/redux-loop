@@ -148,8 +148,8 @@ const rootState: RootState = rootReducer(undefined, {
   text: 'test'
 })[0];
 
-let cmd = Cmd.run(() => {}, {
-  successActionCreator: a => ({type: 'FOO', a: 2*a})
+let cmd = Cmd.run(() => 2, {
+  successActionCreator: (a: number) => ({type: 'FOO', a: 2*a})
 });
 let action: AnyAction = cmd.simulate({success: true, result: 123});
 let listCmd = Cmd.list([cmd, cmd]);
