@@ -93,8 +93,8 @@ declare function loop<S, A extends Action>(
 ): Loop<S, A>;
 
 declare namespace Cmd {
-  export const dispatch: symbol;
-  export const getState: symbol;
+  export const dispatch: unique symbol;
+  export const getState: unique symbol;
   export const none: NoneCmd;
   export function action<A extends Action>(action: A): ActionCmd<A>;
   export function batch<A extends Action>(cmds: CmdType<A>[]): BatchCmd<A>;
