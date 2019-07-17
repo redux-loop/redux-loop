@@ -521,6 +521,28 @@ describe('Cmds', () => {
           { ...actionCreator2(action2), arg1, arg2 }
         ]);
       });
+
+      function dispatchAction(action) {
+        return Cmd.run(
+          (dispatch) => dispatch(action),
+          {
+            args: [Cmd.dispatch],
+          }
+        );
+      }
+
+      it('runs the actions from async dispatch through the tagger function', () => {
+        let action1 = actionCreator1(123);
+        let subCommand = dispatchAction(action1);
+        let arg1 = 'arg1',
+          arg2 = 'arg2';
+        let cmd = Cmd.map(subCommand, argTagger, arg1, arg2);
+        let result = executeCmd(cmd, dispatch, getState);
+        expect(result).toEqual(null);
+        expect(dispatch).toHaveBeenCalledWith(
+          { ...actionCreator2(action1), arg1, arg2 },
+        );
+      });
     });
 
     describe('Cmd.none', () => {
