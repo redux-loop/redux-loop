@@ -523,12 +523,9 @@ describe('Cmds', () => {
       });
 
       function dispatchAction(action) {
-        return Cmd.run(
-          (dispatch) => dispatch(action),
-          {
-            args: [Cmd.dispatch],
-          }
-        );
+        return Cmd.run(dispatch => dispatch(action), {
+          args: [Cmd.dispatch]
+        });
       }
 
       it('runs the actions from async dispatch through the tagger function', () => {
@@ -539,9 +536,11 @@ describe('Cmds', () => {
         let cmd = Cmd.map(subCommand, argTagger, arg1, arg2);
         let result = executeCmd(cmd, dispatch, getState);
         expect(result).toEqual(null);
-        expect(dispatch).toHaveBeenCalledWith(
-          { ...actionCreator2(action1), arg1, arg2 },
-        );
+        expect(dispatch).toHaveBeenCalledWith({
+          ...actionCreator2(action1),
+          arg1,
+          arg2
+        });
       });
     });
 
