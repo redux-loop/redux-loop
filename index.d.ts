@@ -57,14 +57,14 @@ export interface MapCmd<A extends Action> {
   simulate(simulations?: CmdSimulation | MultiCmdSimulation): A[] | A | null
 }
 
-export interface RunCmd<A extends Action> {
+export interface RunCmd<SuccessAction extends Action, FailAction extends Action = Action> {
   readonly type: 'RUN';
   readonly func: Function;
   readonly args?: any[];
-  readonly failActionCreator?: ActionCreator<A>;
-  readonly successActionCreator?: ActionCreator<A>;
+  readonly failActionCreator?: ActionCreator<FailAction>;
+  readonly successActionCreator?: ActionCreator<SuccessAction>;
   readonly forceSync?: boolean;
-  simulate(simulation: CmdSimulation): A
+  simulate(simulation: CmdSimulation): SuccessAction | FailAction;
 }
 
 //deprecated types
@@ -96,6 +96,9 @@ export namespace Cmd {
   export const dispatch: unique symbol;
   export const getState: unique symbol;
   export const none: NoneCmd;
+  export type Dispatch = <A extends Action>(a: A) => void;
+  export type GetState = <S>() => S;
+
   export function action<A extends Action>(action: A): ActionCmd<A>;
   export function batch<A extends Action>(cmds: CmdType<A>[]): BatchCmd<A>;
   export function sequence<A extends Action>(cmds: CmdType<A>[]): SequenceCmd<A>;
@@ -115,16 +118,30 @@ export namespace Cmd {
     args?: any[]
   ): MapCmd<A>;
 
-  export function run<A extends Action, B extends Action>(
-    f: Function,
+  // Allow the use of special dispatch | getState symbols
+  type ArgOrSymbol<T> = {
+    [K in keyof T]: T[K] extends GetState
+      ? typeof getState
+      : T[K] extends Dispatch
+        ? typeof dispatch
+        : T[K];
+  }
+  export type PromiseResult<T> = T extends Promise<infer U> ? U : T;
+
+  export function run<
+    Func extends (...args: any[]) => Promise<any> | any,
+    SuccessAction extends Action,
+    FailAction extends Action,
+    >(
+    f: Func,
     options?: {
-      args?: any[];
-      failActionCreator?: ActionCreator<A>;
-      successActionCreator?: ActionCreator<B>;
+      args?: ArgOrSymbol<Parameters<Func>>;
+      failActionCreator?: (error: any) => FailAction;
+      successActionCreator?: (value: PromiseResult<ReturnType<Func>>) => SuccessAction;
       forceSync?: boolean;
       testInvariants?: boolean;
-    }
-  ): RunCmd<A>;
+    },
+  ): RunCmd<SuccessAction, FailAction>;
 }
 
 export type ReducerMapObject<S, A extends Action = AnyAction> = {
