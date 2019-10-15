@@ -106,9 +106,9 @@ of the cmd object.
 
 * `func: (...Array<any>) => any` &ndash; a function to run
 
-* `options.successActionCreator: (any) => Action` &ndash; an optional function that that takes the promise resolution value (if func returns a promise) or the return value (if func does not return a promise) and returns an action which will be dispatched.
+* `options.successActionCreator: (any) => Action` &ndash; an optional function that takes the promise resolution value (if func returns a promise) or the return value (if func does not return a promise) and returns an action which will be dispatched.
 
-* `options.failActionCreator: (any) => Action` &ndash; an optional function that that takes the promise rejection value (if func returns a promise) or the thrown error (if func throws) and returns an action which will be dispatched. This should not be omitted if the function is expected to potentially throw an exception. Exceptions are re-thrown if there is no fail handler.
+* `options.failActionCreator: (any) => Action` &ndash; an optional function that takes the promise rejection value (if func returns a promise) or the thrown error (if func throws) and returns an action which will be dispatched. This should not be omitted if the function is expected to potentially throw an exception. Exceptions are re-thrown if there is no fail handler.
 
 * `options.args: Array<any>` &ndash; an optional array of arguments to call `func` with.
 
