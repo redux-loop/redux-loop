@@ -85,14 +85,14 @@ export interface LoopConfig {
   readonly DONT_LOG_ERRORS_ON_HANDLED_FAILURES: boolean;
 }
 
-declare function install<S>(config?: LoopConfig): StoreEnhancer<S>;
+export function install<S>(config?: LoopConfig): StoreEnhancer<S>;
 
-declare function loop<S, A extends Action>(
+export function loop<S, A extends Action>(
   state: S,
   cmd: CmdType<A>
 ): Loop<S, A>;
 
-declare namespace Cmd {
+export namespace Cmd {
   export const dispatch: unique symbol;
   export const getState: unique symbol;
   export const none: NoneCmd;
@@ -131,27 +131,27 @@ export type ReducerMapObject<S, A extends Action = AnyAction> = {
   [K in keyof S]: LoopReducer<S[K], A>;
 }
 
-declare function combineReducers<S, A extends Action = AnyAction>(
+export function combineReducers<S, A extends Action = AnyAction>(
   reducers: ReducerMapObject<S, A>
 ): LiftedLoopReducer<S, A>;
 
-declare function mergeChildReducers<S, A extends Action = AnyAction>(
+export function mergeChildReducers<S, A extends Action = AnyAction>(
   parentResult: S | Loop<S, A>,
   action: AnyAction,
   childMap: ReducerMapObject<S, A>
 ): Loop<S, A>;
 
-declare function reduceReducers<S, A extends Action = AnyAction>(
+export function reduceReducers<S, A extends Action = AnyAction>(
   initialReducer: LoopReducer<S, A>,
   ...reducers: Array<LoopReducerWithDefinedState<S, A>>
 ): LiftedLoopReducer<S, A>;
 
-declare function liftState<S, A extends Action>(
+export function liftState<S, A extends Action>(
   state: S | Loop<S, A>
 ): Loop<S, A>;
 
-declare function isLoop(test: any): boolean;
+export function isLoop(test: any): boolean;
 
-declare function getModel<S>(loop: S | Loop<S, AnyAction>): S;
+export function getModel<S>(loop: S | Loop<S, AnyAction>): S;
 
-declare function getCmd<A extends Action>(a: any): CmdType<A> | null;
+export function getCmd<A extends Action>(a: any): CmdType<A> | null;
