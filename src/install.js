@@ -3,7 +3,8 @@ import { executeCmd } from './cmd';
 import { loopPromiseCaughtError } from './errors';
 
 const defaultLoopConfig = {
-  DONT_LOG_ERRORS_ON_HANDLED_FAILURES: false
+  DONT_LOG_ERRORS_ON_HANDLED_FAILURES: false,
+  ENABLE_THUNK_MIGRATION: false
 };
 
 export function install(config = {}) {
@@ -54,6 +55,9 @@ export function install(config = {}) {
     }
 
     function dispatch(action) {
+      if (loopConfig.ENABLE_THUNK_MIGRATION && typeof action === 'function') {
+        return action(dispatch, store.getState);
+      }
       const result = store.dispatch(action);
       const cmdsToRun = cmdsQueue;
       cmdsQueue = [];
