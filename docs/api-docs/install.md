@@ -2,10 +2,8 @@
 
 * `config: Object<string, Boolean>` &ndash; an optional map of config values to override default
  redux-loop configs
-*  Currently the only option is `DONT_LOG_ERRORS_ON_HANDLED_FAILURES` which is set 
-   to false by default. This means that by default, redux-loop will log errors in your 
-   effects even if you pass in a failActionCreator to a command (passing in a 
-   failActionCreator does not swallow errors like how `catch` is used for Promises). 
+  * `DONT_LOG_ERRORS_ON_HANDLED_FAILURES`: set to false by default. This means that by default, redux-loop will log errors in your effects even if you pass in a failActionCreator to a command (passing in a failActionCreator does not swallow errors like how `catch` is used for Promises).
+  * `ENABLE_THUNK_MIGRATION`: Set to false by default. If enabled, you can dispatch thunks and redux-loop will handle them like redux-thunk.
 
 ## Notes
 
