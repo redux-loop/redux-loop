@@ -4,6 +4,7 @@
 * [Getting started](/docs/tutorial/README.md)
   * [Tutorial](/docs/tutorial/Tutorial.md)
   * [Testing](/docs/tutorial/Testing.md)
+  * [Migrating to Redux Loop](/docs/tutorial/Migrating.md)
   * [Advanced topics](/docs/tutorial/AdvancedTopics.md)
 * [Recipes](/docs/recipes/README.md)
   * [Action Queue](/docs/recipes/ActionQueue.md)
