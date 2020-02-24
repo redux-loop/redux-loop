@@ -17,6 +17,7 @@
   * [`isLoop`](/docs/api-docs/isLoop.md)
   * [`Cmds`](/docs/api-docs/cmds.md)
     * [`Cmd.action`](/docs/api-docs/cmds.md#cmdactionactiontodispatch)
+    * [`Cmd.delayedAction`](/docs/api-docs/cmds.md#cmddelayedactionactiontodispatch-delayms)
     * [`Cmd.run`](/docs/api-docs/cmds.md#cmdrunfunc-options)
     * [`Cmd.list`](/docs/api-docs/cmds.md#cmdlistcmds-options)
     * [`Cmd.map`](/docs/api-docs/cmds.md#cmdmapcmd-higherorderactioncreator-additionalargs)

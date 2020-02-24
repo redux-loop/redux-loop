@@ -61,6 +61,13 @@ export interface ActionCmd<A extends Action> {
   simulate(): A;
 }
 
+export interface DelayedActionCmd<A extends Action = never> {
+  readonly type: 'DELAYED_ACTION';
+  readonly actionToDispatch: A;
+  readonly delayMs: number;
+  simulate(): A;
+}
+
 export interface MapCmd<A extends Action = never> {
   readonly type: 'MAP';
   readonly tagger: ActionCreator<A>;
@@ -84,6 +91,7 @@ export interface RunCmd<
 
 export type CmdType =
   | ActionCmd<UnknownAction>
+  | DelayedActionCmd<UnknownAction>
   | ListCmd
   | MapCmd<UnknownAction>
   | NoneCmd
@@ -114,6 +122,7 @@ export namespace Cmd {
   };
 
   export function list(cmds: CmdType[], options?: ListOptions): ListCmd;
+  export function delayedAction<A extends Action>(action: A, delayMs: number): DelayedActionCmd<A>;
 
   export function map<A extends Action, B extends Action>(
     cmd: CmdType,

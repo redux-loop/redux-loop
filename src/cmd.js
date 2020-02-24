@@ -7,6 +7,7 @@ const getStateSymbol = Symbol('getState');
 const cmdTypes = {
   RUN: 'RUN',
   ACTION: 'ACTION',
+  DELAYED_ACTION: 'DELAYED_ACTION',
   LIST: 'LIST',
   MAP: 'MAP',
   NONE: 'NONE'
@@ -131,6 +132,10 @@ function handleSequenceList({ cmds, batch = false }, context) {
   return batch ? result : result.then(() => []);
 }
 
+function delay(delayMs) {
+  return new Promise(resolve => setTimeout(resolve, delayMs));
+}
+
 export function executeCmd(cmd, dispatch, getState, loopConfig = {}) {
   return executeCmdInternal(cmd, {
     dispatch,
@@ -147,6 +152,9 @@ function executeCmdInternal(cmd, context) {
 
     case cmdTypes.ACTION:
       return Promise.resolve([cmd.actionToDispatch]);
+
+    case cmdTypes.DELAYED_ACTION:
+      return delay(cmd.delayMs).then(() => [cmd.actionToDispatch]);
 
     case cmdTypes.LIST:
       return cmd.sequence
@@ -253,6 +261,29 @@ function action(actionToDispatch) {
   });
 }
 
+function delayedAction(actionToDispatch, delayMs) {
+  if (process.env.NODE_ENV !== 'production') {
+    throwInvariant(
+      typeof actionToDispatch === 'object' &&
+        actionToDispatch !== null &&
+        typeof actionToDispatch.type !== 'undefined',
+      'Cmd.delayedAction: first argument to Cmd.delayedAction must be an action'
+    );
+    throwInvariant(
+      typeof delayMs === 'number',
+      'Cmd.delayedAction: second argument to Cmd.delayedAction must be a number'
+    );
+  }
+
+  return Object.freeze({
+    [isCmdSymbol]: true,
+    type: cmdTypes.DELAYED_ACTION,
+    actionToDispatch,
+    delayMs,
+    simulate: simulateAction
+  });
+}
+
 function simulateList(simulations) {
   return flatten(
     this.cmds.map((cmd, i) => cmd.simulate(simulations[i])).filter(a => a)
@@ -332,6 +363,7 @@ const none = Object.freeze({
 export default {
   run,
   action,
+  delayedAction,
   list,
   map,
   none,

@@ -11,6 +11,7 @@ Detailed documentation of the API is provided here. For a more gentle introducti
 * [`Cmds`](cmds.md)
   * [`Cmd.none`](cmds.md#cmdnone)
   * [`Cmd.action(actionToDispatch)`](cmds.md#cmdactionactiontodispatch)
+  * [`Cmd.delayedAction(actionToDispatch, delayMs)`](/docs/api-docs/cmds.md#cmddelayedactionactiontodispatch-delayms)
   * [`Cmd.run(func, options)`](cmds.md#cmdrunfunc-options)
   * [`Cmd.list(cmds, options)`](cmds.md#cmdlistcmds-options)
   * [`Cmd.map(cmd, higherOrderActionCreator, [...additionalArgs])`](cmds.md#cmdmapcmd-higherorderactioncreator-additionalargs)

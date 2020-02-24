@@ -79,6 +79,32 @@ return loop(
 );
 ```
 
+### `Cmd.delayedAction(actionToDispatch, delayMs)`
+
+`delayedAction()` works the same way as `action()` but allows you to delay the dispatch
+to sometime further in the future. This is useful for triggering animations, scheduling
+a timeout, etc. It uses `setTimeout()` internally.
+
+* `actionToDispatch: Action` &ndash; a plain object with a `type` property that the store
+  can dispatch.
+* `delayMs: number` &ndash; the number of milliseconds to wait before dispatching the action.
+
+#### Simulation
+
+Simulating `action` always returns `actionToDispatch`.
+
+#### Examples
+
+```js
+// Once the store has finished updating this part of the state with the new
+// result where `showAnimation` is `true` it will use `setTimeout()` to
+// schedule another dispatch in 3000ms for the action HIDE_ANIMATION.
+return loop(
+  { ...state, showAnimation: true },
+  Cmd.delayedAction({ type: 'HIDE_ANIMATION' }, 3000)
+);
+```
+
 ### `Cmd.run(func, options)`
 
 `run()` allows you to declaratively schedule a function to be called with some
@@ -176,10 +202,10 @@ function reducer(state , action) {
 
   case 'USER_FETCH_SUCCESSFUL':
     return {...state, user: action.user};
-    
+
   case 'USER_FETCH_FAILED':
     return {...state, error: action.error};
-    
+
   default:
     return state;
   }

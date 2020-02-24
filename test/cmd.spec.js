@@ -227,6 +227,15 @@ describe('Cmds', () => {
       });
     });
 
+    describe('Cmd.delayedAction', () => {
+      it('resolves with the passed action in an array', async () => {
+        let action = actionCreator1(123);
+        let cmd = Cmd.delayedAction(action, 100);
+        let result = executeCmd(cmd, dispatch, getState);
+        await expect(result).resolves.toEqual([action]);
+      });
+    });
+
     describe('Cmd.list', () => {
       let consoleError;
 
@@ -598,6 +607,14 @@ describe('Cmds', () => {
       it('returns the action', () => {
         let action = actionCreator1(123);
         let cmd = Cmd.action(action);
+        expect(cmd.simulate()).toBe(action);
+      });
+    });
+
+    describe('Cmd.delayedAction', () => {
+      it('returns the action', () => {
+        let action = actionCreator1(123);
+        let cmd = Cmd.delayedAction(action, 100);
         expect(cmd.simulate()).toBe(action);
       });
     });
