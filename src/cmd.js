@@ -134,20 +134,22 @@ function handleSequenceList({ cmds, batch = false }, context) {
 
 function handleScheduleCmd(cmd, dispatch, getState, loopConfig) {
   let setIntervalOrTimeout = cmd.isRepeating ? setInterval : setTimeout;
-  const handle = setIntervalOrTimeout(
-    () => {
-      const cmdPromise = executeCmd(cmd.nestedCmd, dispatch, getState, loopConfig);
-      if (cmdPromise) {
-        cmdPromise
-          .then(actions => {
-            if (!actions.length) {
-              return;
-            }
-            return Promise.all(actions.map(dispatch));
-          });
-      }
-    },
-    cmd.delayMs);
+  const handle = setIntervalOrTimeout(() => {
+    const cmdPromise = executeCmd(
+      cmd.nestedCmd,
+      dispatch,
+      getState,
+      loopConfig
+    );
+    if (cmdPromise) {
+      cmdPromise.then(actions => {
+        if (!actions.length) {
+          return;
+        }
+        return Promise.all(actions.map(dispatch));
+      });
+    }
+  }, cmd.delayMs);
 
   if (cmd.onScheduledActionCreator) {
     return Promise.resolve([cmd.onScheduledActionCreator(handle)]);

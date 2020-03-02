@@ -237,7 +237,9 @@ describe('Cmds', () => {
         let cmd = Cmd.schedule(Cmd.action(action), 100, actionCreator2);
         let result = executeCmd(cmd, dispatch, getState);
 
-        await expect(result).resolves.toEqual([actionCreator2(expect.anything())]);
+        await expect(result).resolves.toEqual([
+          actionCreator2(expect.anything())
+        ]);
         await dispatchPromise;
         expect(dispatch.mock.calls.length).toEqual(1);
         expect(dispatch.mock.calls[0][0]).toEqual(action);
