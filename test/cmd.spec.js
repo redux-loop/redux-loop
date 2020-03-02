@@ -227,12 +227,20 @@ describe('Cmds', () => {
       });
     });
 
-    describe('Cmd.delayedAction', () => {
-      it('resolves with the passed action in an array', async () => {
+    describe('Cmd.schedule', () => {
+      it('resolves with the action created from the action creator', async () => {
+        let dispatchPromise = new Promise(resolve => {
+          dispatch = jest.fn(() => resolve());
+        });
+
         let action = actionCreator1(123);
-        let cmd = Cmd.delayedAction(action, 100);
+        let cmd = Cmd.schedule(Cmd.action(action), 100, actionCreator2);
         let result = executeCmd(cmd, dispatch, getState);
-        await expect(result).resolves.toEqual([action]);
+
+        await expect(result).resolves.toEqual([actionCreator2(expect.anything())]);
+        await dispatchPromise;
+        expect(dispatch.mock.calls.length).toEqual(1);
+        expect(dispatch.mock.calls[0][0]).toEqual(action);
       });
     });
 
@@ -611,10 +619,10 @@ describe('Cmds', () => {
       });
     });
 
-    describe('Cmd.delayedAction', () => {
-      it('returns the action', () => {
+    describe('Cmd.schedule', () => {
+      it('returns the nested action', () => {
         let action = actionCreator1(123);
-        let cmd = Cmd.delayedAction(action, 100);
+        let cmd = Cmd.schedule(Cmd.action(action), 100);
         expect(cmd.simulate()).toBe(action);
       });
     });

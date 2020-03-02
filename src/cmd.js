@@ -7,7 +7,7 @@ const getStateSymbol = Symbol('getState');
 const cmdTypes = {
   RUN: 'RUN',
   ACTION: 'ACTION',
-  DELAYED_ACTION: 'DELAYED_ACTION',
+  SCHEDULE: 'SCHEDULE',
   LIST: 'LIST',
   MAP: 'MAP',
   NONE: 'NONE'
@@ -132,8 +132,28 @@ function handleSequenceList({ cmds, batch = false }, context) {
   return batch ? result : result.then(() => []);
 }
 
-function delay(delayMs) {
-  return new Promise(resolve => setTimeout(resolve, delayMs));
+function handleScheduleCmd(cmd, dispatch, getState, loopConfig) {
+  let setIntervalOrTimeout = cmd.isRepeating ? setInterval : setTimeout;
+  const handle = setIntervalOrTimeout(
+    () => {
+      const cmdPromise = executeCmd(cmd.nestedCmd, dispatch, getState, loopConfig);
+      if (cmdPromise) {
+        cmdPromise
+          .then(actions => {
+            if (!actions.length) {
+              return;
+            }
+            return Promise.all(actions.map(dispatch));
+          });
+      }
+    },
+    cmd.delayMs);
+
+  if (cmd.onScheduledActionCreator) {
+    return Promise.resolve([cmd.onScheduledActionCreator(handle)]);
+  } else {
+    return null;
+  }
 }
 
 export function executeCmd(cmd, dispatch, getState, loopConfig = {}) {
@@ -153,8 +173,8 @@ function executeCmdInternal(cmd, context) {
     case cmdTypes.ACTION:
       return Promise.resolve([cmd.actionToDispatch]);
 
-    case cmdTypes.DELAYED_ACTION:
-      return delay(cmd.delayMs).then(() => [cmd.actionToDispatch]);
+    case cmdTypes.SCHEDULE:
+      return handleScheduleCmd(cmd, dispatch, getState, loopConfig);
 
     case cmdTypes.LIST:
       return cmd.sequence
@@ -261,27 +281,44 @@ function action(actionToDispatch) {
   });
 }
 
-function delayedAction(actionToDispatch, delayMs) {
+function schedule(nestedCmd, delayMs, onScheduledActionCreator) {
+  return _schedule(nestedCmd, delayMs, onScheduledActionCreator, false);
+}
+
+function scheduleRepeating(nestedCmd, delayMs, onScheduledActionCreator) {
+  return _schedule(nestedCmd, delayMs, onScheduledActionCreator, true);
+}
+
+function _schedule(nestedCmd, delayMs, onScheduledActionCreator, isRepeating) {
   if (process.env.NODE_ENV !== 'production') {
     throwInvariant(
-      typeof actionToDispatch === 'object' &&
-        actionToDispatch !== null &&
-        typeof actionToDispatch.type !== 'undefined',
-      'Cmd.delayedAction: first argument to Cmd.delayedAction must be an action'
+      isCmd(nestedCmd),
+      'Cmd.schedule: first argument must be another Cmd'
     );
     throwInvariant(
       typeof delayMs === 'number',
-      'Cmd.delayedAction: second argument to Cmd.delayedAction must be a number'
+      'Cmd.schedule: second argument must be a number'
+    );
+    throwInvariant(
+      onScheduledActionCreator === undefined ||
+        typeof onScheduledActionCreator === 'function',
+      'Cmd.schedule: third argument must be a function (if specified)'
     );
   }
 
   return Object.freeze({
     [isCmdSymbol]: true,
-    type: cmdTypes.DELAYED_ACTION,
-    actionToDispatch,
+    type: cmdTypes.SCHEDULE,
+    nestedCmd,
     delayMs,
-    simulate: simulateAction
+    isRepeating,
+    onScheduledActionCreator,
+    simulate: simulateSchedule
   });
+}
+
+function simulateSchedule(simulation) {
+  return this.nestedCmd.simulate(simulation);
 }
 
 function simulateList(simulations) {
@@ -363,7 +400,8 @@ const none = Object.freeze({
 export default {
   run,
   action,
-  delayedAction,
+  schedule,
+  scheduleRepeating,
   list,
   map,
   none,

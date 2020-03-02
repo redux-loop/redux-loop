@@ -61,11 +61,13 @@ export interface ActionCmd<A extends Action> {
   simulate(): A;
 }
 
-export interface DelayedActionCmd<A extends Action = never> {
-  readonly type: 'DELAYED_ACTION';
-  readonly actionToDispatch: A;
+export interface ScheduledCmd<A extends Action = never> {
+  readonly type: 'SCHEDULED';
+  readonly nestedCmd: CmdType;
   readonly delayMs: number;
-  simulate(): A;
+  readonly isRepeating: boolean;
+  readonly onScheduledActionCreator?: ActionCreator<A>;
+  simulate(simulations?: CmdSimulation | MultiCmdSimulation): A[] | A | null
 }
 
 export interface MapCmd<A extends Action = never> {
@@ -91,7 +93,7 @@ export interface RunCmd<
 
 export type CmdType =
   | ActionCmd<UnknownAction>
-  | DelayedActionCmd<UnknownAction>
+  | ScheduledCmd<UnknownAction>
   | ListCmd
   | MapCmd<UnknownAction>
   | NoneCmd
@@ -122,7 +124,18 @@ export namespace Cmd {
   };
 
   export function list(cmds: CmdType[], options?: ListOptions): ListCmd;
-  export function delayedAction<A extends Action>(action: A, delayMs: number): DelayedActionCmd<A>;
+
+  export function schedule<A extends Action>(
+    cmd: CmdType,
+    delayMs: number,
+    onScheduledActionCreator?: ActionCreator<A>
+  ): ScheduledCmd<A>;
+
+  export function scheduleRepeating<A extends Action>(
+    cmd: CmdType,
+    delayMs: number,
+    onScheduledActionCreator?: ActionCreator<A>
+  ): ScheduledCmd<A>;
 
   export function map<A extends Action, B extends Action>(
     cmd: CmdType,
