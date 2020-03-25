@@ -273,8 +273,6 @@ nested. This enables you to build your reducer in a fractal-like fashion, in
 which all of the logic for a particular slice of your state is totally
 encapsulated and actions can be simply directed to the reducer for that slice.
 
-If you want to `map()` a nested `list` cmd object, it's important to enable the `batch` option on the list. Otherwise, the `list` does not return any of the dispatched actions as they are all dispatched while running the `list` Cmd.
-
 * `cmd: Cmd` &ndash; a cmd, the resulting action of which will be passed to `higherOrderActionCreator` to be nested into a higher-order action.
 * `higherOrderActionCreator` &ndash; an action creator function which will accept an action, or optionally some other arguments followed by an action, and return a new action in which the previous action was nested.
 * `additionalArgs` &ndash; a list of additional arguments to pass to `higherOrderActionCreator` before passing in the action from the cmd object.
