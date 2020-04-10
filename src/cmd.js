@@ -143,10 +143,7 @@ function handleScheduleCmd(cmd, dispatch, getState, loopConfig) {
     );
     if (cmdPromise) {
       cmdPromise.then(actions => {
-        if (!actions.length) {
-          return;
-        }
-        return Promise.all(actions.map(dispatch));
+        actions.forEach(action => dispatch(action));
       });
     }
   }, cmd.delayMs);
