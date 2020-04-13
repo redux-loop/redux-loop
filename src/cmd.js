@@ -316,8 +316,20 @@ function _schedule(nestedCmd, delayMs, onScheduledActionCreator, isRepeating) {
   });
 }
 
-function simulateSchedule(simulation) {
-  return this.nestedCmd.simulate(simulation);
+function simulateSchedule(timerHandle, nestedSimulation) {
+  let result = this.nestedCmd.simulate(nestedSimulation);
+  let nestedActions = null;
+  if (Array.isArray(result)) {
+    nestedActions = result;
+  } else if (result) {
+    nestedActions = [result];
+  }
+
+  if (this.scheduledActionCreator) {
+    return [this.scheduledActionCreator(timerHandle)].concat(nestedActions);
+  } else {
+    return nestedActions;
+  }
 }
 
 function simulateList(simulations) {
