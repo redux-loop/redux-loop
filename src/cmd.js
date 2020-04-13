@@ -7,7 +7,7 @@ const getStateSymbol = Symbol('getState');
 const cmdTypes = {
   RUN: 'RUN',
   ACTION: 'ACTION',
-  SCHEDULE: 'SCHEDULE',
+  DELAY: 'DELAY',
   LIST: 'LIST',
   MAP: 'MAP',
   NONE: 'NONE'
@@ -132,8 +132,8 @@ function handleSequenceList({ cmds, batch = false }, context) {
   return batch ? result : result.then(() => []);
 }
 
-function handleScheduleCmd(cmd, dispatch, getState, loopConfig) {
-  let setIntervalOrTimeout = cmd.isRepeating ? setInterval : setTimeout;
+function handleDelayCmd(cmd, dispatch, getState, loopConfig) {
+  const setIntervalOrTimeout = cmd.isRepeating ? setInterval : setTimeout;
   const handle = setIntervalOrTimeout(() => {
     const cmdPromise = executeCmd(
       cmd.nestedCmd,
@@ -148,8 +148,8 @@ function handleScheduleCmd(cmd, dispatch, getState, loopConfig) {
     }
   }, cmd.delayMs);
 
-  if (cmd.onScheduledActionCreator) {
-    return Promise.resolve([cmd.onScheduledActionCreator(handle)]);
+  if (cmd.scheduledActionCreator) {
+    return Promise.resolve([cmd.scheduledActionCreator(handle)]);
   } else {
     return null;
   }
@@ -172,8 +172,8 @@ function executeCmdInternal(cmd, context) {
     case cmdTypes.ACTION:
       return Promise.resolve([cmd.actionToDispatch]);
 
-    case cmdTypes.SCHEDULE:
-      return handleScheduleCmd(cmd, dispatch, getState, loopConfig);
+    case cmdTypes.DELAY:
+      return handleDelayCmd(cmd, dispatch, getState, loopConfig);
 
     case cmdTypes.LIST:
       return cmd.sequence
@@ -280,43 +280,48 @@ function action(actionToDispatch) {
   });
 }
 
-function schedule(nestedCmd, delayMs, onScheduledActionCreator) {
-  return _schedule(nestedCmd, delayMs, onScheduledActionCreator, false);
+function setTimeoutCmd(nestedCmd, delayMs, options = {}) {
+  return delay(nestedCmd, delayMs, options, false);
 }
 
-function scheduleRepeating(nestedCmd, delayMs, onScheduledActionCreator) {
-  return _schedule(nestedCmd, delayMs, onScheduledActionCreator, true);
+function setIntervalCmd(nestedCmd, delayMs, options = {}) {
+  return delay(nestedCmd, delayMs, options, true);
 }
 
-function _schedule(nestedCmd, delayMs, onScheduledActionCreator, isRepeating) {
+function delay(nestedCmd, delayMs, options, isRepeating) {
   if (process.env.NODE_ENV !== 'production') {
+    const name = isRepeating ? 'Cmd.setInterval' : 'Cmd.setTimeout';
     throwInvariant(
       isCmd(nestedCmd),
-      'Cmd.schedule: first argument must be another Cmd'
+      `${name}: first argument must be another Cmd`
     );
     throwInvariant(
       typeof delayMs === 'number',
-      'Cmd.schedule: second argument must be a number'
+      `${name}: second argument must be a number`
     );
     throwInvariant(
-      onScheduledActionCreator === undefined ||
-        typeof onScheduledActionCreator === 'function',
-      'Cmd.schedule: third argument must be a function (if specified)'
+      typeof options === 'object',
+      `${name}: third argument must be an options object`
+    );
+    throwInvariant(
+      options.scheduledActionCreator === undefined ||
+        typeof options.scheduledActionCreator === 'function',
+      `${name}: scheduledActionCreator option must be a function if specified`
     );
   }
 
   return Object.freeze({
     [isCmdSymbol]: true,
-    type: cmdTypes.SCHEDULE,
+    type: cmdTypes.DELAY,
     nestedCmd,
     delayMs,
     isRepeating,
-    onScheduledActionCreator,
-    simulate: simulateSchedule
+    scheduledActionCreator: options.scheduledActionCreator,
+    simulate: simulateDelay
   });
 }
 
-function simulateSchedule(timerHandle, nestedSimulation) {
+function simulateDelay(timerId, nestedSimulation) {
   let result = this.nestedCmd.simulate(nestedSimulation);
   let nestedActions = null;
   if (Array.isArray(result)) {
@@ -326,7 +331,7 @@ function simulateSchedule(timerHandle, nestedSimulation) {
   }
 
   if (this.scheduledActionCreator) {
-    return [this.scheduledActionCreator(timerHandle)].concat(nestedActions);
+    return [this.scheduledActionCreator(timerId)].concat(nestedActions);
   } else {
     return nestedActions;
   }
@@ -411,8 +416,8 @@ const none = Object.freeze({
 export default {
   run,
   action,
-  schedule,
-  scheduleRepeating,
+  setTimeout: setTimeoutCmd,
+  setInterval: setIntervalCmd,
   list,
   map,
   none,
