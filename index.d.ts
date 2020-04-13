@@ -124,6 +124,8 @@ export namespace Cmd {
   };
 
   export function list(cmds: CmdType[], options?: ListOptions): ListCmd;
+  export function clearTimeout(timerId: number): RunCmd;
+  export function clearInterval(timerId: number): RunCmd;
 
   export function setTimeout<A extends Action>(
     cmd: CmdType,
