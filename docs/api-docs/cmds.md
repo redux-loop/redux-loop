@@ -79,19 +79,20 @@ return loop(
 );
 ```
 
-### `Cmd.delayedAction(actionToDispatch, delayMs)`
+### `Cmd.setTimeout(cmd, delayMs, options)`
 
-`delayedAction()` works the same way as `action()` but allows you to delay the dispatch
-to sometime further in the future. This is useful for triggering animations, scheduling
-a timeout, etc. It uses `setTimeout()` internally.
+`setTimeout()` allows you to delay the execution of a command to sometime the future. The given command can be of any kind, including a command created by `setTimeout()` itself.
+It uses JavaScript's global `setTimeout()` internally.
 
-* `actionToDispatch: Action` &ndash; a plain object with a `type` property that the store
-  can dispatch.
-* `delayMs: number` &ndash; the number of milliseconds to wait before dispatching the action.
+* `cmd: Cmd` &ndash; the command to execute.
+* `delayMs: number` &ndash; the number of milliseconds to wait before executing the command.
+* `options.scheduledActionCreator: (timerId: number) => Action` &ndash; an optional function that takes `timerId` and creates an action to be dispatched. The `timerId` can be passed to `Cmd.clearTimeout()` to cancel the delayed execution.
 
 #### Simulation
 
-Simulating `action` always returns `actionToDispatch`.
+Two parameters are passed to the `simulate()` method:
+* `timerId: number` &ndash; the value to be passed to `options.scheduledActionCreator`.
+* `nestedSimulation` &ndash; the simulation value for the nested command. The type depends on which kind of command is nested inside.
 
 #### Examples
 
@@ -101,9 +102,14 @@ Simulating `action` always returns `actionToDispatch`.
 // schedule another dispatch in 3000ms for the action HIDE_ANIMATION.
 return loop(
   { ...state, showAnimation: true },
-  Cmd.delayedAction({ type: 'HIDE_ANIMATION' }, 3000)
+  Cmd.setTimeout(Cmd.action({ type: 'HIDE_ANIMATION' }), 3000)
 );
 ```
+
+### `Cmd.setInterval(cmd, delayMs, options)`
+`setInterval()` allows you to repeatedly execute a command with a fixed delay between each execution. It uses JavaScript's global `setInterval()` internally.
+
+For details, see `setTimeout()` above.
 
 ### `Cmd.run(func, options)`
 
@@ -382,6 +388,16 @@ function reducer(state = { /* ... */ }, action) {
   }
 }
 ```
+
+## Convenience helpers
+
+### `Cmd.clearTimeout(timerId)`
+Cancel's a delayed command execution created by `Cmd.setTimeout()`.
+Equivalent to `Cmd.run(clearTimeout, { args: [timerId] })`.
+
+### `Cmd.clearInterval(timerId)`
+Cancel's a repeated command execution created by `Cmd.setInterval()`.
+Equivalent to `Cmd.run(clearInterval, { args: [timerId] })`.
 
 ## Cmd helper symbols
 
