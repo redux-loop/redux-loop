@@ -287,11 +287,11 @@ function action(actionToDispatch) {
 }
 
 function clearTimeoutCmd(timerId) {
-  return Cmd.run(clearTimeout, { args: [timerId] });
+  return run(clearTimeout, { args: [timerId] });
 }
 
 function clearIntervalCmd(timerId) {
-  return Cmd.run(clearInterval, { args: [timerId] });
+  return run(clearInterval, { args: [timerId] });
 }
 
 function setTimeoutCmd(nestedCmd, delayMs, options = {}) {

@@ -234,7 +234,9 @@ describe('Cmds', () => {
         });
 
         let action = actionCreator1(123);
-        let cmd = Cmd.setTimeout(Cmd.action(action), 100, { scheduledActionCreator: actionCreator2 });
+        let cmd = Cmd.setTimeout(Cmd.action(action), 100, {
+          scheduledActionCreator: actionCreator2
+        });
         let result = executeCmd(cmd, dispatch, getState);
 
         await expect(result).resolves.toEqual([
@@ -630,7 +632,9 @@ describe('Cmds', () => {
 
       it('returns the scedule action with the nested action', () => {
         let action = actionCreator1(123);
-        let cmd = Cmd.setTimeout(Cmd.action(action), 100, { scheduledActionCreator: actionCreator2 });
+        let cmd = Cmd.setTimeout(Cmd.action(action), 100, {
+          scheduledActionCreator: actionCreator2
+        });
         expect(cmd.simulate(456)).toEqual([actionCreator2(456), action]);
       });
     });
