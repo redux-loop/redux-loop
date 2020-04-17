@@ -47,7 +47,7 @@ interface IFetchFooSuccess {
   type: typeof FETCH_FOO_SUCCESS
 }
 
-const fetchFooSuccess = (): IFetchFooSuccess => ({
+const fetchFooSuccess = (result: string): IFetchFooSuccess => ({
   type: FETCH_FOO_SUCCESS,
 })
 
@@ -55,7 +55,11 @@ interface IFetchFooFailure {
   type: typeof FETCH_FOO_FAILURE
 }
 
-const fetchFooFailure = (): IFetchFooFailure => ({
+class CustomError extends Error {
+  public prop = 'myprop';
+}
+
+const fetchFooFailure = (err: CustomError): IFetchFooFailure => ({
   type: FETCH_FOO_FAILURE,
 })
 
@@ -95,15 +99,23 @@ const todosReducer: LoopReducer<TodoState, TodoActions> = (
         Cmd.list([
           Cmd.none,
           Cmd.run(console.log, { args: ['log this', Cmd.getState] }),
-          Cmd.run(dispatchNoop, { args: [Cmd.dispatch] })
+          Cmd.run(dispatchNoop, { args: [Cmd.dispatch] }),
+          Cmd.run(getState, { args: [1, Cmd.getState] }),
+          Cmd.run(typedArgs, { args: [1, 'a', { n: 2 }] })
         ], {sequence: true})
       );
   }
 };
 
-const dispatchNoop = (dispatch: (a: any) => void): void => {
+const dispatchNoop = (dispatch: Cmd.Dispatch): void => {
   dispatch(noop());
 };
+
+const getState = (n: number, getState: Cmd.GetState): void => {
+  const s = getState();
+};
+
+const typedArgs = (a: number, b: string, c: { n: number }) => {};
 
 const todoState: TodoState = <TodoState>todosReducer(
   { todos: [], nestedCounter: 0 },
@@ -148,8 +160,8 @@ const rootState: RootState = rootReducer(undefined, {
   text: 'test'
 })[0];
 
-let cmd = Cmd.run(() => {}, {
-  successActionCreator: a => ({type: 'FOO', a: 2*a})
+let cmd = Cmd.run(() => 1, {
+  successActionCreator: (a: number) => ({type: 'FOO', a: 2*a})
 });
 let action: AnyAction = cmd.simulate({success: true, result: 123});
 let listCmd = Cmd.list([cmd, cmd]);
