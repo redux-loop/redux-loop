@@ -35,9 +35,6 @@
     "no-with": "error",
     "no-unused-vars": ["error", {"ignoreRestSiblings": true, "args": "after-used" }],
     "strict": "error",
-    "prettier/prettier": ["error", {
-      singleQuote: true,
-      tabWidth: 2
-    }]
+    "prettier/prettier": ["error"]
   }
 }

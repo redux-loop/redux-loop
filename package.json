@@ -23,6 +23,7 @@
   "scripts": {
     "clear": "rimraf lib dist es",
     "lint": "eslint --max-warnings=0 src test",
+    "format": "prettier --write src/*.js test/*.js",
     "test": "cross-env BABEL_ENV=test jest && yarn flow",
     "pretest": "yarn flow-typed install redux@4",
     "build:commonjs": "cross-env BABEL_ENV=commonjs babel src --out-dir lib",
