@@ -35,12 +35,7 @@ export function install(config = {}) {
     }
 
     function runCmd({ originalAction, cmd }) {
-      const cmdPromise = executeCmd(
-        cmd,
-        dispatch,
-        store.getState,
-        loopConfig
-      );
+      const cmdPromise = executeCmd(cmd, dispatch, store.getState, loopConfig);
 
       if (!cmdPromise) {
         return null;
