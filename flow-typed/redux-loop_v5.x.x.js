@@ -38,7 +38,7 @@ declare module "redux-loop" {
 
   declare export interface NoneCmd {
     type: "NONE";
-    simulate(): null;
+    simulate(): any[];
   }
 
   declare export interface ListCmd<A> {
@@ -52,7 +52,7 @@ declare module "redux-loop" {
   declare export interface ActionCmd<A> {
     type: "ACTION";
     actionToDispatch: A;
-    simulate(): A;
+    simulate(): A[];
   }
 
   declare export interface MapCmd<A, B = any, C = any> {
@@ -60,7 +60,7 @@ declare module "redux-loop" {
     tagger: ((...args:Array<C|B>) => A) | ((subAction: B) => A);
     nestedCmd: CmdType<A>;
     args: Array<C>;
-    simulate(simulations?: CmdSimulation<any> | MultiCmdSimulation): A[] | A | null;
+    simulate(simulations?: CmdSimulation<any> | MultiCmdSimulation): A[];
   }
 
   declare export interface RunCmd<A, B, C> {
@@ -70,7 +70,7 @@ declare module "redux-loop" {
     failActionCreator?: ActionCreator<A, any>;
     successActionCreator?: ActionCreator<A, B>;
     forceSync?: boolean;
-    simulate(simulation: CmdSimulation<B>): A;
+    simulate(simulation: CmdSimulation<B>): A[];
   }
 
   declare export type SequenceCmd<A> = ListCmd<A>;

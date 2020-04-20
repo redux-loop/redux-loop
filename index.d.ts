@@ -32,7 +32,7 @@ export interface MultiCmdSimulation {
 
 export interface NoneCmd {
   readonly type: 'NONE';
-  simulate(): null;
+  simulate(): {}[];
 }
 
 export interface ListCmd<A extends Action> {
@@ -46,7 +46,7 @@ export interface ListCmd<A extends Action> {
 export interface ActionCmd<A extends Action> {
   readonly type: 'ACTION';
   readonly actionToDispatch: A;
-  simulate(): A;
+  simulate(): A[];
 }
 
 export interface MapCmd<A extends Action> {
@@ -54,7 +54,7 @@ export interface MapCmd<A extends Action> {
   readonly tagger: ActionCreator<A>;
   readonly nestedCmd: CmdType<A>;
   readonly args: any[];
-  simulate(simulations?: CmdSimulation | MultiCmdSimulation): A[] | A | null
+  simulate(simulations?: CmdSimulation | MultiCmdSimulation): A[]
 }
 
 export interface RunCmd<SuccessAction extends Action, FailAction extends Action = Action> {
@@ -64,7 +64,7 @@ export interface RunCmd<SuccessAction extends Action, FailAction extends Action 
   readonly failActionCreator?: ActionCreator<FailAction>;
   readonly successActionCreator?: ActionCreator<SuccessAction>;
   readonly forceSync?: boolean;
-  simulate(simulation: CmdSimulation): SuccessAction | FailAction;
+  simulate(simulation: CmdSimulation): (SuccessAction | FailAction)[];
 }
 
 //deprecated types

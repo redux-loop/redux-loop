@@ -563,7 +563,7 @@ describe('Cmds', () => {
       describe('with no handlers', () => {
         it('returns null', () => {
           let cmd = Cmd.run(sideEffect);
-          expect(cmd.simulate({ result: 123, success: true })).toBe(null);
+          expect(cmd.simulate({ result: 123, success: true })).toEqual([]);
         });
       });
 
@@ -574,9 +574,9 @@ describe('Cmds', () => {
             failActionCreator: actionCreator2
           });
 
-          expect(cmd.simulate({ result: 123, success: true })).toEqual(
+          expect(cmd.simulate({ result: 123, success: true })).toEqual([
             actionCreator1(123)
-          );
+          ]);
         });
 
         it('returns null if there is no success hanlder', () => {
@@ -584,7 +584,7 @@ describe('Cmds', () => {
             failActionCreator: actionCreator2
           });
 
-          expect(cmd.simulate({ result: 123, success: true })).toBe(null);
+          expect(cmd.simulate({ result: 123, success: true })).toEqual([]);
         });
       });
 
@@ -595,9 +595,9 @@ describe('Cmds', () => {
             failActionCreator: actionCreator2
           });
 
-          expect(cmd.simulate({ result: 123, success: false })).toEqual(
+          expect(cmd.simulate({ result: 123, success: false })).toEqual([
             actionCreator2(123)
-          );
+          ]);
         });
 
         it('returns null if there is no fail hanlder', () => {
@@ -605,7 +605,7 @@ describe('Cmds', () => {
             successActionCreator: actionCreator2
           });
 
-          expect(cmd.simulate({ result: 123, success: false })).toBe(null);
+          expect(cmd.simulate({ result: 123, success: false })).toEqual([]);
         });
       });
     });
@@ -614,7 +614,7 @@ describe('Cmds', () => {
       it('returns the action', () => {
         let action = actionCreator1(123);
         let cmd = Cmd.action(action);
-        expect(cmd.simulate()).toBe(action);
+        expect(cmd.simulate()).toEqual([action]);
       });
     });
 
@@ -705,15 +705,15 @@ describe('Cmds', () => {
           successActionCreator: actionCreator1
         });
         let cmd = Cmd.map(runCmd, noArgTagger);
-        expect(cmd.simulate({ success: true, result: 123 })).toEqual(
+        expect(cmd.simulate({ success: true, result: 123 })).toEqual([
           noArgTagger(actionCreator1(123))
-        );
+        ]);
       });
 
       it('returns null if the nested cmd simulates to null', () => {
         let runCmd = Cmd.run(sideEffect);
         let cmd = Cmd.map(runCmd, noArgTagger);
-        expect(cmd.simulate({ success: true, result: 123 })).toBe(null);
+        expect(cmd.simulate({ success: true, result: 123 })).toEqual([]);
       });
 
       it('passes the args through to the tagger if there are args', () => {
@@ -721,9 +721,9 @@ describe('Cmds', () => {
           successActionCreator: actionCreator1
         });
         let cmd = Cmd.map(runCmd, argTagger, 456, 789);
-        expect(cmd.simulate({ success: true, result: 123 })).toEqual(
+        expect(cmd.simulate({ success: true, result: 123 })).toEqual([
           argTagger(456, 789, actionCreator1(123))
-        );
+        ]);
       });
 
       describe('when the nested simulation returns an array', () => {
@@ -765,7 +765,7 @@ describe('Cmds', () => {
 
     describe('Cmd.none', () => {
       it('returns null', () => {
-        expect(Cmd.none.simulate({ success: true, result: 123 })).toBe(null);
+        expect(Cmd.none.simulate({ success: true, result: 123 })).toEqual([]);
       });
     });
   });

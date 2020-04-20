@@ -163,9 +163,9 @@ const rootState: RootState = rootReducer(undefined, {
 let cmd = Cmd.run(() => 1, {
   successActionCreator: (a: number) => ({type: 'FOO', a: 2*a})
 });
-let action: AnyAction = cmd.simulate({success: true, result: 123});
+let actions: AnyAction[] = cmd.simulate({success: true, result: 123});
 let listCmd = Cmd.list([cmd, cmd]);
-let actions: AnyAction[] = listCmd.simulate([{success: true, result: 123}, {success: false, result: 456}]);
+actions= listCmd.simulate([{success: true, result: 123}, {success: false, result: 456}]);
 let nestedListCmd = Cmd.list([cmd, listCmd]);
 let flattenedActions: AnyAction[] = nestedListCmd.simulate([
   {success: true, result: 123},

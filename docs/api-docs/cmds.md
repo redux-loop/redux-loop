@@ -26,10 +26,10 @@ it doesn't cause any side effects to actually occur.
 
 #### Simulation
 
-Simulating `Cmd.none` always returns null.
+Simulating `Cmd.none` always returns an empty array.
 
 ```js
-expect(Cmd.none.simulate()).toBe(null); //parameter is ignored
+expect(Cmd.none.simulate()).toEqual([]); //parameter is ignored
 ```
 
 #### Examples
@@ -59,12 +59,12 @@ Make sure your action creator is pure if creating an action from a reducer.
 
 #### Simulation
 
-Simulating `action` always returns `actionToDispatch`.
+Simulating `action` always returns an array with a single element: `actionToDispatch`.
 
 ```js
 const action = {type: 'type', foo: 123};
 const cmd = Cmd.action(action);
-expect(cmd.simulate()).toEqual(action); //parameter is ignored
+expect(cmd.simulate()).toEqual([action]); //parameter is ignored
 ```
 
 #### Examples
@@ -127,16 +127,16 @@ because `jasmine.any(Function)` is not a function.
 
 #### Simulation
 
-`run()` cmd simulations pass the result through the correct action creator (depending on the success property passed) and return the resulting action.
+`run()` cmd simulations pass the result through the correct action creator (depending on the success property passed) and return the resulting action in an array.
 
-If there is no corresponding action creator on the cmd object, `null` is returned.
+If there is no corresponding action creator on the cmd object, an empty array is returned.
 
 ```js
 const cmd = Cmd.run(sideEffect, {
   successActionCreator: result => actionCreator(result, 'hard coded');
 });
-expect(cmd.simulate({success: true, result: 123})).toEqual(actionCreator(123, 'hard coded'));
-expect(cmd.simulate({success: false, result: 123})).toBe(null);
+expect(cmd.simulate({success: true, result: 123})).toEqual([actionCreator(123, 'hard coded')]);
+expect(cmd.simulate({success: false, result: 123})).toEqual([]);
 ```
 
 #### Examples
@@ -176,10 +176,10 @@ function reducer(state , action) {
 
   case 'USER_FETCH_SUCCESSFUL':
     return {...state, user: action.user};
-    
+
   case 'USER_FETCH_FAILED':
     return {...state, error: action.error};
-    
+
   default:
     return state;
   }
@@ -197,7 +197,7 @@ function reducer(state , action) {
 
 #### Simulation
 
-Simulating `list()` simulates all of its child cmd objects and returns an array of the results. The resulting array has `null`s filtered out and is flattened.
+Simulating `list()` simulates all of its child cmd objects and returns an array of the results. The resulting array is flattened.
 
 To simulate `list()`, pass an array of parameters to be passed to the corresponding cmd objects for simulation.
 
@@ -279,7 +279,7 @@ encapsulated and actions can be simply directed to the reducer for that slice.
 
 #### Simulation
 
-Simulating a `map` cmd simulates the nested cmd and passes the result through `tagger`. If the result is an array of actions, all of them are passed through `tagger`. If args are provided to the cmd, they are passed to `tagger`.
+Simulating a `map` cmd simulates the nested cmd and passes each of the resulting actions through `tagger`. If args are provided to the cmd, they are passed to `tagger`.
 
 ```js
 const cmd1 = Cmd.run(sideEffect, {
@@ -288,7 +288,7 @@ const cmd1 = Cmd.run(sideEffect, {
 
 const map = Cmd.map(cmd1, actionCreator2, 'extra arg');
 const result = map.simulate({success: true, result: 123});
-expect(result).toEqual(actionCreator2('extra arg', actionCreator(123, 'hard coded')));
+expect(result).toEqual([actionCreator2('extra arg', actionCreator(123, 'hard coded'))]);
 ```
 
 #### Examples

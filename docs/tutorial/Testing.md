@@ -62,8 +62,8 @@ expect(cmd).toEqual(Cmd.run(foo, {
   successActionCreator: jasmine.any(Function) //replace with your testing library's equivalent matcher
 }));
 
-expect(cmd.simulate({success: true, result: 123})).toEqual(actionCreator(123, state.blah));
-expect(cmd.simulate({success: false, result: 123})).toBe(null);
+expect(cmd.simulate({success: true, result: 123})).toEqual([actionCreator(123, state.blah)]);
+expect(cmd.simulate({success: false, result: 123})).toEqual([]);
 
 ```
 

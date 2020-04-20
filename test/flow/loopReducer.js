@@ -126,11 +126,11 @@ let cmd = Cmd.run(() => Promise.resolve(1), {
 });
 
 // Able to detect errors in result
-let action = cmd.simulate({success: true, result: 123});
+let actions = cmd.simulate({success: true, result: 123});
 
 // Not able to detect error in result
 let listCmd = Cmd.list([cmd, cmd]);
-let actions = listCmd.simulate([{success: true, result: 123}, {success: false, result: 456}]);
+actions = listCmd.simulate([{success: true, result: 123}, {success: false, result: 456}]);
 let nestedListCmd = Cmd.list([cmd, listCmd]);
 let flattenedActions = nestedListCmd.simulate([
   {success: true, result: 123},

@@ -222,11 +222,11 @@ function executeCmdInternal({
 
 function simulateRun({ result, success }) {
   if (success && this.successActionCreator) {
-    return this.successActionCreator(result);
+    return [this.successActionCreator(result)];
   } else if (!success && this.failActionCreator) {
-    return this.failActionCreator(result);
+    return [this.failActionCreator(result)];
   }
-  return null;
+  return [];
 }
 
 function run(func, options = {}) {
@@ -277,7 +277,7 @@ function run(func, options = {}) {
 }
 
 function simulateAction() {
-  return this.actionToDispatch;
+  return [this.actionToDispatch];
 }
 
 function action(actionToDispatch) {
@@ -299,9 +299,7 @@ function action(actionToDispatch) {
 }
 
 function simulateList(simulations) {
-  return flatten(
-    this.cmds.map((cmd, i) => cmd.simulate(simulations[i])).filter(a => a)
-  );
+  return flatten(this.cmds.map((cmd, i) => cmd.simulate(simulations[i])));
 }
 
 function list(cmds, options = {}) {
@@ -335,14 +333,9 @@ function list(cmds, options = {}) {
 }
 
 function simulateMap(simulation) {
-  let result = this.nestedCmd.simulate(simulation);
-  if (Array.isArray(result)) {
-    return result.map(action => this.tagger(...this.args, action));
-  } else if (result) {
-    return this.tagger(...this.args, result);
-  } else {
-    return null;
-  }
+  return this.nestedCmd
+    .simulate(simulation)
+    .map(action => this.tagger(...this.args, action));
 }
 
 function map(nestedCmd, tagger, ...args) {
@@ -371,7 +364,7 @@ function map(nestedCmd, tagger, ...args) {
 const none = Object.freeze({
   [isCmdSymbol]: true,
   type: cmdTypes.NONE,
-  simulate: () => null
+  simulate: () => []
 });
 
 export default {
