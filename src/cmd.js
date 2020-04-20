@@ -44,7 +44,11 @@ function handleRunCmd(cmd, dispatch, getState, loopConfig = {}) {
   }
 
   try {
-    let result = cmd.func(...getMappedCmdArgs(cmd.args, dispatch, getState));
+    let result = cmd.func.apply(
+      // Pass undefined so that 'this' will not point to our 'cmd' object.
+      undefined,
+      getMappedCmdArgs(cmd.args, dispatch, getState)
+    );
 
     if (isPromiseLike(result) && !cmd.forceSync) {
       return result.then(onSuccess, onFail).then(action => {
