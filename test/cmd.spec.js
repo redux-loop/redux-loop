@@ -295,11 +295,7 @@ describe('Cmds', () => {
           });
 
           it('returns null if there are no items', () => {
-            let result = executeCmd(
-              Cmd.list([], options),
-              dispatch,
-              getState
-            );
+            let result = executeCmd(Cmd.list([], options), dispatch, getState);
             expect(result).toBe(null);
           });
         });
@@ -360,11 +356,7 @@ describe('Cmds', () => {
           });
 
           it('returns null if there are no items', () => {
-            let result = executeCmd(
-              Cmd.list([], options),
-              dispatch,
-              getState
-            );
+            let result = executeCmd(Cmd.list([], options), dispatch, getState);
             expect(result).toBe(null);
           });
         });
@@ -417,11 +409,7 @@ describe('Cmds', () => {
           });
 
           it('returns null if there are no items', () => {
-            let result = executeCmd(
-              Cmd.list([], options),
-              dispatch,
-              getState
-            );
+            let result = executeCmd(Cmd.list([], options), dispatch, getState);
             expect(result).toBe(null);
           });
         });
@@ -479,11 +467,7 @@ describe('Cmds', () => {
           });
 
           it('returns null if there are no items', () => {
-            let result = executeCmd(
-              Cmd.list([], options),
-              dispatch,
-              getState
-            );
+            let result = executeCmd(Cmd.list([], options), dispatch, getState);
             expect(result).toBe(null);
           });
         });

@@ -64,10 +64,7 @@ function handleRunCmd(cmd, context) {
   }
 }
 
-function handleParallelList(
-  { cmds, batch = false },
-  context,
-) {
+function handleParallelList({ cmds, batch = false }, context) {
   const promises = cmds
     .map(nestedCmd => {
       const possiblePromise = executeCmdInternal(nestedCmd, context);
@@ -92,10 +89,7 @@ function handleParallelList(
     });
 }
 
-function handleSequenceList(
-  { cmds, batch = false },
-  context,
-) {
+function handleSequenceList({ cmds, batch = false }, context) {
   const firstCmd = cmds.length ? cmds[0] : null;
   if (!firstCmd) {
     return null;
@@ -107,7 +101,9 @@ function handleSequenceList(
     firstPromise.then(result => {
       let executePromise;
       if (!batch) {
-        executePromise = Promise.all(result.map(a => context.wrappedDispatch(a)));
+        executePromise = Promise.all(
+          result.map(a => context.wrappedDispatch(a))
+        );
       } else {
         executePromise = Promise.resolve();
       }
@@ -154,14 +150,11 @@ function executeCmdInternal(cmd, context) {
         : handleParallelList(cmd, context);
 
     case cmdTypes.MAP: {
-      const possiblePromise = executeCmdInternal(
-        cmd.nestedCmd,
-        {
-          ...context,
-          wrappedDispatch: action =>
-            context.wrappedDispatch(cmd.tagger(...cmd.args, action)),
-        },
-      );
+      const possiblePromise = executeCmdInternal(cmd.nestedCmd, {
+        ...context,
+        wrappedDispatch: action =>
+          context.wrappedDispatch(cmd.tagger(...cmd.args, action))
+      });
       if (!possiblePromise) {
         return null;
       }
