@@ -35,12 +35,12 @@ export function install(config = {}) {
     }
 
     function runCmd({ originalAction, cmd }) {
-      const cmdPromise = executeCmd({
+      const cmdPromise = executeCmd(
         cmd,
         dispatch,
-        getState: store.getState,
+        store.getState,
         loopConfig
-      });
+      );
 
       if (!cmdPromise) {
         return null;

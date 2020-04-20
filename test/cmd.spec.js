@@ -32,14 +32,14 @@ describe('Cmds', () => {
       describe('with no handlers', () => {
         it('runs the passed in function and returns null', () => {
           let cmd = Cmd.run(sideEffect);
-          expect(executeCmd({ cmd, dispatch, getState })).toBe(null);
+          expect(executeCmd(cmd, dispatch, getState)).toBe(null);
           expect(sideEffect.mock.calls.length).toBe(1);
         });
 
         it('resolves with an empty array if the function returns a resolved promise', async () => {
           sideEffect.mockReturnValueOnce(Promise.resolve(123));
           let cmd = Cmd.run(sideEffect);
-          let result = executeCmd({ cmd, dispatch, getState });
+          let result = executeCmd(cmd, dispatch, getState);
           expect(sideEffect.mock.calls.length).toBe(1);
           await expect(result).resolves.toEqual([]);
         });
@@ -50,7 +50,7 @@ describe('Cmds', () => {
             .mockImplementation(() => {});
           sideEffect.mockReturnValueOnce(Promise.reject(123));
           let cmd = Cmd.run(sideEffect);
-          let result = executeCmd({ cmd, dispatch, getState });
+          let result = executeCmd(cmd, dispatch, getState);
           expect(sideEffect.mock.calls.length).toBe(1);
           await expect(result).resolves.toEqual([]);
           consoleErr.mockRestore();
@@ -65,7 +65,7 @@ describe('Cmds', () => {
             throw err;
           });
           let cmd = Cmd.run(sideEffect);
-          expect(() => executeCmd({ cmd, dispatch, getState })).toThrow(err);
+          expect(() => executeCmd(cmd, dispatch, getState)).toThrow(err);
           consoleErr.mockRestore();
         });
 
@@ -78,7 +78,7 @@ describe('Cmds', () => {
           let cmd = Cmd.run(sideEffect);
           let loopConfig = { DONT_LOG_ERRORS_ON_HANDLED_FAILURES: true }; // note: logs even when set to true as no fail handler passed in
 
-          await executeCmd({ cmd, dispatch, getState, loopConfig });
+          await executeCmd(cmd, dispatch, getState, loopConfig);
           expect(consoleErr).toHaveBeenCalledWith(err);
           consoleErr.mockRestore();
         });
@@ -89,7 +89,7 @@ describe('Cmds', () => {
           let cmd = Cmd.run(sideEffect, {
             args: [123, 456]
           });
-          executeCmd({ cmd, dispatch, getState });
+          executeCmd(cmd, dispatch, getState);
           expect(sideEffect.mock.calls[0]).toEqual([123, 456]);
         });
 
@@ -97,7 +97,7 @@ describe('Cmds', () => {
           let cmd = Cmd.run(sideEffect, {
             args: [123, Cmd.getState, Cmd.getState, Cmd.dispatch, 456]
           });
-          executeCmd({ cmd, dispatch, getState });
+          executeCmd(cmd, dispatch, getState);
           expect(sideEffect.mock.calls[0]).toEqual([
             123,
             getState,
@@ -116,7 +116,7 @@ describe('Cmds', () => {
             failActionCreator: actionCreator2
           });
 
-          let result = executeCmd({ cmd, dispatch, getState });
+          let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator1(123)]);
         });
 
@@ -127,7 +127,7 @@ describe('Cmds', () => {
             failActionCreator: actionCreator2
           });
 
-          let result = executeCmd({ cmd, dispatch, getState });
+          let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator1(123)]);
         });
 
@@ -139,7 +139,7 @@ describe('Cmds', () => {
             successActionCreator: actionCreator1
           });
 
-          let result = executeCmd({ cmd, dispatch, getState });
+          let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator1(returnValue)]);
         });
       });
@@ -167,7 +167,7 @@ describe('Cmds', () => {
             failActionCreator: actionCreator2
           });
 
-          let result = executeCmd({ cmd, dispatch, getState });
+          let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator2(err)]);
           expect(consoleError).toHaveBeenCalledWith(err);
         });
@@ -179,7 +179,7 @@ describe('Cmds', () => {
             failActionCreator: actionCreator2
           });
 
-          let result = executeCmd({ cmd, dispatch, getState });
+          let result = executeCmd(cmd, dispatch, getState);
           await expect(result).resolves.toEqual([actionCreator2(123)]);
           expect(consoleError).toHaveBeenCalledWith(123);
         });
@@ -195,7 +195,7 @@ describe('Cmds', () => {
           });
           let loopConfig = { DONT_LOG_ERRORS_ON_HANDLED_FAILURES: false };
 
-          let result = executeCmd({ cmd, dispatch, getState, loopConfig });
+          let result = executeCmd(cmd, dispatch, getState, loopConfig);
           await expect(result).resolves.toEqual([actionCreator2(err)]);
           expect(consoleError).toHaveBeenCalledWith(err);
         });
@@ -211,7 +211,7 @@ describe('Cmds', () => {
           });
           let loopConfig = { DONT_LOG_ERRORS_ON_HANDLED_FAILURES: true };
 
-          let result = executeCmd({ cmd, dispatch, getState, loopConfig });
+          let result = executeCmd(cmd, dispatch, getState, loopConfig);
           await expect(result).resolves.toEqual([actionCreator2(err)]);
           expect(consoleError).not.toHaveBeenCalledWith(err);
         });
@@ -222,7 +222,7 @@ describe('Cmds', () => {
       it('resolves with the passed action in an array', async () => {
         let action = actionCreator1(123);
         let cmd = Cmd.action(action);
-        let result = executeCmd({ cmd, dispatch, getState });
+        let result = executeCmd(cmd, dispatch, getState);
         await expect(result).resolves.toEqual([action]);
       });
     });
@@ -276,7 +276,7 @@ describe('Cmds', () => {
             //should take 100 ms if running in parallel
             let listCmd = Cmd.list([cmd1, cmd2, cmd3, cmd4], options);
 
-            let result = executeCmd({ cmd: listCmd, dispatch, getState });
+            let result = executeCmd(listCmd, dispatch, getState);
             await jest.runTimersToTime(0);
             expect(dispatch).toHaveBeenCalledWith(actionCreator1('hello'));
             expect(dispatch).toHaveBeenCalledWith(actionCreator2(456));
@@ -295,11 +295,11 @@ describe('Cmds', () => {
           });
 
           it('returns null if there are no items', () => {
-            let result = executeCmd({
-              cmd: Cmd.list([], options),
+            let result = executeCmd(
+              Cmd.list([], options),
               dispatch,
               getState
-            });
+            );
             expect(result).toBe(null);
           });
         });
@@ -338,7 +338,7 @@ describe('Cmds', () => {
             //should take 100 ms if running in parallel
             let listCmd = Cmd.list([cmd1, cmd2, cmd3, cmd4], options);
 
-            let result = executeCmd({ cmd: listCmd, dispatch, getState });
+            let result = executeCmd(listCmd, dispatch, getState);
             expect(cmd1Run).toBe(true);
             expect(cmd4Run).toBe(true);
             jest.runTimersToTime(100);
@@ -355,16 +355,16 @@ describe('Cmds', () => {
             let run = Cmd.run(() => {});
             let listCmd = Cmd.list([Cmd.action(action), run], options);
 
-            let result = executeCmd({ cmd: listCmd, dispatch, getState });
+            let result = executeCmd(listCmd, dispatch, getState);
             await expect(result).resolves.toEqual([action]);
           });
 
           it('returns null if there are no items', () => {
-            let result = executeCmd({
-              cmd: Cmd.list([], options),
+            let result = executeCmd(
+              Cmd.list([], options),
               dispatch,
               getState
-            });
+            );
             expect(result).toBe(null);
           });
         });
@@ -398,7 +398,7 @@ describe('Cmds', () => {
 
             //should take 200 ms if running in series
             let listCmd = Cmd.list([cmd1, cmd2], options);
-            let result = executeCmd({ cmd: listCmd, dispatch, getState });
+            let result = executeCmd(listCmd, dispatch, getState);
 
             expect(dispatch).not.toHaveBeenCalledWith(actionCreator1(123));
             await jest.runTimersToTime(100);
@@ -417,11 +417,11 @@ describe('Cmds', () => {
           });
 
           it('returns null if there are no items', () => {
-            let result = executeCmd({
-              cmd: Cmd.list([], options),
+            let result = executeCmd(
+              Cmd.list([], options),
               dispatch,
               getState
-            });
+            );
             expect(result).toBe(null);
           });
         });
@@ -456,7 +456,7 @@ describe('Cmds', () => {
 
             //should take 200 ms if running in series
             let listCmd = Cmd.list([cmd1, cmd2], options);
-            let result = executeCmd({ cmd: listCmd, dispatch, getState });
+            let result = executeCmd(listCmd, dispatch, getState);
             expect(cmd1Run).toBe(true);
             expect(cmd2Run).toBe(false);
             await jest.runTimersToTime(100);
@@ -474,16 +474,16 @@ describe('Cmds', () => {
             let run = Cmd.run(() => {});
             let listCmd = Cmd.list([Cmd.action(action), run], options);
 
-            let result = executeCmd({ cmd: listCmd, dispatch, getState });
+            let result = executeCmd(listCmd, dispatch, getState);
             await expect(result).resolves.toEqual([action]);
           });
 
           it('returns null if there are no items', () => {
-            let result = executeCmd({
-              cmd: Cmd.list([], options),
+            let result = executeCmd(
+              Cmd.list([], options),
               dispatch,
               getState
-            });
+            );
             expect(result).toBe(null);
           });
         });
@@ -493,7 +493,7 @@ describe('Cmds', () => {
     describe('Cmd.map', () => {
       it('returns null if the nested Cmd returns null', () => {
         let cmd = Cmd.map(Cmd.run(sideEffect), actionCreator1);
-        let result = executeCmd({ cmd, dispatch, getState });
+        let result = executeCmd(cmd, dispatch, getState);
         expect(result).toBe(null);
       });
 
@@ -515,7 +515,7 @@ describe('Cmds', () => {
           batch: true
         });
         let cmd = Cmd.map(list, noArgTagger);
-        let result = executeCmd({ cmd, dispatch, getState });
+        let result = executeCmd(cmd, dispatch, getState);
         await expect(result).resolves.toEqual([
           actionCreator2(action1),
           actionCreator2(action2)
@@ -527,7 +527,7 @@ describe('Cmds', () => {
           action2 = actionCreator1(456);
         let list = Cmd.list([Cmd.action(action1), Cmd.action(action2)]);
         let cmd = Cmd.map(list, noArgTagger);
-        let result = executeCmd({ cmd, dispatch, getState });
+        let result = executeCmd(cmd, dispatch, getState);
         await expect(result).resolves.toEqual([]);
         expect(dispatch).toHaveBeenCalledWith(actionCreator2(action1));
         expect(dispatch).toHaveBeenCalledWith(actionCreator2(action2));
@@ -542,7 +542,7 @@ describe('Cmds', () => {
         let arg1 = 'arg1',
           arg2 = 'arg2';
         let cmd = Cmd.map(list, argTagger, arg1, arg2);
-        let result = executeCmd({ cmd, dispatch, getState });
+        let result = executeCmd(cmd, dispatch, getState);
         await expect(result).resolves.toEqual([
           { ...actionCreator2(action1), arg1, arg2 },
           { ...actionCreator2(action2), arg1, arg2 }
@@ -552,7 +552,7 @@ describe('Cmds', () => {
 
     describe('Cmd.none', () => {
       it('returns null', () => {
-        let result = executeCmd({ cmd: Cmd.none, dispatch, getState });
+        let result = executeCmd(Cmd.none, dispatch, getState);
         expect(result).toBe(null);
       });
     });
