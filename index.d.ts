@@ -96,7 +96,7 @@ export namespace Cmd {
   export const dispatch: unique symbol;
   export const getState: unique symbol;
   export const none: NoneCmd;
-  export type Dispatch = <A extends Action>(a: A) => void;
+  export type Dispatch = <A extends Action>(a: A) => Promise<A>;
   export type GetState = <S>() => S;
 
   export function action<A extends Action>(action: A): ActionCmd<A>;
@@ -120,11 +120,12 @@ export namespace Cmd {
 
   // Allow the use of special dispatch | getState symbols
   type ArgOrSymbol<T> = {
-    [K in keyof T]: T[K] extends GetState
-      ? typeof getState
-      : T[K] extends Dispatch
-        ? typeof dispatch
-        : T[K];
+    [K in keyof T]:
+      T[K] extends GetState
+        ? typeof getState
+        : T[K] extends Dispatch
+          ? typeof dispatch
+          : T[K];
   }
   export type PromiseResult<T> = T extends Promise<infer U> ? U : T;
 
