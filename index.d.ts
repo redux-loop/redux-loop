@@ -8,7 +8,7 @@ export interface StoreCreator {
   ): Store<S>;
 }
 
-export type Loop<S, A extends Action> = [S, CmdType<A>];
+export type Loop<S, A extends Action = never> = [S, CmdType<A>];
 
 export interface LoopReducer<S, A extends Action = AnyAction> {
   (state: S | undefined, action: A, ...args: any[]): S | Loop<S, A>;
@@ -35,7 +35,7 @@ export interface NoneCmd {
   simulate(): null;
 }
 
-export interface ListCmd<A extends Action> {
+export interface ListCmd<A extends Action = never> {
   readonly type: 'LIST';
   readonly cmds: CmdType<A>[];
   readonly sequence?: boolean;
@@ -49,7 +49,7 @@ export interface ActionCmd<A extends Action> {
   simulate(): A;
 }
 
-export interface MapCmd<A extends Action> {
+export interface MapCmd<A extends Action = never> {
   readonly type: 'MAP';
   readonly tagger: ActionCreator<A>;
   readonly nestedCmd: CmdType<A>;
@@ -57,7 +57,7 @@ export interface MapCmd<A extends Action> {
   simulate(simulations?: CmdSimulation | MultiCmdSimulation): A[] | A | null
 }
 
-export interface RunCmd<SuccessAction extends Action, FailAction extends Action = Action> {
+export interface RunCmd<SuccessAction extends Action = never, FailAction extends Action = Action> {
   readonly type: 'RUN';
   readonly func: Function;
   readonly args?: any[];
@@ -68,11 +68,11 @@ export interface RunCmd<SuccessAction extends Action, FailAction extends Action 
 }
 
 //deprecated types
-export type SequenceCmd<A extends Action> = ListCmd<A>;
-export type BatchCmd<A extends Action> = ListCmd<A>;
+export type SequenceCmd<A extends Action = never> = ListCmd<A>;
+export type BatchCmd<A extends Action = never> = ListCmd<A>;
 
 
-export type CmdType<A extends Action> =
+export type CmdType<A extends Action = never> =
   | ActionCmd<A>
   | ListCmd<A>
   | MapCmd<A>
@@ -87,7 +87,7 @@ export interface LoopConfig {
 
 export function install<S>(config?: LoopConfig): StoreEnhancer<S>;
 
-export function loop<S, A extends Action>(
+export function loop<S, A extends Action = never>(
   state: S,
   cmd: CmdType<A>
 ): Loop<S, A>;
@@ -100,10 +100,10 @@ export namespace Cmd {
   export type GetState = <S>() => S;
 
   export function action<A extends Action>(action: A): ActionCmd<A>;
-  export function batch<A extends Action>(cmds: CmdType<A>[]): BatchCmd<A>;
-  export function sequence<A extends Action>(cmds: CmdType<A>[]): SequenceCmd<A>;
+  export function batch<A extends Action = never>(cmds: CmdType<A>[]): BatchCmd<A>;
+  export function sequence<A extends Action = never>(cmds: CmdType<A>[]): SequenceCmd<A>;
 
-  export function list<A extends Action>(
+  export function list<A extends Action = never>(
     cmds: CmdType<A>[],
     options?: {
       batch?: boolean;
@@ -112,7 +112,7 @@ export namespace Cmd {
     }
   ): ListCmd<A>;
 
-  export function map<A extends Action, B extends Action>(
+  export function map<A extends Action, B extends Action = never>(
     cmd: CmdType<B>,
     tagger: (subAction: B) => A,
     args?: any[]
@@ -131,8 +131,8 @@ export namespace Cmd {
 
   export function run<
     Func extends (...args: any[]) => Promise<any> | any,
-    SuccessAction extends Action,
-    FailAction extends Action,
+    SuccessAction extends Action = never,
+    FailAction extends Action = never,
     >(
     f: Func,
     options?: {
@@ -172,4 +172,4 @@ export function isLoop(test: any): boolean;
 
 export function getModel<S>(loop: S | Loop<S, AnyAction>): S;
 
-export function getCmd<A extends Action>(a: any): CmdType<A> | null;
+export function getCmd<A extends Action = never>(a: any): CmdType<A> | null;
