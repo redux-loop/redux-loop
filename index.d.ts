@@ -71,7 +71,6 @@ export interface RunCmd<SuccessAction extends Action = never, FailAction extends
 export type SequenceCmd<A extends Action = never> = ListCmd<A>;
 export type BatchCmd<A extends Action = never> = ListCmd<A>;
 
-
 export type CmdType<A extends Action = never> =
   | ActionCmd<A>
   | ListCmd<A>
@@ -103,7 +102,16 @@ export namespace Cmd {
   export function batch<A extends Action = never>(cmds: CmdType<A>[]): BatchCmd<A>;
   export function sequence<A extends Action = never>(cmds: CmdType<A>[]): SequenceCmd<A>;
 
-  export function list<A extends Action = never>(
+  export function list(
+    cmds: CmdType[],
+    options?: {
+      batch?: boolean;
+      sequence?: boolean;
+      testInvariants?: boolean;
+    }
+  ): ListCmd;
+
+  export function list<A extends Action>(
     cmds: CmdType<A>[],
     options?: {
       batch?: boolean;
@@ -112,7 +120,7 @@ export namespace Cmd {
     }
   ): ListCmd<A>;
 
-  export function map<A extends Action, B extends Action = never>(
+  export function map<A extends Action, B extends Action>(
     cmd: CmdType<B>,
     tagger: (subAction: B) => A,
     args?: any[]
@@ -129,16 +137,51 @@ export namespace Cmd {
   }
   export type PromiseResult<T> = T extends Promise<infer U> ? U : T;
 
+  export function run<Func extends (...args: any[]) => Promise<any> | any>(
+    f: Func,
+    options?: {
+      args?: ArgOrSymbol<Parameters<Func>>;
+      forceSync?: boolean;
+      testInvariants?: boolean;
+    },
+  ): RunCmd;
+
   export function run<
     Func extends (...args: any[]) => Promise<any> | any,
     SuccessAction extends Action = never,
+    >(
+    f: Func,
+    options?: {
+      args?: ArgOrSymbol<Parameters<Func>>;
+      successActionCreator: (value: PromiseResult<ReturnType<Func>>) => SuccessAction;
+      forceSync?: boolean;
+      testInvariants?: boolean;
+    },
+  ): RunCmd<SuccessAction, never>;
+
+  export function run<
+    Func extends (...args: any[]) => Promise<any> | any,
     FailAction extends Action = never,
     >(
     f: Func,
     options?: {
       args?: ArgOrSymbol<Parameters<Func>>;
-      failActionCreator?: (error: any) => FailAction;
-      successActionCreator?: (value: PromiseResult<ReturnType<Func>>) => SuccessAction;
+      failActionCreator: (error: any) => FailAction;
+      forceSync?: boolean;
+      testInvariants?: boolean;
+    },
+  ): RunCmd<never, FailAction>;
+
+  export function run<
+    Func extends (...args: any[]) => Promise<any> | any,
+    SuccessAction extends Action,
+    FailAction extends Action,
+    >(
+    f: Func,
+    options?: {
+      args?: ArgOrSymbol<Parameters<Func>>;
+      failActionCreator: (error: any) => FailAction;
+      successActionCreator: (value: PromiseResult<ReturnType<Func>>) => SuccessAction;
       forceSync?: boolean;
       testInvariants?: boolean;
     },
@@ -172,4 +215,5 @@ export function isLoop(test: any): boolean;
 
 export function getModel<S>(loop: S | Loop<S, AnyAction>): S;
 
-export function getCmd<A extends Action = never>(a: any): CmdType<A> | null;
+export function getCmd<A extends Action>(a: any): CmdType<A> | null;
+export function getCmd(a: any): CmdType | null;
