@@ -46,7 +46,7 @@ function userFetchSuccessfulAction(user){
 
 function userFetchFailedAction(err){
    return {
-      type: 'USER_FETCH_ERROR',
+      type: 'USER_FETCH_FAILED',
       err
    };
 }
