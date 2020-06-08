@@ -10,8 +10,12 @@ export interface StoreCreator {
 
 export type Loop<S, A extends Action = never> = [S, CmdType<A>];
 
-export interface LoopReducer<S, A extends Action = AnyAction, B extends Action = A> {
-  (state: S | undefined, action: A, ...args: any[]): S | Loop<S, B>;
+export interface LoopReducerDeprecated<S, A extends Action = AnyAction> {
+  (state: S | undefined, action: A, ...args: any[]): S | Loop<S, A>;
+}
+
+export interface LoopReducer<S, LoopActions extends Action = never> {
+  (state: S | undefined, action: AnyAction, ...args: any[]): S | Loop<S, LoopActions>;
 }
 
 export interface LoopReducerWithDefinedState<S, A extends Action = AnyAction, B extends Action = A> {
