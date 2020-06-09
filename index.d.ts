@@ -69,18 +69,12 @@ export interface RunCmd<SuccessAction extends Action = never, FailAction extends
   simulate(simulation: CmdSimulation): SuccessAction | FailAction;
 }
 
-//deprecated types
-export type SequenceCmd<A extends Action = never> = ListCmd<A>;
-export type BatchCmd<A extends Action = never> = ListCmd<A>;
-
 export type CmdType<A extends Action = never> =
   | ActionCmd<A>
   | ListCmd<A>
   | MapCmd<A>
   | NoneCmd
-  | RunCmd<A>
-  | BatchCmd<A>
-  | SequenceCmd<A>;
+  | RunCmd<A>;
 
 export interface LoopConfig {
   readonly DONT_LOG_ERRORS_ON_HANDLED_FAILURES: boolean;
@@ -101,9 +95,7 @@ export namespace Cmd {
   export type GetState = <S>() => S;
 
   export function action<A extends Action>(action: A): ActionCmd<A>;
-  export function batch<A extends Action = never>(cmds: CmdType<A>[]): BatchCmd<A>;
-  export function sequence<A extends Action = never>(cmds: CmdType<A>[]): SequenceCmd<A>;
-
+  
   export function list(
     cmds: CmdType[],
     options?: {
