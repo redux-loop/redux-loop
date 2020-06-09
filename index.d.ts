@@ -8,22 +8,20 @@ export interface StoreCreator {
   ): Store<S>;
 }
 
+type WithDefaultActionHandling<T> = T | Action<'ENFORCE_DEFAULT_HANDLING'>;
+
 export type Loop<S, A extends Action = never> = [S, CmdType<A>];
 
-export interface LoopReducerDeprecated<S, A extends Action = AnyAction> {
-  (state: S | undefined, action: A, ...args: any[]): S | Loop<S, A>;
+export interface LoopReducer<S, ReducerActions extends Action = AnyAction, LoopActions extends Action = never> {
+  (state: S | undefined, action: WithDefaultActionHandling<ReducerActions>, ...args: any[]): S | Loop<S, LoopActions>;
 }
 
-export interface LoopReducer<S, LoopActions extends Action = never> {
-  (state: S | undefined, action: AnyAction, ...args: any[]): S | Loop<S, LoopActions>;
+export interface LoopReducerWithDefinedState<S, ReducerActions extends Action = AnyAction, LoopActions extends Action = never> {
+  (state: S, action: WithDefaultActionHandling<ReducerActions>, ...args: any[]): S | Loop<S, LoopActions>;
 }
 
-export interface LoopReducerWithDefinedState<S, A extends Action = AnyAction, B extends Action = A> {
-  (state: S, action: A, ...args: any[]): S | Loop<S, B>;
-}
-
-export interface LiftedLoopReducer<S, A extends Action = AnyAction, B extends Action = A> {
-  (state: S | undefined, action: A, ...args: any[]): Loop<S, B>;
+export interface LiftedLoopReducer<S, ReducerActions extends Action = AnyAction, LoopActions extends Action = never> {
+  (state: S | undefined, action: WithDefaultActionHandling<ReducerActions>, ...args: any[]): Loop<S, LoopActions>;
 }
 
 export type CmdSimulation = {
@@ -61,7 +59,7 @@ export interface MapCmd<A extends Action = never> {
   simulate(simulations?: CmdSimulation | MultiCmdSimulation): A[] | A | null
 }
 
-export interface RunCmd<SuccessAction extends Action = never, FailAction extends Action = Action> {
+export interface RunCmd<SuccessAction extends Action = never, FailAction extends Action = never> {
   readonly type: 'RUN';
   readonly func: Function;
   readonly args?: any[];
