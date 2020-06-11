@@ -1,5 +1,7 @@
 import { Action, ActionCreator, AnyAction, StoreEnhancer, Store } from 'redux';
 
+type Maybe<T> = T | undefined;
+
 export interface StoreCreator {
   <S, A extends Action>(
     reducer: LoopReducer<S, A>,
@@ -129,35 +131,54 @@ export namespace Cmd {
           ? typeof dispatch
           : T[K];
   }
+
   export type PromiseResult<T> = T extends Promise<infer U> ? U : T;
 
   type RunFunc = (...args: any[]) => Promise<any> | any;
 
-  type RunOptions<Func extends RunFunc> = {
+  type RunOptions<
+    Func extends RunFunc,
+    SuccessAction extends Action = never,
+    FailAction extends Action = never,
+    FailReason = unknown
+  > = {
     args?: ArgOrSymbol<Parameters<Func>>;
     forceSync?: boolean;
     testInvariants?: boolean;
+    successActionCreator: (value: PromiseResult<ReturnType<Func>>) => SuccessAction;
+    failActionCreator: (error: FailReason) => FailAction;
   }
 
   export function run<Func extends RunFunc>(
     f: Func,
-    options?: RunOptions<Func>,
+    options?: Omit<RunOptions<Func>, 'successActionCreator' | 'failActionCreator'>,
   ): RunCmd;
 
   export function run<
-    Func extends RunFunc,
+    Func extends (...args: any[]) => Promise<any> | any,
+    SuccessAction extends Action,
+  >(
+    f: Func,
+    options: Omit<RunOptions<Func, SuccessAction>, 'failActionCreator'>,
+  ): RunCmd<SuccessAction, never>;
+
+  export function run<
+    Func extends (...args: any[]) => Promise<any> | any,
+    FailAction extends Action,
+    FailReason = unknown
+  >(
+    f: Func,
+    options: Omit<RunOptions<Func, never, FailAction, FailReason>, 'successActionCreator'>,
+  ): RunCmd<never, FailAction>;
+
+  export function run<
+    Func extends (...args: any[]) => Promise<any> | any,
     SuccessAction extends Action = never,
     FailAction extends Action = never,
-    >(
+    FailReason = unknown
+  >(
     f: Func,
-    options: RunOptions<Func> & {
-      failActionCreator: [FailAction] extends [never]
-        ? undefined
-        : (error: any) => FailAction;
-      successActionCreator: [SuccessAction] extends [never]
-        ? undefined
-        : (value: PromiseResult<ReturnType<Func>>) => SuccessAction;
-    },
+    options: RunOptions<Func, SuccessAction, FailAction, FailReason>,
   ): RunCmd<SuccessAction, FailAction>;
 }
 
