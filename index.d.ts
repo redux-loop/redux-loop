@@ -131,53 +131,32 @@ export namespace Cmd {
   }
   export type PromiseResult<T> = T extends Promise<infer U> ? U : T;
 
-  export function run<Func extends (...args: any[]) => Promise<any> | any>(
+  type RunFunc = (...args: any[]) => Promise<any> | any;
+
+  type RunOptions<Func extends RunFunc> = {
+    args?: ArgOrSymbol<Parameters<Func>>;
+    forceSync?: boolean;
+    testInvariants?: boolean;
+  }
+
+  export function run<Func extends RunFunc>(
     f: Func,
-    options?: {
-      args?: ArgOrSymbol<Parameters<Func>>;
-      forceSync?: boolean;
-      testInvariants?: boolean;
-    },
+    options?: RunOptions<Func>,
   ): RunCmd;
 
   export function run<
-    Func extends (...args: any[]) => Promise<any> | any,
-    SuccessAction extends Action,
+    Func extends RunFunc,
+    SuccessAction extends Action = never,
+    FailAction extends Action = never,
     >(
     f: Func,
-    options: {
-      args?: ArgOrSymbol<Parameters<Func>>;
-      successActionCreator: (value: PromiseResult<ReturnType<Func>>) => SuccessAction;
-      forceSync?: boolean;
-      testInvariants?: boolean;
-    },
-  ): RunCmd<SuccessAction, never>;
-
-  export function run<
-    Func extends (...args: any[]) => Promise<any> | any,
-    FailAction extends Action,
-    >(
-    f: Func,
-    options: {
-      args?: ArgOrSymbol<Parameters<Func>>;
-      failActionCreator: (error: any) => FailAction;
-      forceSync?: boolean;
-      testInvariants?: boolean;
-    },
-  ): RunCmd<never, FailAction>;
-
-  export function run<
-    Func extends (...args: any[]) => Promise<any> | any,
-    SuccessAction extends Action,
-    FailAction extends Action,
-    >(
-    f: Func,
-    options: {
-      args?: ArgOrSymbol<Parameters<Func>>;
-      failActionCreator: (error: any) => FailAction;
-      successActionCreator: (value: PromiseResult<ReturnType<Func>>) => SuccessAction;
-      forceSync?: boolean;
-      testInvariants?: boolean;
+    options: RunOptions<Func> & {
+      failActionCreator: [FailAction] extends [never]
+        ? undefined
+        : (error: any) => FailAction;
+      successActionCreator: [SuccessAction] extends [never]
+        ? undefined
+        : (value: PromiseResult<ReturnType<Func>>) => SuccessAction;
     },
   ): RunCmd<SuccessAction, FailAction>;
 }
