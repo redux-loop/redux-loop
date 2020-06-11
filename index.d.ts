@@ -8,7 +8,7 @@ export interface StoreCreator {
   ): Store<S>;
 }
 
-type WithDefaultActionHandling<T> = T | Action<'ENFORCE_DEFAULT_HANDLING'>;
+type WithDefaultActionHandling<T extends AnyAction> = T | Action<'@@REDUX_LOOP/ENFORCE_DEFAULT_HANDLING'>;
 
 export type Loop<S, A extends Action = never> = [S, CmdType<A>];
 
@@ -142,10 +142,10 @@ export namespace Cmd {
 
   export function run<
     Func extends (...args: any[]) => Promise<any> | any,
-    SuccessAction extends Action = never,
+    SuccessAction extends Action,
     >(
     f: Func,
-    options?: {
+    options: {
       args?: ArgOrSymbol<Parameters<Func>>;
       successActionCreator: (value: PromiseResult<ReturnType<Func>>) => SuccessAction;
       forceSync?: boolean;
@@ -155,10 +155,10 @@ export namespace Cmd {
 
   export function run<
     Func extends (...args: any[]) => Promise<any> | any,
-    FailAction extends Action = never,
+    FailAction extends Action,
     >(
     f: Func,
-    options?: {
+    options: {
       args?: ArgOrSymbol<Parameters<Func>>;
       failActionCreator: (error: any) => FailAction;
       forceSync?: boolean;
@@ -172,7 +172,7 @@ export namespace Cmd {
     FailAction extends Action,
     >(
     f: Func,
-    options?: {
+    options: {
       args?: ArgOrSymbol<Parameters<Func>>;
       failActionCreator: (error: any) => FailAction;
       successActionCreator: (value: PromiseResult<ReturnType<Func>>) => SuccessAction;
