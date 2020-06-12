@@ -188,14 +188,14 @@ export namespace Cmd {
 }
 
 export type ReducerMapObject<S, A extends Action = Action> = {
-  [K in keyof S]: LoopReducer<S[K]>;
+  [K in keyof S]: LoopReducer<S[K], A>;
 };
 
 export function combineReducers<S>(
   reducers: ReducerMapObject<S, any>
 ): LiftedLoopReducer<S, any>;
 
-export function combineReducers<S, A extends Action = AnyAction>(
+export function combineReducers<S, A extends Action>(
   reducers: ReducerMapObject<S, A>
 ): LiftedLoopReducer<S, A>;
 
@@ -210,7 +210,7 @@ export function reduceReducers<S>(
   ...reducers: Array<LoopReducerWithDefinedState<S, any>>
 ): LiftedLoopReducer<S, any>;
 
-export function reduceReducers<S, A extends Action = AnyAction>(
+export function reduceReducers<S, A extends Action>(
   initialReducer: LoopReducer<S, A>,
   ...reducers: Array<LoopReducerWithDefinedState<S, A>>
 ): LiftedLoopReducer<S, A>;
