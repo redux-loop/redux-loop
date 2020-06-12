@@ -211,10 +211,10 @@ export function mergeChildReducers<S>(
   childMap: ReducerMapObject<S>
 ): Loop<S>;
 
-export function reduceReducers<S>(
-  initialReducer: LoopReducer<S>,
-  ...reducers: Array<LoopReducerWithDefinedState<S>>
-): LiftedLoopReducer<S>;
+export function reduceReducers<S, A extends Action = AnyAction>(
+  initialReducer: LoopReducer<S, A>,
+  ...reducers: Array<LoopReducerWithDefinedState<S, A>>
+): LiftedLoopReducer<S, A>;
 
 export function liftState<S, A extends Action>(state: S | Loop<S>): Loop<S>;
 

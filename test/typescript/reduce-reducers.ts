@@ -9,6 +9,7 @@ import {
   getCmd,
   CmdType
 } from '../../index';
+import { Action } from 'redux';
 
 type ReducedState = {
   add: number;
@@ -20,10 +21,15 @@ const initialState: ReducedState = {
   mult: 2
 };
 
-type ReducedActions = {
-  type: 'change';
+type ChangeAction = Action<'change'> & {
   value: number;
 };
+
+type StuffAction = Action<'stuff'> & {
+  value: string;
+};
+
+type ReducedActions = ChangeAction | StuffAction;
 
 const addReducer: LoopReducer<ReducedState, ReducedActions> = (
   state = initialState,
@@ -45,7 +51,7 @@ const multReducer: LoopReducerWithDefinedState<ReducedState, ReducedActions> = (
   return state;
 };
 
-const change = (value: number): ReducedActions => ({
+const change = (value: number): ChangeAction => ({
   type: 'change',
   value
 });
