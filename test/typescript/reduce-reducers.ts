@@ -21,43 +21,47 @@ const initialState: ReducedState = {
   mult: 2
 };
 
-type ChangeAction = Action<'change'> & {
+type AddAction = Action<'add'> & {
   value: number;
 };
 
-type StuffAction = Action<'stuff'> & {
-  value: string;
+type MultiplyAction = Action<'multiply'> & {
+  value: number;
 };
 
-type ReducedActions = ChangeAction | StuffAction;
-
-const addReducer: LoopReducer<ReducedState, ReducedActions> = (
+const addReducer: LoopReducer<ReducedState, AddAction> = (
   state = initialState,
   action
 ) => {
-  if (action.type === 'change') {
+  if (action.type === 'add') {
     return { ...state, add: state.add + action.value };
   }
   return state;
 };
 
-const multReducer: LoopReducerWithDefinedState<ReducedState, ReducedActions> = (
+const multReducer: LoopReducerWithDefinedState<ReducedState, MultiplyAction> = (
   state,
   action
 ) => {
-  if (action.type === 'change') {
+  if (action.type === 'multiply') {
     return { ...state, mult: state.mult * action.value };
   }
   return state;
 };
 
-const change = (value: number): ChangeAction => ({
-  type: 'change',
+const add = (value: number): AddAction => ({
+  type: 'add',
+  value
+});
+
+const multiply = (value: number): MultiplyAction => ({
+  type: 'multiply',
   value
 });
 
 const reducer = reduceReducers(addReducer, multReducer);
 
-const result: Loop<ReducedState> = reducer(undefined, change(5));
-const newState: ReducedState = getModel(result);
-const cmd: CmdType | null = getCmd(result);
+const result1: Loop<ReducedState> = reducer(undefined, add(5));
+const result2: Loop<ReducedState> = reducer(initialState, multiply(5));
+const newState: ReducedState = getModel(result2);
+const cmd: CmdType | null = getCmd(result2);

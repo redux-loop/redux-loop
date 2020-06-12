@@ -106,23 +106,13 @@ export namespace Cmd {
 
   export function action<A extends Action>(action: A): ActionCmd<A>;
 
-  export function list(
-    cmds: CmdType[],
-    options?: {
-      batch?: boolean;
-      sequence?: boolean;
-      testInvariants?: boolean;
-    }
-  ): ListCmd;
+  export type ListOptions = {
+    batch?: boolean;
+    sequence?: boolean;
+    testInvariants?: boolean;
+  };
 
-  export function list(
-    cmds: CmdType[],
-    options?: {
-      batch?: boolean;
-      sequence?: boolean;
-      testInvariants?: boolean;
-    }
-  ): ListCmd;
+  export function list(cmds: CmdType[], options?: ListOptions): ListCmd;
 
   export function map<A extends Action, B extends Action>(
     cmd: CmdType,
@@ -143,7 +133,7 @@ export namespace Cmd {
 
   type RunFunc = (...args: any[]) => Promise<any> | any;
 
-  type RunOptions<
+  export type RunOptions<
     Func extends RunFunc,
     SuccessAction extends Action = never,
     FailAction extends Action = never,
@@ -188,8 +178,8 @@ export namespace Cmd {
 
   export function run<
     Func extends (...args: any[]) => Promise<any> | any,
-    SuccessAction extends Action = never,
-    FailAction extends Action = never,
+    SuccessAction extends Action,
+    FailAction extends Action,
     FailReason = unknown
   >(
     f: Func,
@@ -197,19 +187,28 @@ export namespace Cmd {
   ): RunCmd<SuccessAction, FailAction>;
 }
 
-export type ReducerMapObject<S> = {
+export type ReducerMapObject<S, A extends Action = Action> = {
   [K in keyof S]: LoopReducer<S[K]>;
 };
 
 export function combineReducers<S>(
-  reducers: ReducerMapObject<S>
-): LiftedLoopReducer<S>;
+  reducers: ReducerMapObject<S, any>
+): LiftedLoopReducer<S, any>;
+
+export function combineReducers<S, A extends Action = AnyAction>(
+  reducers: ReducerMapObject<S, A>
+): LiftedLoopReducer<S, A>;
 
 export function mergeChildReducers<S>(
   parentResult: S | Loop<S>,
   action: AnyAction,
   childMap: ReducerMapObject<S>
 ): Loop<S>;
+
+export function reduceReducers<S>(
+  initialReducer: LoopReducer<S, any>,
+  ...reducers: Array<LoopReducerWithDefinedState<S, any>>
+): LiftedLoopReducer<S, any>;
 
 export function reduceReducers<S, A extends Action = AnyAction>(
   initialReducer: LoopReducer<S, A>,
