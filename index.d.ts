@@ -1,7 +1,5 @@
 import { Action, ActionCreator, AnyAction, StoreEnhancer, Store } from 'redux';
 
-type Maybe<T> = T | undefined;
-
 export interface StoreCreator {
   <S, A extends Action>(
     reducer: LoopReducer<S, A>,
@@ -10,25 +8,33 @@ export interface StoreCreator {
   ): Store<S>;
 }
 
-type WithDefaultActionHandling<T extends AnyAction> = T | Action<'@@REDUX_LOOP/ENFORCE_DEFAULT_HANDLING'>;
+type WithDefaultActionHandling<T extends AnyAction> =
+  | T
+  | Action<'@@REDUX_LOOP/ENFORCE_DEFAULT_HANDLING'>;
 
-export type Loop<S, A extends Action = never> = [S, CmdType<A>];
+export type Loop<S> = [S, CmdType];
 
-export interface LoopReducer<S, ReducerActions extends Action = AnyAction, LoopActions extends Action = never> {
-  (state: S | undefined, action: WithDefaultActionHandling<ReducerActions>, ...args: any[]): S | Loop<S, LoopActions>;
+export interface LoopReducer<S, A extends Action = AnyAction> {
+  (state: S | undefined, action: WithDefaultActionHandling<A>, ...args: any[]):
+    | S
+    | Loop<S>;
 }
 
-export interface LoopReducerWithDefinedState<S, ReducerActions extends Action = AnyAction, LoopActions extends Action = never> {
-  (state: S, action: WithDefaultActionHandling<ReducerActions>, ...args: any[]): S | Loop<S, LoopActions>;
+export interface LoopReducerWithDefinedState<S, A extends Action = AnyAction> {
+  (state: S, action: WithDefaultActionHandling<A>, ...args: any[]): S | Loop<S>;
 }
 
-export interface LiftedLoopReducer<S, ReducerActions extends Action = AnyAction, LoopActions extends Action = never> {
-  (state: S | undefined, action: WithDefaultActionHandling<ReducerActions>, ...args: any[]): Loop<S, LoopActions>;
+export interface LiftedLoopReducer<S, A extends Action = AnyAction> {
+  (
+    state: S | undefined,
+    action: WithDefaultActionHandling<A>,
+    ...args: any[]
+  ): Loop<S>;
 }
 
 export type CmdSimulation = {
-  result: any,
-  success: boolean
+  result: any;
+  success: boolean;
 };
 export interface MultiCmdSimulation {
   [index: number]: CmdSimulation | MultiCmdSimulation;
@@ -39,12 +45,12 @@ export interface NoneCmd {
   simulate(): null;
 }
 
-export interface ListCmd<A extends Action = never> {
+export interface ListCmd {
   readonly type: 'LIST';
-  readonly cmds: CmdType<A>[];
+  readonly cmds: CmdType[];
   readonly sequence?: boolean;
   readonly batch?: boolean;
-  simulate(simulations: MultiCmdSimulation): A[];
+  simulate(simulations: MultiCmdSimulation): AnyAction[];
 }
 
 export interface ActionCmd<A extends Action> {
@@ -56,14 +62,17 @@ export interface ActionCmd<A extends Action> {
 export interface MapCmd<A extends Action = never> {
   readonly type: 'MAP';
   readonly tagger: ActionCreator<A>;
-  readonly nestedCmd: CmdType<A>;
+  readonly nestedCmd: CmdType;
   readonly args: any[];
-  simulate(simulations?: CmdSimulation | MultiCmdSimulation): A[] | A | null
+  simulate(simulations?: CmdSimulation | MultiCmdSimulation): A[] | A | null;
 }
 
-export interface RunCmd<SuccessAction extends Action = never, FailAction extends Action = never> {
+export interface RunCmd<
+  SuccessAction extends Action = never,
+  FailAction extends Action = never
+> {
   readonly type: 'RUN';
-  readonly func: Function;
+  readonly func: (...args: any[]) => any;
   readonly args?: any[];
   readonly failActionCreator?: ActionCreator<FailAction>;
   readonly successActionCreator?: ActionCreator<SuccessAction>;
@@ -71,12 +80,14 @@ export interface RunCmd<SuccessAction extends Action = never, FailAction extends
   simulate(simulation: CmdSimulation): SuccessAction | FailAction;
 }
 
-export type CmdType<A extends Action = never> =
-  | ActionCmd<A>
-  | ListCmd<A>
-  | MapCmd<A>
+type UnknownAction = AnyAction | never;
+
+export type CmdType =
+  | ActionCmd<UnknownAction>
+  | ListCmd
+  | MapCmd<UnknownAction>
   | NoneCmd
-  | RunCmd<A>;
+  | RunCmd<UnknownAction, UnknownAction>;
 
 export interface LoopConfig {
   readonly DONT_LOG_ERRORS_ON_HANDLED_FAILURES: boolean;
@@ -84,10 +95,7 @@ export interface LoopConfig {
 
 export function install<S>(config?: LoopConfig): StoreEnhancer<S>;
 
-export function loop<S, A extends Action = never>(
-  state: S,
-  cmd: CmdType<A>
-): Loop<S, A>;
+export function loop<S>(state: S, cmd: CmdType): Loop<S>;
 
 export namespace Cmd {
   export const dispatch: unique symbol;
@@ -97,7 +105,7 @@ export namespace Cmd {
   export type GetState = <S>() => S;
 
   export function action<A extends Action>(action: A): ActionCmd<A>;
-  
+
   export function list(
     cmds: CmdType[],
     options?: {
@@ -107,30 +115,29 @@ export namespace Cmd {
     }
   ): ListCmd;
 
-  export function list<A extends Action>(
-    cmds: CmdType<A>[],
+  export function list(
+    cmds: CmdType[],
     options?: {
       batch?: boolean;
       sequence?: boolean;
       testInvariants?: boolean;
     }
-  ): ListCmd<A>;
+  ): ListCmd;
 
   export function map<A extends Action, B extends Action>(
-    cmd: CmdType<B>,
+    cmd: CmdType,
     tagger: (subAction: B) => A,
     args?: any[]
   ): MapCmd<A>;
 
   // Allow the use of special dispatch | getState symbols
   type ArgOrSymbol<T> = {
-    [K in keyof T]:
-      T[K] extends GetState
-        ? typeof getState
-        : T[K] extends Dispatch
-          ? typeof dispatch
-          : T[K];
-  }
+    [K in keyof T]: T[K] extends GetState
+      ? typeof getState
+      : T[K] extends Dispatch
+      ? typeof dispatch
+      : T[K];
+  };
 
   export type PromiseResult<T> = T extends Promise<infer U> ? U : T;
 
@@ -145,21 +152,26 @@ export namespace Cmd {
     args?: ArgOrSymbol<Parameters<Func>>;
     forceSync?: boolean;
     testInvariants?: boolean;
-    successActionCreator: (value: PromiseResult<ReturnType<Func>>) => SuccessAction;
+    successActionCreator: (
+      value: PromiseResult<ReturnType<Func>>
+    ) => SuccessAction;
     failActionCreator: (error: FailReason) => FailAction;
-  }
+  };
 
   export function run<Func extends RunFunc>(
     f: Func,
-    options?: Omit<RunOptions<Func>, 'successActionCreator' | 'failActionCreator'>,
-  ): RunCmd;
+    options?: Omit<
+      RunOptions<Func>,
+      'successActionCreator' | 'failActionCreator'
+    >
+  ): RunCmd<never, never>;
 
   export function run<
     Func extends (...args: any[]) => Promise<any> | any,
-    SuccessAction extends Action,
+    SuccessAction extends Action
   >(
     f: Func,
-    options: Omit<RunOptions<Func, SuccessAction>, 'failActionCreator'>,
+    options: Omit<RunOptions<Func, SuccessAction>, 'failActionCreator'>
   ): RunCmd<SuccessAction, never>;
 
   export function run<
@@ -168,7 +180,10 @@ export namespace Cmd {
     FailReason = unknown
   >(
     f: Func,
-    options: Omit<RunOptions<Func, never, FailAction, FailReason>, 'successActionCreator'>,
+    options: Omit<
+      RunOptions<Func, never, FailAction, FailReason>,
+      'successActionCreator'
+    >
   ): RunCmd<never, FailAction>;
 
   export function run<
@@ -178,36 +193,36 @@ export namespace Cmd {
     FailReason = unknown
   >(
     f: Func,
-    options: RunOptions<Func, SuccessAction, FailAction, FailReason>,
+    options: RunOptions<Func, SuccessAction, FailAction, FailReason>
   ): RunCmd<SuccessAction, FailAction>;
 }
 
-export type ReducerMapObject<S, A extends Action = AnyAction> = {
-  [K in keyof S]: LoopReducer<S[K], A>;
-}
+export type ReducerMapObject<S> = {
+  [K in keyof S]: LoopReducer<S[K]>;
+};
 
-export function combineReducers<S, A extends Action = AnyAction>(
-  reducers: ReducerMapObject<S, A>
-): LiftedLoopReducer<S, A>;
+export function combineReducers<S>(
+  reducers: ReducerMapObject<S>
+): LiftedLoopReducer<S>;
 
-export function mergeChildReducers<S, A extends Action = AnyAction>(
-  parentResult: S | Loop<S, A>,
+export function mergeChildReducers<S>(
+  parentResult: S | Loop<S>,
   action: AnyAction,
-  childMap: ReducerMapObject<S, A>
-): Loop<S, A>;
+  childMap: ReducerMapObject<S>
+): Loop<S>;
 
-export function reduceReducers<S, A extends Action = AnyAction>(
-  initialReducer: LoopReducer<S, A>,
-  ...reducers: Array<LoopReducerWithDefinedState<S, A>>
-): LiftedLoopReducer<S, A>;
+export function reduceReducers<S>(
+  initialReducer: LoopReducer<S>,
+  ...reducers: Array<LoopReducerWithDefinedState<S>>
+): LiftedLoopReducer<S>;
 
-export function liftState<S, A extends Action>(
-  state: S | Loop<S, A>
-): Loop<S, A>;
+export function liftState<S, A extends Action>(state: S | Loop<S>): Loop<S>;
 
 export function isLoop(test: any): boolean;
 
-export function getModel<S>(loop: S | Loop<S, AnyAction>): S;
+export function getModel<S>(loop: S | Loop<S>): S;
 
-export function getCmd<A extends Action>(a: any): CmdType<A> | null;
+export function getCmd<A extends Action, B extends Action = never>(
+  a: any
+): CmdType | null;
 export function getCmd(a: any): CmdType | null;

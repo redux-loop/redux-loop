@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
+  combineReducers,
   reduceReducers,
   Loop,
   LoopReducer,
@@ -7,37 +9,38 @@ import {
   getCmd,
   CmdType
 } from '../../index';
-import { AnyAction } from 'redux';
 
-type ReducedState = { add: number; mult: number };
+type ReducedState = {
+  add: number;
+  mult: number;
+};
 
 const initialState: ReducedState = {
   add: 0,
   mult: 2
 };
 
-type ReducedActions =
-  | {
-      type: 'change';
-      value: number;
-    };
+type ReducedActions = {
+  type: 'change';
+  value: number;
+};
 
 const addReducer: LoopReducer<ReducedState, ReducedActions> = (
   state = initialState,
-  action: AnyAction
+  action
 ) => {
-  if(action.type === 'change'){
-    return {...state, add: state.add + action.value};
+  if (action.type === 'change') {
+    return { ...state, add: state.add + action.value };
   }
   return state;
 };
 
 const multReducer: LoopReducerWithDefinedState<ReducedState, ReducedActions> = (
   state,
-  action: AnyAction
+  action
 ) => {
-  if(action.type === 'change'){
-    return {...state, mult: state.mult * action.value};
+  if (action.type === 'change') {
+    return { ...state, mult: state.mult * action.value };
   }
   return state;
 };
@@ -49,6 +52,6 @@ const change = (value: number): ReducedActions => ({
 
 const reducer = reduceReducers(addReducer, multReducer);
 
-const result: Loop<ReducedState, ReducedActions> = reducer(undefined, change(5));
+const result: Loop<ReducedState> = reducer(undefined, change(5));
 const newState: ReducedState = getModel(result);
-const cmd: CmdType<ReducedActions> | null = getCmd(result);
+const cmd: CmdType | null = getCmd(result);
