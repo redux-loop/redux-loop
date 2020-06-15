@@ -1,5 +1,7 @@
 import { Action, ActionCreator, AnyAction, StoreEnhancer, Store } from 'redux';
 
+export type UnknownAction = AnyAction | never;
+
 export interface StoreCreator {
   <S, A extends Action>(
     reducer: LoopReducer<S, A>,
@@ -79,8 +81,6 @@ export interface RunCmd<
   readonly forceSync?: boolean;
   simulate(simulation: CmdSimulation): SuccessAction | FailAction;
 }
-
-type UnknownAction = AnyAction | never;
 
 export type CmdType =
   | ActionCmd<UnknownAction>
@@ -188,18 +188,18 @@ export namespace Cmd {
   ): RunCmd<SuccessAction, FailAction>;
 }
 
-export type ReducerMapObject<S, A extends Action = Action> = {
+export type ReducersMapObject<S, A extends Action = AnyAction> = {
   [K in keyof S]: LoopReducer<S[K], A>;
 };
 
 export function combineReducers<S, A extends Action = AnyAction>(
-  reducers: ReducerMapObject<S, A>
+  reducers: ReducersMapObject<S, A>
 ): LiftedLoopReducer<S, A>;
 
 export function mergeChildReducers<S>(
   parentResult: S | Loop<S>,
   action: AnyAction,
-  childMap: ReducerMapObject<S>
+  childMap: ReducersMapObject<S>
 ): Loop<S>;
 
 export function reduceReducers<S>(
@@ -212,13 +212,10 @@ export function reduceReducers<S, A extends Action>(
   ...reducers: Array<LoopReducerWithDefinedState<S, A>>
 ): LiftedLoopReducer<S, A>;
 
-export function liftState<S, A extends Action>(state: S | Loop<S>): Loop<S>;
+export function liftState<S>(state: S | Loop<S>): Loop<S>;
 
 export function isLoop(test: any): boolean;
 
 export function getModel<S>(loop: S | Loop<S>): S;
 
-export function getCmd<A extends Action, B extends Action = never>(
-  a: any
-): CmdType | null;
 export function getCmd(a: any): CmdType | null;
