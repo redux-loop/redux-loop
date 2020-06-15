@@ -91,6 +91,7 @@ export type CmdType =
 
 export interface LoopConfig {
   readonly DONT_LOG_ERRORS_ON_HANDLED_FAILURES: boolean;
+  readonly ENABLE_THUNK_MIGRATION: boolean;
 }
 
 export function install<S>(config?: LoopConfig): StoreEnhancer<S>;
@@ -191,11 +192,7 @@ export type ReducerMapObject<S, A extends Action = Action> = {
   [K in keyof S]: LoopReducer<S[K], A>;
 };
 
-export function combineReducers<S>(
-  reducers: ReducerMapObject<S, any>
-): LiftedLoopReducer<S, any>;
-
-export function combineReducers<S, A extends Action>(
+export function combineReducers<S, A extends Action = AnyAction>(
   reducers: ReducerMapObject<S, A>
 ): LiftedLoopReducer<S, A>;
 
