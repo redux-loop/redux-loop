@@ -130,9 +130,9 @@ export namespace Cmd {
       : T[K];
   };
 
-  export type PromiseResult<T> = T extends Promise<infer U> ? U : T;
-
   type RunFunc = (...args: any[]) => Promise<any> | any;
+
+  export type PromiseResult<T> = T extends Promise<infer U> ? U : T;
 
   export type RunOptions<
     Func extends RunFunc,
@@ -157,16 +157,13 @@ export namespace Cmd {
     >
   ): RunCmd<never, never>;
 
-  export function run<
-    Func extends (...args: any[]) => Promise<any> | any,
-    SuccessAction extends Action
-  >(
+  export function run<Func extends RunFunc, SuccessAction extends Action>(
     f: Func,
     options: Omit<RunOptions<Func, SuccessAction>, 'failActionCreator'>
   ): RunCmd<SuccessAction, never>;
 
   export function run<
-    Func extends (...args: any[]) => Promise<any> | any,
+    Func extends RunFunc,
     FailAction extends Action,
     FailReason = unknown
   >(
@@ -178,7 +175,7 @@ export namespace Cmd {
   ): RunCmd<never, FailAction>;
 
   export function run<
-    Func extends (...args: any[]) => Promise<any> | any,
+    Func extends RunFunc,
     SuccessAction extends Action,
     FailAction extends Action,
     FailReason = unknown
