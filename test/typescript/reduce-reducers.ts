@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {
+  combineReducers,
   reduceReducers,
   Loop,
   LoopReducer,
@@ -7,48 +9,59 @@ import {
   getCmd,
   CmdType
 } from '../../index';
-import { AnyAction } from 'redux';
+import { Action } from 'redux';
 
-type ReducedState = { add: number; mult: number };
+type ReducedState = {
+  add: number;
+  mult: number;
+};
 
 const initialState: ReducedState = {
   add: 0,
   mult: 2
 };
 
-type ReducedActions =
-  | {
-      type: 'change';
-      value: number;
-    };
+type AddAction = Action<'add'> & {
+  value: number;
+};
 
-const addReducer: LoopReducer<ReducedState, ReducedActions> = (
+type MultiplyAction = Action<'multiply'> & {
+  value: number;
+};
+
+const addReducer: LoopReducer<ReducedState, AddAction> = (
   state = initialState,
-  action: AnyAction
+  action
 ) => {
-  if(action.type === 'change'){
-    return {...state, add: state.add + action.value};
+  if (action.type === 'add') {
+    return { ...state, add: state.add + action.value };
   }
   return state;
 };
 
-const multReducer: LoopReducerWithDefinedState<ReducedState, ReducedActions> = (
+const multReducer: LoopReducerWithDefinedState<ReducedState, MultiplyAction> = (
   state,
-  action: AnyAction
+  action
 ) => {
-  if(action.type === 'change'){
-    return {...state, mult: state.mult * action.value};
+  if (action.type === 'multiply') {
+    return { ...state, mult: state.mult * action.value };
   }
   return state;
 };
 
-const change = (value: number): ReducedActions => ({
-  type: 'change',
+const add = (value: number): AddAction => ({
+  type: 'add',
+  value
+});
+
+const multiply = (value: number): MultiplyAction => ({
+  type: 'multiply',
   value
 });
 
 const reducer = reduceReducers(addReducer, multReducer);
 
-const result: Loop<ReducedState, ReducedActions> = reducer(undefined, change(5));
-const newState: ReducedState = getModel(result);
-const cmd: CmdType<ReducedActions> | null = getCmd(result);
+const result1: Loop<ReducedState> = reducer(undefined, add(5));
+const result2: Loop<ReducedState> = reducer(initialState, multiply(5));
+const newState: ReducedState = getModel(result2);
+const cmd: CmdType | null = getCmd(result2);
