@@ -132,17 +132,12 @@ function handleSequenceList({ cmds, batch = false }, context) {
   return batch ? result : result.then(() => []);
 }
 
-function handleDelayCmd(cmd, dispatch, getState, loopConfig) {
+function handleDelayCmd(cmd, context) {
   const executeNestedCmd = () => {
-    const cmdPromise = executeCmd(
-      cmd.nestedCmd,
-      dispatch,
-      getState,
-      loopConfig
-    );
+    const cmdPromise = executeCmdInternal(cmd.nestedCmd, context);
     if (cmdPromise) {
       cmdPromise.then(actions => {
-        actions.forEach(action => dispatch(action));
+        actions.forEach(action => context.wrappedDispatch(action));
       });
     }
   };
@@ -179,7 +174,7 @@ function executeCmdInternal(cmd, context) {
       return Promise.resolve([cmd.actionToDispatch]);
 
     case cmdTypes.DELAY:
-      return handleDelayCmd(cmd, dispatch, getState, loopConfig);
+      return handleDelayCmd(cmd, context);
 
     case cmdTypes.LIST:
       return cmd.sequence
