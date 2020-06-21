@@ -292,38 +292,49 @@ function clearIntervalCmd(timerId) {
 }
 
 function setTimeoutCmd(nestedCmd, delayMs, options = {}) {
-  return delay(nestedCmd, delayMs, options, cmdTypes.SET_TIMEOUT);
+  return delay(
+    nestedCmd,
+    delayMs,
+    options,
+    cmdTypes.SET_TIMEOUT,
+    'Cmd.setTimeout'
+  );
 }
 
 function setIntervalCmd(nestedCmd, delayMs, options = {}) {
-  return delay(nestedCmd, delayMs, options, cmdTypes.SET_INTERVAL);
+  return delay(
+    nestedCmd,
+    delayMs,
+    options,
+    cmdTypes.SET_INTERVAL,
+    'Cmd.setInterval'
+  );
 }
 
-function delay(nestedCmd, delayMs, options, type) {
+function delay(nestedCmd, delayMs, options, cmdType, funcName) {
   if (process.env.NODE_ENV !== 'production') {
-    const name = type === cmdTypes.SET_INTERVAL ? 'Cmd.setInterval' : 'Cmd.setTimeout';
     throwInvariant(
       isCmd(nestedCmd),
-      `${name}: first argument must be another Cmd`
+      `${funcName}: first argument must be another Cmd`
     );
     throwInvariant(
       typeof delayMs === 'number',
-      `${name}: second argument must be a number`
+      `${funcName}: second argument must be a number`
     );
     throwInvariant(
       typeof options === 'object',
-      `${name}: third argument must be an options object`
+      `${funcName}: third argument must be an options object`
     );
     throwInvariant(
       options.scheduledActionCreator === undefined ||
         typeof options.scheduledActionCreator === 'function',
-      `${name}: scheduledActionCreator option must be a function if specified`
+      `${funcName}: scheduledActionCreator option must be a function if specified`
     );
   }
 
   return Object.freeze({
     [isCmdSymbol]: true,
-    type: type,
+    type: cmdType,
     nestedCmd,
     delayMs,
     scheduledActionCreator: options.scheduledActionCreator,
