@@ -7,7 +7,8 @@ const getStateSymbol = Symbol('getState');
 const cmdTypes = {
   RUN: 'RUN',
   ACTION: 'ACTION',
-  DELAY: 'DELAY',
+  SET_TIMEOUT: 'SET_TIMEOUT',
+  SET_INTERVAL: 'SET_INTERVAL',
   LIST: 'LIST',
   MAP: 'MAP',
   NONE: 'NONE'
@@ -143,7 +144,7 @@ function handleDelayCmd(cmd, context) {
   };
 
   let timerId;
-  if (cmd.isRepeating) {
+  if (cmd.type === cmdTypes.SET_INTERVAL) {
     timerId = setInterval(executeNestedCmd, cmd.delayMs);
   } else {
     timerId = setTimeout(executeNestedCmd, cmd.delayMs);
@@ -173,7 +174,8 @@ function executeCmdInternal(cmd, context) {
     case cmdTypes.ACTION:
       return Promise.resolve([cmd.actionToDispatch]);
 
-    case cmdTypes.DELAY:
+    case cmdTypes.SET_TIMEOUT:
+    case cmdTypes.SET_INTERVAL:
       return handleDelayCmd(cmd, context);
 
     case cmdTypes.LIST:
@@ -290,16 +292,16 @@ function clearIntervalCmd(timerId) {
 }
 
 function setTimeoutCmd(nestedCmd, delayMs, options = {}) {
-  return delay(nestedCmd, delayMs, options, false);
+  return delay(nestedCmd, delayMs, options, cmdTypes.SET_TIMEOUT);
 }
 
 function setIntervalCmd(nestedCmd, delayMs, options = {}) {
-  return delay(nestedCmd, delayMs, options, true);
+  return delay(nestedCmd, delayMs, options, cmdTypes.SET_INTERVAL);
 }
 
-function delay(nestedCmd, delayMs, options, isRepeating) {
+function delay(nestedCmd, delayMs, options, type) {
   if (process.env.NODE_ENV !== 'production') {
-    const name = isRepeating ? 'Cmd.setInterval' : 'Cmd.setTimeout';
+    const name = type === cmdTypes.SET_INTERVAL ? 'Cmd.setInterval' : 'Cmd.setTimeout';
     throwInvariant(
       isCmd(nestedCmd),
       `${name}: first argument must be another Cmd`
@@ -321,10 +323,9 @@ function delay(nestedCmd, delayMs, options, isRepeating) {
 
   return Object.freeze({
     [isCmdSymbol]: true,
-    type: cmdTypes.DELAY,
+    type: type,
     nestedCmd,
     delayMs,
-    isRepeating,
     scheduledActionCreator: options.scheduledActionCreator,
     simulate: simulateDelay
   });
