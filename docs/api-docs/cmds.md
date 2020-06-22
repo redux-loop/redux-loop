@@ -111,6 +111,14 @@ return loop(
 
 For details, see `setTimeout()` above.
 
+### `Cmd.clearTimeout(timerId)`
+Cancel's a delayed command execution created by `Cmd.setTimeout()`.
+Equivalent to `Cmd.run(clearTimeout, { args: [timerId] })`.
+
+### `Cmd.clearInterval(timerId)`
+Cancel's a repeated command execution created by `Cmd.setInterval()`.
+Equivalent to `Cmd.run(clearInterval, { args: [timerId] })`.
+
 ### `Cmd.run(func, options)`
 
 `run()` allows you to declaratively schedule a function to be called with some
@@ -388,16 +396,6 @@ function reducer(state = { /* ... */ }, action) {
   }
 }
 ```
-
-## Convenience helpers
-
-### `Cmd.clearTimeout(timerId)`
-Cancel's a delayed command execution created by `Cmd.setTimeout()`.
-Equivalent to `Cmd.run(clearTimeout, { args: [timerId] })`.
-
-### `Cmd.clearInterval(timerId)`
-Cancel's a repeated command execution created by `Cmd.setInterval()`.
-Equivalent to `Cmd.run(clearInterval, { args: [timerId] })`.
 
 ## Cmd helper symbols
 
