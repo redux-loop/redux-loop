@@ -1,10 +1,10 @@
 # `mergeChildReducers(parentResult, action, childMap)`
 
+NOTE: `mergeChildReducers` is deprecated as of version 6.0.0. It will be removed in 7.0.0. `combineReducers` and `reduceReducers` should cover the cases where `mergeChildReducers` is needed. If you need to use it temporarily without a console warning, use `DEPRECATED_mergeChildReducers(parentResult, action, childMap)`. This will also be removed in 7.0.0 though.
+
 `mergeChildReducers` is a more generalized version of `combineReducers` that allows you to nest reducers
 underneath a common parent that has functionality of its own (rather than restricting the parent
 to simply passing actions to its children like `combineReducers` does)
-
-NOTE: `mergeChildReducers` will likely be removed in a future release due to its awkward API. `combineReducers` and `reduceReducers` should cover most cases where `mergeChildReducers` is needed.
 
 * `parentResult: Object | loop(Object, Cmd)` &ndash; The result from the parent reducer before any child results have been applied.
 
