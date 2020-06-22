@@ -7,7 +7,7 @@ import {
   LoopReducerWithDefinedState,
   getModel,
   getCmd,
-  CmdType
+  CmdType,
 } from '../../index';
 import { Action } from 'redux';
 
@@ -18,7 +18,7 @@ type ReducedState = {
 
 const initialState: ReducedState = {
   add: 0,
-  mult: 2
+  mult: 2,
 };
 
 type AddAction = Action<'add'> & {
@@ -51,12 +51,12 @@ const multReducer: LoopReducerWithDefinedState<ReducedState, MultiplyAction> = (
 
 const add = (value: number): AddAction => ({
   type: 'add',
-  value
+  value,
 });
 
 const multiply = (value: number): MultiplyAction => ({
   type: 'multiply',
-  value
+  value,
 });
 
 const reducer = reduceReducers(addReducer, multReducer);

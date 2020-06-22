@@ -1,6 +1,6 @@
 const concat = Array.prototype.concat;
 
-export const flatten = array => {
+export const flatten = (array) => {
   return concat.apply([], array);
 };
 
@@ -10,6 +10,6 @@ export const throwInvariant = (condition, message) => {
   }
 };
 
-export const isPromiseLike = obj => {
+export const isPromiseLike = (obj) => {
   return !!obj && typeof obj === 'object' && typeof obj.then === 'function';
 };

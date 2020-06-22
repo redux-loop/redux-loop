@@ -6,7 +6,7 @@ import {
   loop,
   liftState,
   LoopReducer,
-  StoreCreator
+  StoreCreator,
 } from '../../index';
 import { Action, AnyAction, createStore } from 'redux';
 
@@ -38,14 +38,14 @@ type TodoReducerActions =
   | IFetchFooRequest;
 
 const noop = (): TodoReducerActions => ({
-  type: NOOP
+  type: NOOP,
 });
 
 const updateNestedCounter = (
   subAction: CounterActions
 ): TodoReducerActions => ({
   type: UPDATE_NESTED_COUNTER,
-  subAction
+  subAction,
 });
 
 interface IFetchFooRequest {
@@ -57,7 +57,7 @@ interface IFetchFooSuccess {
 }
 
 const fetchFooSuccess = (_result: string): IFetchFooSuccess => ({
-  type: FETCH_FOO_SUCCESS
+  type: FETCH_FOO_SUCCESS,
 });
 
 interface IFetchFooFailure {
@@ -69,7 +69,7 @@ class CustomError extends Error {
 }
 
 const fetchFooFailure = (_err: CustomError): IFetchFooFailure => ({
-  type: FETCH_FOO_FAILURE
+  type: FETCH_FOO_FAILURE,
 });
 
 const apiFetchFoo = () => Promise.resolve('foo');
@@ -145,7 +145,7 @@ const todosReducer: LoopReducer<TodoState, TodoReducerActions> = (
           CustomError
         >(apiFetchFoo, {
           successActionCreator: fetchFooSuccess,
-          failActionCreator: fetchFooFailure
+          failActionCreator: fetchFooFailure,
         })
       );
     default:
@@ -157,7 +157,7 @@ const todosReducer: LoopReducer<TodoState, TodoReducerActions> = (
             Cmd.run(console.log, { args: ['log this', Cmd.getState] }),
             Cmd.run(dispatchNoop, { args: [Cmd.dispatch] }),
             Cmd.run(getState, { args: [1, Cmd.getState] }),
-            Cmd.run(typedArgs, { args: [1, 'a', { n: 2 }] })
+            Cmd.run(typedArgs, { args: [1, 'a', { n: 2 }] }),
           ],
           { sequence: true }
         )
@@ -169,7 +169,7 @@ const todoState: TodoState = <TodoState>todosReducer(
   { todos: [], nestedCounter: 0 },
   {
     type: ADD_TODO,
-    text: 'test'
+    text: 'test',
   }
 );
 
@@ -182,27 +182,30 @@ type RootState = {
 
 const rootReducer = combineReducers<RootState>({
   todos: todosReducer,
-  counter: counterReducer
+  counter: counterReducer,
 });
 
 const rootState: RootState = rootReducer(undefined, {
   type: ADD_TODO,
-  text: 'test'
+  text: 'test',
 })[0];
 
 const cmd = Cmd.run(() => 1, {
-  successActionCreator: (a: number) => ({ type: 'FOO', a: 2 * a })
+  successActionCreator: (a: number) => ({ type: 'FOO', a: 2 * a }),
 });
 const action: AnyAction = cmd.simulate({ success: true, result: 123 });
 const listCmd = Cmd.list([cmd, cmd]);
 const actions: AnyAction[] = listCmd.simulate([
   { success: true, result: 123 },
-  { success: false, result: 456 }
+  { success: false, result: 456 },
 ]);
 const nestedListCmd = Cmd.list([cmd, listCmd]);
 const flattenedActions: AnyAction[] = nestedListCmd.simulate([
   { success: true, result: 123 },
-  [{ success: true, result: 456 }, { success: true, result: 789 }]
+  [
+    { success: true, result: 456 },
+    { success: true, result: 789 },
+  ],
 ]);
 
 const enhancedCreateStore = createStore as StoreCreator;

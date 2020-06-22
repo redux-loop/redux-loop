@@ -4,17 +4,17 @@ import { loopPromiseCaughtError } from './errors';
 
 const defaultLoopConfig = {
   DONT_LOG_ERRORS_ON_HANDLED_FAILURES: false,
-  ENABLE_THUNK_MIGRATION: false
+  ENABLE_THUNK_MIGRATION: false,
 };
 
 export function install(config = {}) {
   const loopConfig = Object.assign({}, defaultLoopConfig, config);
 
-  return next => (reducer, initialState, enhancer) => {
+  return (next) => (reducer, initialState, enhancer) => {
     const [initialModel, initialCmd] = liftState(initialState);
     let cmdsQueue = [];
 
-    const liftReducer = reducer => (state, action) => {
+    const liftReducer = (reducer) => (state, action) => {
       const result = reducer(state, action);
       const [model, cmd] = liftState(result);
       cmdsQueue.push({ originalAction: action, cmd });
@@ -24,7 +24,7 @@ export function install(config = {}) {
     const store = next(liftReducer(reducer), initialModel, enhancer);
 
     function runCmds(queue) {
-      const promises = queue.map(runCmd).filter(x => x);
+      const promises = queue.map(runCmd).filter((x) => x);
       if (promises.length === 0) {
         return Promise.resolve();
       } else if (promises.length === 1) {
@@ -42,13 +42,13 @@ export function install(config = {}) {
       }
 
       return cmdPromise
-        .then(actions => {
+        .then((actions) => {
           if (!actions.length) {
             return;
           }
           return Promise.all(actions.map(dispatch));
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(loopPromiseCaughtError(originalAction.type, error));
           throw error;
         });
@@ -70,13 +70,13 @@ export function install(config = {}) {
 
     runCmd({
       originalAction: { type: '@@ReduxLoop/INIT' },
-      cmd: initialCmd
+      cmd: initialCmd,
     });
 
     return {
       ...store,
       dispatch,
-      replaceReducer
+      replaceReducer,
     };
   };
 }

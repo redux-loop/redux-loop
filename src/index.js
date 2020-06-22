@@ -6,7 +6,7 @@ import { install } from './install';
 
 import c from './combine-reducers';
 import m, {
-  DEPRECATED_mergeChildReducers as mergeChildReducersWithNoWarning
+  DEPRECATED_mergeChildReducers as mergeChildReducersWithNoWarning,
 } from './merge-child-reducers';
 import r from './reduce-reducers';
 

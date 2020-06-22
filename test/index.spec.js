@@ -2,27 +2,27 @@ import { install, loop, Cmd, combineReducers } from '../src';
 import { createStore } from 'redux';
 
 describe('redux loop store enhancer', () => {
-  it('a looped action gets dispatched after the action that initiated it is reduced', done => {
+  it('a looped action gets dispatched after the action that initiated it is reduced', (done) => {
     let arbitraryValue = 0;
     const initialState = {
       prop1: {
         firstRun: false,
         secondRun: false,
         thirdRun: false,
-        fourthRun: false
+        fourthRun: false,
       },
-      prop2: true
+      prop2: true,
     };
 
     const firstAction = { type: 'FIRST_ACTION' };
     const secondAction = { type: 'SECOND_ACTION' };
-    const thirdSuccess = value => ({ type: 'THIRD_ACTION', payload: value });
+    const thirdSuccess = (value) => ({ type: 'THIRD_ACTION', payload: value });
     const thirdFailure = () => ({ type: 'THIRD_FAILURE' });
     const fourthAction = { type: 'FOURTH_ACTION' };
-    const nestAction = action => ({ type: 'NESTED_ACTION', payload: action });
+    const nestAction = (action) => ({ type: 'NESTED_ACTION', payload: action });
 
-    const doThirdLater = value => {
-      return new Promise(resolve => {
+    const doThirdLater = (value) => {
+      return new Promise((resolve) => {
         setTimeout(() => {
           resolve(value);
         }, 1);
@@ -38,14 +38,14 @@ describe('redux loop store enhancer', () => {
               Cmd.list([
                 Cmd.action(secondAction),
                 Cmd.none,
-                Cmd.map(Cmd.action(fourthAction), nestAction)
+                Cmd.map(Cmd.action(fourthAction), nestAction),
               ]),
-              Cmd.run(arg => (arbitraryValue = arg), { args: [5] }),
+              Cmd.run((arg) => (arbitraryValue = arg), { args: [5] }),
               Cmd.run(doThirdLater, {
                 successActionCreator: thirdSuccess,
                 failActionCreator: thirdFailure,
-                args: ['hello']
-              })
+                args: ['hello'],
+              }),
             ])
           );
 
@@ -75,7 +75,7 @@ describe('redux loop store enhancer', () => {
 
     const finalReducer = combineReducers({
       prop1: prop1Reducer,
-      prop2: prop2Reducer
+      prop2: prop2Reducer,
     });
 
     const store = createStore(finalReducer, initialState, install());
@@ -86,9 +86,9 @@ describe('redux loop store enhancer', () => {
         firstRun: true,
         secondRun: false,
         thirdRun: false,
-        fourthRun: false
+        fourthRun: false,
       },
-      prop2: true
+      prop2: true,
     });
 
     dispatchPromise.then(() => {
@@ -97,9 +97,9 @@ describe('redux loop store enhancer', () => {
           firstRun: true,
           secondRun: true,
           thirdRun: 'hello',
-          fourthRun: true
+          fourthRun: true,
         },
-        prop2: true
+        prop2: true,
       });
 
       expect(arbitraryValue).toBe(5);
@@ -108,27 +108,27 @@ describe('redux loop store enhancer', () => {
     });
   });
 
-  it('supports thunks if you enable them', done => {
+  it('supports thunks if you enable them', (done) => {
     let arbitraryValue = 0;
     const initialState = {
       prop1: {
         firstRun: false,
         secondRun: false,
         thirdRun: false,
-        fourthRun: false
+        fourthRun: false,
       },
-      prop2: true
+      prop2: true,
     };
 
     const firstAction = { type: 'FIRST_ACTION' };
     const secondAction = { type: 'SECOND_ACTION' };
-    const thirdSuccess = value => ({ type: 'THIRD_ACTION', payload: value });
+    const thirdSuccess = (value) => ({ type: 'THIRD_ACTION', payload: value });
     const thirdFailure = () => ({ type: 'THIRD_FAILURE' });
     const fourthAction = { type: 'FOURTH_ACTION' };
-    const nestAction = action => ({ type: 'NESTED_ACTION', payload: action });
+    const nestAction = (action) => ({ type: 'NESTED_ACTION', payload: action });
 
-    const doThirdLater = value => {
-      return new Promise(resolve => {
+    const doThirdLater = (value) => {
+      return new Promise((resolve) => {
         setTimeout(() => {
           resolve(value);
         }, 1);
@@ -144,14 +144,14 @@ describe('redux loop store enhancer', () => {
               Cmd.list([
                 Cmd.action(secondAction),
                 Cmd.none,
-                Cmd.map(Cmd.action(fourthAction), nestAction)
+                Cmd.map(Cmd.action(fourthAction), nestAction),
               ]),
-              Cmd.run(arg => (arbitraryValue = arg), { args: [5] }),
+              Cmd.run((arg) => (arbitraryValue = arg), { args: [5] }),
               Cmd.run(doThirdLater, {
                 successActionCreator: thirdSuccess,
                 failActionCreator: thirdFailure,
-                args: ['hello']
-              })
+                args: ['hello'],
+              }),
             ])
           );
 
@@ -181,7 +181,7 @@ describe('redux loop store enhancer', () => {
 
     function doubleThunk(dispatch, getState) {
       const oldState = getState().thunk;
-      return new Promise(resolve => {
+      return new Promise((resolve) => {
         setTimeout(() => {
           dispatch({ type: 'REPLACE_STATE', value: 2 * oldState });
           dispatch(firstAction).then(resolve);
@@ -196,7 +196,7 @@ describe('redux loop store enhancer', () => {
     const finalReducer = combineReducers({
       prop1: prop1Reducer,
       prop2: prop2Reducer,
-      thunk: thunkReducer
+      thunk: thunkReducer,
     });
 
     const store = createStore(
@@ -213,10 +213,10 @@ describe('redux loop store enhancer', () => {
           firstRun: true,
           secondRun: true,
           thirdRun: 'hello',
-          fourthRun: true
+          fourthRun: true,
         },
         prop2: true,
-        thunk: 246
+        thunk: 246,
       });
       expect(arbitraryValue).toBe(5);
 
@@ -225,15 +225,15 @@ describe('redux loop store enhancer', () => {
   });
 
   describe('dispatch', () => {
-    it('should return the provided action after the dispatch promise resolves', done => {
+    it('should return the provided action after the dispatch promise resolves', (done) => {
       const firstAction = { type: 'FIRST_ACTION' };
       const downstreamAction = { type: 'DOWNSTREAM_ACTION' };
-      const thunk = dispatch => Promise.resolve(dispatch(downstreamAction));
+      const thunk = (dispatch) => Promise.resolve(dispatch(downstreamAction));
       const initialState = {
         firstRun: false,
         secondRun: false,
         thirdRun: false,
-        fourthRun: false
+        fourthRun: false,
       };
       const reducer = (state = initialState, action) => {
         switch (action.type) {
@@ -249,7 +249,7 @@ describe('redux loop store enhancer', () => {
       };
       const store = createStore(reducer, initialState, install());
 
-      store.dispatch(firstAction).then(result => {
+      store.dispatch(firstAction).then((result) => {
         expect(result).toEqual(firstAction);
         expect(store.getState().secondRun).toEqual(true);
 

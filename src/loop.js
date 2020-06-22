@@ -1,7 +1,7 @@
 import { throwInvariant } from './utils';
 import Cmd, { isCmd } from './cmd';
 
-export const isLoop = array => {
+export const isLoop = (array) => {
   return (
     Array.isArray(array) &&
     array.length === 2 &&
@@ -10,11 +10,11 @@ export const isLoop = array => {
   );
 };
 
-export const getCmd = loop => {
+export const getCmd = (loop) => {
   return isLoop(loop) ? loop[1] : null;
 };
 
-export const getModel = loop => {
+export const getModel = (loop) => {
   return isLoop(loop) ? loop[0] : loop;
 };
 
@@ -26,6 +26,6 @@ export const loop = (model, cmd) => {
   return [model, cmd];
 };
 
-export const liftState = state => {
+export const liftState = (state) => {
   return isLoop(state) ? state : loop(state, Cmd.none);
 };

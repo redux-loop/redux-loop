@@ -11,7 +11,7 @@ const cmdTypes = {
   SET_INTERVAL: 'SET_INTERVAL',
   LIST: 'LIST',
   MAP: 'MAP',
-  NONE: 'NONE'
+  NONE: 'NONE',
 };
 
 export function isCmd(object) {
@@ -19,7 +19,7 @@ export function isCmd(object) {
 }
 
 function getMappedCmdArgs(args = [], dispatch, getState) {
-  return args.map(arg => {
+  return args.map((arg) => {
     if (arg === dispatchSymbol) {
       return dispatch;
     } else if (arg === getStateSymbol) {
@@ -36,7 +36,7 @@ function handleRunCmd(cmd, context) {
 
   let onFail;
   if (cmd.failActionCreator) {
-    onFail = error => {
+    onFail = (error) => {
       if (!loopConfig.DONT_LOG_ERRORS_ON_HANDLED_FAILURES) {
         console.error(error);
       }
@@ -54,7 +54,7 @@ function handleRunCmd(cmd, context) {
     );
 
     if (isPromiseLike(result) && !cmd.forceSync) {
-      return result.then(onSuccess, onFail).then(action => {
+      return result.then(onSuccess, onFail).then((action) => {
         return action ? [action] : [];
       });
     }
@@ -72,17 +72,17 @@ function handleRunCmd(cmd, context) {
 
 function handleParallelList({ cmds, batch = false }, context) {
   const promises = cmds
-    .map(nestedCmd => {
+    .map((nestedCmd) => {
       const possiblePromise = executeCmdInternal(nestedCmd, context);
       if (!possiblePromise || batch) {
         return possiblePromise;
       }
 
-      return possiblePromise.then(result => {
-        return Promise.all(result.map(a => context.wrappedDispatch(a)));
+      return possiblePromise.then((result) => {
+        return Promise.all(result.map((a) => context.wrappedDispatch(a)));
       });
     })
-    .filter(x => x);
+    .filter((x) => x);
 
   if (promises.length === 0) {
     return null;
@@ -90,7 +90,7 @@ function handleParallelList({ cmds, batch = false }, context) {
 
   return Promise.all(promises)
     .then(flatten)
-    .then(actions => {
+    .then((actions) => {
       return batch ? actions : [];
     });
 }
@@ -101,14 +101,14 @@ function handleSequenceList({ cmds, batch = false }, context) {
     return null;
   }
 
-  const result = new Promise(resolve => {
+  const result = new Promise((resolve) => {
     let firstPromise = executeCmdInternal(firstCmd, context);
     firstPromise = firstPromise || Promise.resolve([]);
-    firstPromise.then(result => {
+    firstPromise.then((result) => {
       let executePromise;
       if (!batch) {
         executePromise = Promise.all(
-          result.map(a => context.wrappedDispatch(a))
+          result.map((a) => context.wrappedDispatch(a))
         );
       } else {
         executePromise = Promise.resolve();
@@ -116,11 +116,11 @@ function handleSequenceList({ cmds, batch = false }, context) {
       executePromise.then(() => {
         const remainingSequence = list(cmds.slice(1), {
           batch,
-          sequence: true
+          sequence: true,
         });
         const remainingPromise = executeCmdInternal(remainingSequence, context);
         if (remainingPromise) {
-          remainingPromise.then(innerResult => {
+          remainingPromise.then((innerResult) => {
             resolve(result.concat(innerResult));
           });
         } else {
@@ -137,8 +137,8 @@ function handleDelayCmd(cmd, context) {
   const executeNestedCmd = () => {
     const cmdPromise = executeCmdInternal(cmd.nestedCmd, context);
     if (cmdPromise) {
-      cmdPromise.then(actions => {
-        actions.forEach(action => context.wrappedDispatch(action));
+      cmdPromise.then((actions) => {
+        actions.forEach((action) => context.wrappedDispatch(action));
       });
     }
   };
@@ -162,7 +162,7 @@ export function executeCmd(cmd, dispatch, getState, loopConfig = {}) {
     dispatch,
     wrappedDispatch: dispatch,
     getState,
-    loopConfig
+    loopConfig,
   });
 }
 
@@ -186,14 +186,14 @@ function executeCmdInternal(cmd, context) {
     case cmdTypes.MAP: {
       const possiblePromise = executeCmdInternal(cmd.nestedCmd, {
         ...context,
-        wrappedDispatch: action =>
-          context.wrappedDispatch(cmd.tagger(...cmd.args, action))
+        wrappedDispatch: (action) =>
+          context.wrappedDispatch(cmd.tagger(...cmd.args, action)),
       });
       if (!possiblePromise) {
         return null;
       }
-      return possiblePromise.then(actions =>
-        actions.map(action => cmd.tagger(...cmd.args, action))
+      return possiblePromise.then((actions) =>
+        actions.map((action) => cmd.tagger(...cmd.args, action))
       );
     }
 
@@ -257,7 +257,7 @@ function run(func, options = {}) {
     type: cmdTypes.RUN,
     func,
     simulate: simulateRun,
-    ...rest
+    ...rest,
   });
 }
 
@@ -279,7 +279,7 @@ function action(actionToDispatch) {
     [isCmdSymbol]: true,
     type: cmdTypes.ACTION,
     actionToDispatch,
-    simulate: simulateAction
+    simulate: simulateAction,
   });
 }
 
@@ -338,7 +338,7 @@ function delay(nestedCmd, delayMs, options, cmdType, funcName) {
     nestedCmd,
     delayMs,
     scheduledActionCreator: options.scheduledActionCreator,
-    simulate: simulateDelay
+    simulate: simulateDelay,
   });
 }
 
@@ -360,7 +360,7 @@ function simulateDelay(timerId, nestedSimulation) {
 
 function simulateList(simulations) {
   return flatten(
-    this.cmds.map((cmd, i) => cmd.simulate(simulations[i])).filter(a => a)
+    this.cmds.map((cmd, i) => cmd.simulate(simulations[i])).filter((a) => a)
   );
 }
 
@@ -390,14 +390,14 @@ function list(cmds, options = {}) {
     type: cmdTypes.LIST,
     cmds,
     simulate: simulateList,
-    ...rest
+    ...rest,
   });
 }
 
 function simulateMap(simulation) {
   let result = this.nestedCmd.simulate(simulation);
   if (Array.isArray(result)) {
-    return result.map(action => this.tagger(...this.args, action));
+    return result.map((action) => this.tagger(...this.args, action));
   } else if (result) {
     return this.tagger(...this.args, result);
   } else {
@@ -424,14 +424,14 @@ function map(nestedCmd, tagger, ...args) {
     tagger,
     nestedCmd,
     args,
-    simulate: simulateMap
+    simulate: simulateMap,
   });
 }
 
 const none = Object.freeze({
   [isCmdSymbol]: true,
   type: cmdTypes.NONE,
-  simulate: () => null
+  simulate: () => null,
 });
 
 export default {
@@ -445,5 +445,5 @@ export default {
   map,
   none,
   dispatch: dispatchSymbol,
-  getState: getStateSymbol
+  getState: getStateSymbol,
 };

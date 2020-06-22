@@ -3,7 +3,10 @@ import { flatten, throwInvariant, isPromiseLike } from '../src/utils';
 describe('utils', () => {
   describe('flatten', () => {
     it('returns the passed in array flattened a single level', () => {
-      let arr = [[1, 2, 3], [4, 5, 6]];
+      let arr = [
+        [1, 2, 3],
+        [4, 5, 6],
+      ];
       expect(flatten(arr)).toEqual([1, 2, 3, 4, 5, 6]);
     });
   });

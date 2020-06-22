@@ -8,7 +8,7 @@ export default (...reducers) => (prevState, action, ...args) => {
       if (isLoop(result)) {
         return {
           newState: getModel(result),
-          cmds: [...prevResult.cmds, getCmd(result)]
+          cmds: [...prevResult.cmds, getCmd(result)],
         };
       }
       return { newState: result, cmds: prevResult.cmds };
