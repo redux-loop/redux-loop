@@ -248,6 +248,27 @@ describe('Cmds', () => {
       });
     });
 
+    describe('Cmd.setInterval', () => {
+      it('resolves with the action created from the action creator', async () => {
+        let dispatchPromise = new Promise(resolve => {
+          dispatch = jest.fn(() => resolve());
+        });
+
+        let action = actionCreator1(123);
+        let cmd = Cmd.setInterval(Cmd.action(action), 100, {
+          scheduledActionCreator: actionCreator2
+        });
+        let result = executeCmd(cmd, dispatch, getState);
+
+        await expect(result).resolves.toEqual([
+          actionCreator2(expect.anything())
+        ]);
+        await dispatchPromise;
+        expect(dispatch.mock.calls.length).toEqual(1);
+        expect(dispatch.mock.calls[0][0]).toEqual(action);
+      });
+    });
+
     describe('Cmd.list', () => {
       let consoleError;
 
@@ -633,6 +654,22 @@ describe('Cmds', () => {
       it('returns the scedule action with the nested action', () => {
         let action = actionCreator1(123);
         let cmd = Cmd.setTimeout(Cmd.action(action), 100, {
+          scheduledActionCreator: actionCreator2
+        });
+        expect(cmd.simulate(456)).toEqual([actionCreator2(456), action]);
+      });
+    });
+
+    describe('Cmd.setInterval', () => {
+      it('returns the nested action', () => {
+        let action = actionCreator1(123);
+        let cmd = Cmd.setInterval(Cmd.action(action), 100);
+        expect(cmd.simulate()).toEqual([action]);
+      });
+
+      it('returns the scedule action with the nested action', () => {
+        let action = actionCreator1(123);
+        let cmd = Cmd.setInterval(Cmd.action(action), 100, {
           scheduledActionCreator: actionCreator2
         });
         expect(cmd.simulate(456)).toEqual([actionCreator2(456), action]);
