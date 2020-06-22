@@ -1,0 +1,1037 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Cmds · Redux-Loop</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-prism/prism.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+        <link rel="stylesheet" href="../../build/gitbook.css">
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="cmds.html" />
+    
+    
+    <link rel="prev" href="isLoop.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../../">
+            
+                <a href="../../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../tutorial/">
+            
+                <a href="../tutorial/">
+            
+                    
+                    Getting started
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../tutorial/Tutorial.html">
+            
+                <a href="../tutorial/Tutorial.html">
+            
+                    
+                    Tutorial
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../tutorial/Testing.html">
+            
+                <a href="../tutorial/Testing.html">
+            
+                    
+                    Testing
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../tutorial/Migrating.html">
+            
+                <a href="../tutorial/Migrating.html">
+            
+                    
+                    Migrating to Redux Loop
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="../tutorial/AdvancedTopics.html">
+            
+                <a href="../tutorial/AdvancedTopics.html">
+            
+                    
+                    Advanced topics
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../recipes/">
+            
+                <a href="../recipes/">
+            
+                    
+                    Recipes
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../recipes/ActionQueue.html">
+            
+                <a href="../recipes/ActionQueue.html">
+            
+                    
+                    Action Queue
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    API Docs
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="install.html">
+            
+                <a href="install.html">
+            
+                    
+                    install
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="loop.html">
+            
+                <a href="loop.html">
+            
+                    
+                    loop
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="liftState.html">
+            
+                <a href="liftState.html">
+            
+                    
+                    liftState
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="getModel.html">
+            
+                <a href="getModel.html">
+            
+                    
+                    getModel
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="getCmd.html">
+            
+                <a href="getCmd.html">
+            
+                    
+                    getCmd
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="isLoop.html">
+            
+                <a href="isLoop.html">
+            
+                    
+                    isLoop
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.4.7" data-path="cmds.html">
+            
+                <a href="cmds.html">
+            
+                    
+                    Cmds
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.7.1" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdactionactiontodispatch">
+            
+                    
+                    Cmd.action
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.2" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdsettimeoutcmd-delayms-options">
+            
+                    
+                    Cmd.setTimeout
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.3" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdsetintervalcmd-delayms-options">
+            
+                    
+                    Cmd.setInterval
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.4" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdrunfunc-options">
+            
+                    
+                    Cmd.run
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.5" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdlistcmds-options">
+            
+                    
+                    Cmd.list
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.6" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdmapcmd-higherorderactioncreator-additionalargs">
+            
+                    
+                    Cmd.map
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.7" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdnone">
+            
+                    
+                    Cmd.none
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdcleartimeouttimerid">
+            
+                    
+                    Cmd.clearTimeout
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.9" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdclearintervaltimerid">
+            
+                    
+                    Cmd.clearInterval
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.10" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdgetstate">
+            
+                    
+                    Cmd.getState
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11" data-path="cmds.html">
+            
+                <a href="cmds.html#cmddispatch">
+            
+                    
+                    Cmd.dispatch
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.12" data-path="combine-reducers.html">
+            
+                <a href="combine-reducers.html">
+            
+                    
+                    combineReducers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.13" data-path="reduce-reducers.html">
+            
+                <a href="reduce-reducers.html">
+            
+                    
+                    reduceReducers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.14" data-path="merge-child-reducers.html">
+            
+                <a href="merge-child-reducers.html">
+            
+                    
+                    mergeChildReducers
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../.." >Cmds</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="cmds"><code>Cmds</code></h1>
+<p>The <code>Cmd</code> module provides access to all of the functions you&apos;ll need to
+create and represent different kinds of cmd objects to redux-loop&apos;s
+cmd-processor. Every cmd object is simply a plain JavaScript object that
+describes to the store how to process it. Cmd objects are never executed in
+the reducer, leaving your reducer pure and testable.</p>
+<h2 id="cmd-object-generators">Cmd object-generators</h2>
+<p>A Cmd object (generated by <code>Cmd.map()</code>, <code>Cmd.run()</code>, <code>Cmd.action()</code>, etc.)
+has the following minimum parameters and shape:</p>
+<pre class="language-"><code class="lang-js">  <span class="token punctuation">[</span>Symbol<span class="token punctuation">.</span><span class="token function">for</span><span class="token punctuation">(</span><span class="token string">&apos;isCmd&apos;</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  type<span class="token operator">:</span> String<span class="token punctuation">,</span>
+  simulate<span class="token operator">:</span> Function
+</code></pre>
+<h3 id="cmdnone"><code>Cmd.none</code></h3>
+<p><code>none</code> is a no-op effect that you can use for convenience when building custom
+effect creators from the ones provided. Since it does not resolve to an action
+it doesn&apos;t cause any side effects to actually occur.</p>
+<h4 id="simulation">Simulation</h4>
+<p>Simulating <code>Cmd.none</code> always returns null.</p>
+<pre class="language-"><code class="lang-js"><span class="token function">expect</span><span class="token punctuation">(</span>Cmd<span class="token punctuation">.</span>none<span class="token punctuation">.</span><span class="token function">simulate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toBe</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//parameter is ignored</span>
+</code></pre>
+<h4 id="examples">Examples</h4>
+<pre class="language-"><code class="lang-js"><span class="token comment">// The following two expressions are equivalent when processed by the store.</span>
+
+<span class="token keyword">return</span> <span class="token function">loop</span><span class="token punctuation">(</span>
+  <span class="token punctuation">{</span> <span class="token operator">...</span>state<span class="token punctuation">,</span> someProp<span class="token operator">:</span> action<span class="token punctuation">.</span>payload <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  Cmd<span class="token punctuation">.</span>none
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">// ...</span>
+
+<span class="token keyword">return</span> <span class="token punctuation">{</span> <span class="token operator">...</span>state<span class="token punctuation">,</span> someProp<span class="token operator">:</span> action<span class="token punctuation">.</span>payload <span class="token punctuation">}</span>
+</code></pre>
+<h3 id="cmdactionactiontodispatch"><code>Cmd.action(actionToDispatch)</code></h3>
+<p><code>action()</code> allows you to schedule a plain action object for dispatch after the
+current dispatch is complete. It can be useful for initiating multiple sequences
+that run in parallel but don&apos;t need to communicate or complete at the same time.
+Make sure your action creator is pure if creating an action from a reducer.</p>
+<ul>
+<li><code>actionToDispatch: Action</code> &#x2013; a plain object with a <code>type</code> property that the store
+can dispatch.</li>
+</ul>
+<h4 id="simulation">Simulation</h4>
+<p>Simulating <code>action</code> always returns <code>actionToDispatch</code>.</p>
+<pre class="language-"><code class="lang-js"><span class="token keyword">const</span> action <span class="token operator">=</span> <span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&apos;type&apos;</span><span class="token punctuation">,</span> foo<span class="token operator">:</span> <span class="token number">123</span><span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> cmd <span class="token operator">=</span> Cmd<span class="token punctuation">.</span><span class="token function">action</span><span class="token punctuation">(</span>action<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">expect</span><span class="token punctuation">(</span>cmd<span class="token punctuation">.</span><span class="token function">simulate</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toEqual</span><span class="token punctuation">(</span>action<span class="token punctuation">)</span><span class="token punctuation">;</span> <span class="token comment">//parameter is ignored</span>
+</code></pre>
+<h4 id="examples">Examples</h4>
+<pre class="language-"><code class="lang-js"><span class="token comment">// Once the store has finished updating this part of the state with the new</span>
+<span class="token comment">// result where `someProp` is set to `action.payload` it will schedule another</span>
+<span class="token comment">// dispatch for the action SOME_ACTION.</span>
+<span class="token keyword">return</span> <span class="token function">loop</span><span class="token punctuation">(</span>
+  <span class="token punctuation">{</span> <span class="token operator">...</span>state<span class="token punctuation">,</span> someProp<span class="token operator">:</span> action<span class="token punctuation">.</span>payload <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  Cmd<span class="token punctuation">.</span><span class="token function">action</span><span class="token punctuation">(</span><span class="token punctuation">{</span> type<span class="token operator">:</span> <span class="token string">&apos;SOME_ACTION&apos;</span> <span class="token punctuation">}</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<h3 id="cmdsettimeoutcmd-delayms-options"><code>Cmd.setTimeout(cmd, delayMs, options)</code></h3>
+<p><code>setTimeout()</code> allows you to delay the execution of a command to sometime the future. The given command can be of any kind, including a command created by <code>setTimeout()</code> itself.
+It uses JavaScript&apos;s global <code>setTimeout()</code> internally.</p>
+<ul>
+<li><code>cmd: Cmd</code> &#x2013; the command to execute.</li>
+<li><code>delayMs: number</code> &#x2013; the number of milliseconds to wait before executing the command.</li>
+<li><code>options.scheduledActionCreator: (timerId: number) =&gt; Action</code> &#x2013; an optional function that takes <code>timerId</code> and creates an action to be dispatched. The <code>timerId</code> can be passed to <code>Cmd.clearTimeout()</code> to cancel the delayed execution.</li>
+</ul>
+<h4 id="simulation">Simulation</h4>
+<p>Two parameters are passed to the <code>simulate()</code> method:</p>
+<ul>
+<li><code>timerId: number</code> &#x2013; the value to be passed to <code>options.scheduledActionCreator</code>.</li>
+<li><code>nestedSimulation</code> &#x2013; the simulation value for the nested command. The type depends on which kind of command is nested inside.</li>
+</ul>
+<h4 id="examples">Examples</h4>
+<pre class="language-"><code class="lang-js"><span class="token comment">// Once the store has finished updating this part of the state with the new</span>
+<span class="token comment">// result where `showAnimation` is `true` it will use `setTimeout()` to</span>
+<span class="token comment">// schedule another dispatch in 3000ms for the action HIDE_ANIMATION.</span>
+<span class="token keyword">return</span> <span class="token function">loop</span><span class="token punctuation">(</span>
+  <span class="token punctuation">{</span> <span class="token operator">...</span>state<span class="token punctuation">,</span> showAnimation<span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+  Cmd<span class="token punctuation">.</span><span class="token function">setTimeout</span><span class="token punctuation">(</span>Cmd<span class="token punctuation">.</span><span class="token function">action</span><span class="token punctuation">(</span><span class="token punctuation">{</span> type<span class="token operator">:</span> <span class="token string">&apos;HIDE_ANIMATION&apos;</span> <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">3000</span><span class="token punctuation">)</span>
+<span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<h3 id="cmdsetintervalcmd-delayms-options"><code>Cmd.setInterval(cmd, delayMs, options)</code></h3>
+<p><code>setInterval()</code> allows you to repeatedly execute a command with a fixed delay between each execution. It uses JavaScript&apos;s global <code>setInterval()</code> internally.</p>
+<p>For details, see <code>setTimeout()</code> above.</p>
+<h3 id="cmdcleartimeouttimerid"><code>Cmd.clearTimeout(timerId)</code></h3>
+<p>Cancel&apos;s a delayed command execution created by <code>Cmd.setTimeout()</code>.
+Equivalent to <code>Cmd.run(clearTimeout, { args: [timerId] })</code>.</p>
+<h3 id="cmdclearintervaltimerid"><code>Cmd.clearInterval(timerId)</code></h3>
+<p>Cancel&apos;s a repeated command execution created by <code>Cmd.setInterval()</code>.
+Equivalent to <code>Cmd.run(clearInterval, { args: [timerId] })</code>.</p>
+<h3 id="cmdrunfunc-options"><code>Cmd.run(func, options)</code></h3>
+<p><code>run()</code> allows you to declaratively schedule a function to be called with some
+arguments and dispatch actions based on the results. This
+allows you to represent almost any kind of runnable process to the store without
+sacrificing functional purity or having to encapsulate implicit state outside
+of your reducer. Keep in mind, functions that are handed off to the store with <code>run()</code>
+are never invoked in the reducer, only by the store during your application&apos;s
+runtime. You can invoke a reducer that returns a <code>run()</code> effect as many times
+as you want and always get the same result by deep-equality without triggering
+any side-effect function calls in the process.</p>
+<p>By default, if func returns a promise, that promise&apos;s resolution and rejection
+values are used in the success and fail action creators (if provided). If func does
+not return a promise, the return value is used for the success action creator, and
+the fail action creator is only used if an error is thrown.</p>
+<p>If a run Cmd is used in a list with batch set to <code>true</code> and func returns a
+promise, the list will not finish until the returned promise
+resolves/rejects. If a promise is not returned, the batched list does not
+wait. You can prevent waiting for a single long-running asynchronous cmd
+object by using the <code>forceSync</code> option on that individual cmd object. If you
+do, you won&apos;t be able to use the action creator options to handle the result
+of the cmd object.</p>
+<ul>
+<li><p><code>func: (...Array<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>any</span><span class="token punctuation">&gt;</span></span>) =&gt; any</code> &#x2013; a function to run</p>
+</li>
+<li><p><code>options.successActionCreator: (any) =&gt; Action</code> &#x2013; an optional function that takes the promise resolution value (if func returns a promise) or the return value (if func does not return a promise) and returns an action which will be dispatched.</p>
+</li>
+<li><p><code>options.failActionCreator: (any) =&gt; Action</code> &#x2013; an optional function that takes the promise rejection value (if func returns a promise) or the thrown error (if func throws) and returns an action which will be dispatched. This should not be omitted if the function is expected to potentially throw an exception. Exceptions are re-thrown if there is no fail handler.</p>
+</li>
+<li><p><code>options.args: Array<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>any</span><span class="token punctuation">&gt;</span></span></code> &#x2013; an optional array of arguments to call <code>func</code> with.</p>
+</li>
+<li><p><code>options.forceSync: boolean</code> &#x2013; if true, this cmd object will finish synchronously even if func returns a promise. Useful if the cmd object runs as part of a list with <code>batch</code> set to <code>true</code> but you don&apos;t care about the result of this cmd object and want the list to finish faster.</p>
+</li>
+<li><p><code>options.testInvariants: boolean</code> &#x2013; Normally, if your action creators are not functions or <code>args</code> is not an array, an error will be thrown (unless you are in production). You can turn this off in testing environments by using this option. NOTE: ONLY DO THIS IN TESTS. IF YOU DO THIS IN PRODUCTION, IT WILL THROW. This is useful if you want to do something like:</p>
+</li>
+</ul>
+<pre class="language-"><code class="lang-js"><span class="token function">expect</span><span class="token punctuation">(</span>cmd<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toEqual</span><span class="token punctuation">(</span>Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>foo<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  testInvariants<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  successActionCreator<span class="token operator">:</span> jasmine<span class="token punctuation">.</span><span class="token function">any</span><span class="token punctuation">(</span>Function<span class="token punctuation">)</span> <span class="token comment">//replace with your testing library&apos;s equivalent matcher</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>because <code>jasmine.any(Function)</code> is not a function.</p>
+<h4 id="simulation">Simulation</h4>
+<p><code>run()</code> cmd simulations pass the result through the correct action creator (depending on the success property passed) and return the resulting action.</p>
+<p>If there is no corresponding action creator on the cmd object, <code>null</code> is returned.</p>
+<pre class="language-"><code class="lang-js"><span class="token keyword">const</span> cmd <span class="token operator">=</span> Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>sideEffect<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  <span class="token function-variable function">successActionCreator</span><span class="token operator">:</span> <span class="token parameter">result</span> <span class="token operator">=&gt;</span> <span class="token function">actionCreator</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> <span class="token string">&apos;hard coded&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">expect</span><span class="token punctuation">(</span>cmd<span class="token punctuation">.</span><span class="token function">simulate</span><span class="token punctuation">(</span><span class="token punctuation">{</span>success<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> result<span class="token operator">:</span> <span class="token number">123</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toEqual</span><span class="token punctuation">(</span><span class="token function">actionCreator</span><span class="token punctuation">(</span><span class="token number">123</span><span class="token punctuation">,</span> <span class="token string">&apos;hard coded&apos;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">expect</span><span class="token punctuation">(</span>cmd<span class="token punctuation">.</span><span class="token function">simulate</span><span class="token punctuation">(</span><span class="token punctuation">{</span>success<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> result<span class="token operator">:</span> <span class="token number">123</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toBe</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<h4 id="examples">Examples</h4>
+<pre class="language-"><code class="lang-js"><span class="token keyword">import</span> <span class="token punctuation">{</span> loop<span class="token punctuation">,</span> Cmd <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;redux-loop&apos;</span><span class="token punctuation">;</span>
+
+<span class="token keyword">function</span> <span class="token function">fetchUser</span><span class="token punctuation">(</span><span class="token parameter">userId</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token function">fetch</span><span class="token punctuation">(</span><span class="token template-string"><span class="token template-punctuation string">`</span><span class="token string">/api/users/</span><span class="token interpolation"><span class="token interpolation-punctuation punctuation">${</span>userId<span class="token interpolation-punctuation punctuation">}</span></span><span class="token template-punctuation string">`</span></span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">userFetchSuccessfulAction</span><span class="token punctuation">(</span><span class="token parameter">user</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    type<span class="token operator">:</span> <span class="token string">&apos;USER_FETCH_SUCCESSFUL&apos;</span><span class="token punctuation">,</span>
+    user
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">userFetchFailedAction</span><span class="token punctuation">(</span><span class="token parameter">err</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">{</span>
+    type<span class="token operator">:</span> <span class="token string">&apos;USER_FETCH_ERROR&apos;</span><span class="token punctuation">,</span>
+    err
+  <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">reducer</span><span class="token punctuation">(</span><span class="token parameter">state <span class="token punctuation">,</span> action</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">switch</span><span class="token punctuation">(</span>action<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">case</span> <span class="token string">&apos;INIT&apos;</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> <span class="token function">loop</span><span class="token punctuation">(</span>
+      <span class="token punctuation">{</span><span class="token operator">...</span>state<span class="token punctuation">,</span> initStarted<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+      Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>fetchUser<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+        successActionCreator<span class="token operator">:</span> userFetchSuccessfulAction<span class="token punctuation">,</span>
+        failActionCreator<span class="token operator">:</span> userFetchFailedAction<span class="token punctuation">,</span>
+        args<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&apos;123&apos;</span><span class="token punctuation">]</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">case</span> <span class="token string">&apos;USER_FETCH_SUCCESSFUL&apos;</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token operator">...</span>state<span class="token punctuation">,</span> user<span class="token operator">:</span> action<span class="token punctuation">.</span>user<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">case</span> <span class="token string">&apos;USER_FETCH_FAILED&apos;</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token operator">...</span>state<span class="token punctuation">,</span> error<span class="token operator">:</span> action<span class="token punctuation">.</span>error<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">default</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> state<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<h3 id="cmdlistcmds-options"><code>Cmd.list(cmds, options)</code></h3>
+<p><code>list()</code> allows you to group cmd objects as a single cmd to be run all together. Use the options to choose when you want the individual cmd objects to run and when the resulting actions are dispatched. The default behavior is to run each cmd object simultaneously and dispatch the results as soon as possible.</p>
+<ul>
+<li><code>cmds: Array<span class="token tag"><span class="token tag"><span class="token punctuation">&lt;</span>Cmd</span><span class="token punctuation">&gt;</span></span></code> &#x2013; an array of cmd objects returned by any of the other cmd functions, or even nested calls to <code>Cmd.list</code>.</li>
+<li><code>options.sequence: boolean</code> &#x2013; By default, asynchronous cmd objects all run immediately and in parallel. If <code>sequence</code> is <code>true</code>, each cmd object will wait for the previous cmd object to resolve before starting. Note: this does not have an effect if all cmd objects are synchronous.</li>
+<li><code>options.batch: boolean</code> &#x2013; By default, actions from nested cmd objects will be dispatched as soon as that cmd object finishes. If <code>batch</code> is <code>true</code>, no actions will be dispatched until all of the cmd objects are resolved/finished. The actions will then be dispatched all at once in the order of the original cmd array.</li>
+<li><code>options.testInvariants: boolean</code> &#x2013; Normally, if the first parameter to <code>Cmd.list()</code> is not an array of cmd objects, an error will be thrown (unless you are in production). You can turn this off in testing environments by using this option. NOTE: ONLY DO THIS IN TESTS. IF YOU DO THIS IN PRODUCTION, IT WILL THROW. This is useful if you want to pass a custom object from your test library to verify a subset of cmd objects, such as <code>jasmine.arrayContaining(someCmd)</code>.</li>
+</ul>
+<h4 id="simulation">Simulation</h4>
+<p>Simulating <code>list()</code> simulates all of its child cmd objects and returns an array of the results. The resulting array has <code>null</code>s filtered out and is flattened.</p>
+<p>To simulate <code>list()</code>, pass an array of parameters to be passed to the corresponding cmd objects for simulation.</p>
+<pre class="language-"><code class="lang-js"><span class="token keyword">const</span> cmd1 <span class="token operator">=</span> Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>sideEffect<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  <span class="token function-variable function">successActionCreator</span><span class="token operator">:</span> <span class="token parameter">result</span> <span class="token operator">=&gt;</span> <span class="token function">actionCreator</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> <span class="token string">&apos;hard coded&apos;</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> cmd2 <span class="token operator">=</span> Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>sideEffect<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  <span class="token function-variable function">failActionCreator</span><span class="token operator">:</span> <span class="token parameter">result</span> <span class="token operator">=&gt;</span> <span class="token function">actionCreator2</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> <span class="token string">&apos;foo&apos;</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> list <span class="token operator">=</span> Cmd<span class="token punctuation">.</span><span class="token function">list</span><span class="token punctuation">(</span><span class="token punctuation">[</span>cmd1<span class="token punctuation">,</span> cmd2<span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> result <span class="token operator">=</span> list<span class="token punctuation">.</span><span class="token function">simulate</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token punctuation">{</span>success<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> result<span class="token operator">:</span> <span class="token number">123</span><span class="token punctuation">}</span><span class="token punctuation">,</span> <span class="token punctuation">{</span>success<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> result<span class="token operator">:</span> <span class="token number">456</span><span class="token punctuation">}</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">expect</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toEqual</span><span class="token punctuation">(</span><span class="token punctuation">[</span><span class="token function">actionCreator</span><span class="token punctuation">(</span><span class="token number">123</span><span class="token punctuation">,</span> <span class="token string">&apos;hard coded&apos;</span><span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token function">actionCreator2</span><span class="token punctuation">(</span><span class="token number">456</span><span class="token punctuation">,</span> <span class="token string">&apos;foo&apos;</span><span class="token punctuation">)</span><span class="token punctuation">]</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<h4 id="examples">Examples</h4>
+<pre class="language-"><code class="lang-js"><span class="token keyword">import</span> <span class="token punctuation">{</span> loop<span class="token punctuation">,</span> Cmd <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;redux-loop&apos;</span><span class="token punctuation">;</span>
+
+<span class="token keyword">function</span> <span class="token function">reducer</span><span class="token punctuation">(</span><span class="token parameter">state <span class="token punctuation">,</span> action</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">switch</span><span class="token punctuation">(</span>action<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">case</span> <span class="token string">&apos;INIT&apos;</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> <span class="token function">loop</span><span class="token punctuation">(</span>
+      <span class="token punctuation">{</span><span class="token operator">...</span>state<span class="token punctuation">,</span> initStarted<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+      Cmd<span class="token punctuation">.</span><span class="token function">list</span><span class="token punctuation">(</span><span class="token punctuation">[</span>
+        Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>fetchUser<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+          successActionCreator<span class="token operator">:</span> userFetchSuccessfulAction
+          failActionCreator<span class="token operator">:</span> userFetchFailedAction<span class="token punctuation">,</span>
+          args<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&apos;123&apos;</span><span class="token punctuation">]</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">,</span>
+        Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>fetchItem<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+          successActionCreator<span class="token operator">:</span> itemFetchSuccessfulAction<span class="token punctuation">,</span>
+          failActionCreator<span class="token operator">:</span> itemFetchFailedAction<span class="token punctuation">,</span>
+          args<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token string">&apos;456&apos;</span><span class="token punctuation">]</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span>
+      <span class="token punctuation">]</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">case</span> <span class="token string">&apos;USER_FETCH_SUCCESSFUL&apos;</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token operator">...</span>state<span class="token punctuation">,</span> user<span class="token operator">:</span> action<span class="token punctuation">.</span>user<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">case</span> <span class="token string">&apos;USER_FETCH_FAILED&apos;</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token operator">...</span>state<span class="token punctuation">,</span> userError<span class="token operator">:</span> action<span class="token punctuation">.</span>error<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">case</span> <span class="token string">&apos;ITEM_FETCH_SUCCESSFUL&apos;</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token operator">...</span>state<span class="token punctuation">,</span> item<span class="token operator">:</span> action<span class="token punctuation">.</span>item<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">case</span> <span class="token string">&apos;ITEM_FETCH_FAILED&apos;</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> <span class="token punctuation">{</span><span class="token operator">...</span>state<span class="token punctuation">,</span> itemError<span class="token operator">:</span> action<span class="token punctuation">.</span>error<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">default</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> state<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<h4 id="batch-option"><code>batch</code> option</h4>
+<p>If you find the difference between <code>batch</code> options confusing, the picture below may help.</p>
+<p><code>{batch: false}</code> (default) - dispatches the action as soon as the individual cmd Promise is resolved (or immediately for synchronous operations)
+<img src="figures/batch-false.svg" alt="batch: false"></p>
+<p><code>{batch: true}</code> - waits for all the individual Promises in the list to be resolved, before dispatching any action
+<img src="figures/batch-true.svg" alt="batch: true"></p>
+<h3 id="cmdmapcmd-higherorderactioncreator-additionalargs"><code>Cmd.map(cmd, higherOrderActionCreator, [...additionalArgs])</code></h3>
+<p><code>map()</code> allows you to take an existing cmd object from a nested reducer in your
+state and lift it to a more general action in which the resulting action is
+nested. This enables you to build your reducer in a fractal-like fashion, in
+which all of the logic for a particular slice of your state is totally
+encapsulated and actions can be simply directed to the reducer for that slice.</p>
+<ul>
+<li><code>cmd: Cmd</code> &#x2013; a cmd, the resulting action of which will be passed to <code>higherOrderActionCreator</code> to be nested into a higher-order action.</li>
+<li><code>higherOrderActionCreator</code> &#x2013; an action creator function which will accept an action, or optionally some other arguments followed by an action, and return a new action in which the previous action was nested.</li>
+<li><code>additionalArgs</code> &#x2013; a list of additional arguments to pass to <code>higherOrderActionCreator</code> before passing in the action from the cmd object.</li>
+</ul>
+<h4 id="simulation">Simulation</h4>
+<p>Simulating a <code>map</code> cmd simulates the nested cmd and passes the result through <code>tagger</code>. If the result is an array of actions, all of them are passed through <code>tagger</code>. If args are provided to the cmd, they are passed to <code>tagger</code>.</p>
+<pre class="language-"><code class="lang-js"><span class="token keyword">const</span> cmd1 <span class="token operator">=</span> Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>sideEffect<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  <span class="token function-variable function">successActionCreator</span><span class="token operator">:</span> <span class="token parameter">result</span> <span class="token operator">=&gt;</span> <span class="token function">actionCreator</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> <span class="token string">&apos;hard coded&apos;</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> map <span class="token operator">=</span> Cmd<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>cmd1<span class="token punctuation">,</span> actionCreator2<span class="token punctuation">,</span> <span class="token string">&apos;extra arg&apos;</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> result <span class="token operator">=</span> map<span class="token punctuation">.</span><span class="token function">simulate</span><span class="token punctuation">(</span><span class="token punctuation">{</span>success<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> result<span class="token operator">:</span> <span class="token number">123</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">expect</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toEqual</span><span class="token punctuation">(</span><span class="token function">actionCreator2</span><span class="token punctuation">(</span><span class="token string">&apos;extra arg&apos;</span><span class="token punctuation">,</span> <span class="token function">actionCreator</span><span class="token punctuation">(</span><span class="token number">123</span><span class="token punctuation">,</span> <span class="token string">&apos;hard coded&apos;</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<h4 id="examples">Examples</h4>
+<p><strong>nestedState.js</strong></p>
+<pre class="language-"><code class="lang-js"><span class="token keyword">function</span> <span class="token function">incrementAsync</span><span class="token punctuation">(</span><span class="token parameter">amount</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token keyword">new</span> <span class="token class-name">Promise</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token parameter">resolve</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+    <span class="token function">setTimeout</span><span class="token punctuation">(</span><span class="token punctuation">(</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">(</span>
+      <span class="token function">resolve</span><span class="token punctuation">(</span>amount<span class="token punctuation">)</span>
+    <span class="token punctuation">)</span><span class="token punctuation">,</span> <span class="token number">100</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">incrementStart</span><span class="token punctuation">(</span><span class="token parameter">amount</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">{</span> type<span class="token operator">:</span> <span class="token string">&apos;INCREMENT_START&apos;</span><span class="token punctuation">,</span> payload<span class="token operator">:</span> amount <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">nestedReducer</span><span class="token punctuation">(</span><span class="token parameter">state <span class="token operator">=</span> <span class="token number">0</span><span class="token punctuation">,</span> action</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">switch</span> <span class="token punctuation">(</span>action<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token keyword">case</span> <span class="token string">&apos;INCREMENT_START&apos;</span><span class="token operator">:</span>
+      <span class="token keyword">return</span> <span class="token function">loop</span><span class="token punctuation">(</span>
+        state<span class="token punctuation">,</span>
+        Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>incrementAsync<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+           successActionCreator<span class="token operator">:</span> incrementSuccessAction<span class="token punctuation">,</span>
+           failActionCreator<span class="token operator">:</span> incremenetFailedAction<span class="token punctuation">,</span>
+           args<span class="token operator">:</span> <span class="token punctuation">[</span>action<span class="token punctuation">.</span>payload<span class="token punctuation">]</span>
+        <span class="token punctuation">}</span><span class="token punctuation">)</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">case</span> <span class="token string">&apos;INCREMENT&apos;</span><span class="token operator">:</span>
+      <span class="token keyword">return</span> <span class="token function">loop</span><span class="token punctuation">(</span>
+        state <span class="token operator">+</span> action<span class="token punctuation">.</span>payload<span class="token punctuation">,</span>
+        Cmd<span class="token punctuation">.</span>none
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+    <span class="token keyword">default</span><span class="token operator">:</span>
+      <span class="token keyword">return</span> <span class="token function">loop</span><span class="token punctuation">(</span>
+        state<span class="token punctuation">,</span>
+        Cmd<span class="token punctuation">.</span>none
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p><strong>topState.js</strong></p>
+<pre class="language-"><code class="lang-js"><span class="token keyword">import</span> nestedReducer <span class="token keyword">from</span> <span class="token string">&apos;./nestedState&apos;</span><span class="token punctuation">;</span>
+
+<span class="token keyword">function</span> <span class="token function">nestedAction</span><span class="token punctuation">(</span><span class="token parameter">action</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">return</span> <span class="token punctuation">{</span> type<span class="token operator">:</span> <span class="token string">&apos;NESTED_ACTION&apos;</span><span class="token punctuation">,</span> payload<span class="token operator">:</span> action <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+
+<span class="token keyword">function</span> <span class="token function">reducer</span><span class="token punctuation">(</span>state <span class="token operator">=</span> <span class="token punctuation">{</span> <span class="token comment">/* ... */</span> <span class="token punctuation">}</span><span class="token punctuation">,</span> action<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">switch</span><span class="token punctuation">(</span>action<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token comment">// ... other top-level things</span>
+
+    <span class="token keyword">case</span> <span class="token string">&apos;NESTED_ACTION&apos;</span><span class="token operator">:</span>
+      <span class="token keyword">const</span> <span class="token punctuation">[</span>model<span class="token punctuation">,</span> cmd<span class="token punctuation">]</span> <span class="token operator">=</span> <span class="token function">nestedReducer</span><span class="token punctuation">(</span>state<span class="token punctuation">.</span>nestedCount<span class="token punctuation">,</span> action<span class="token punctuation">.</span>payload<span class="token punctuation">)</span><span class="token punctuation">;</span>
+      <span class="token keyword">return</span> <span class="token function">loop</span><span class="token punctuation">(</span>
+        <span class="token punctuation">{</span> <span class="token operator">...</span>state<span class="token punctuation">,</span> nestedCount<span class="token operator">:</span> model <span class="token punctuation">}</span><span class="token punctuation">,</span>
+        Cmd<span class="token punctuation">.</span><span class="token function">map</span><span class="token punctuation">(</span>cmd<span class="token punctuation">,</span> nestedAction<span class="token punctuation">)</span>
+      <span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+    <span class="token keyword">default</span><span class="token operator">:</span>
+      <span class="token keyword">return</span> state<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<h2 id="cmd-helper-symbols">Cmd helper symbols</h2>
+<h3 id="cmdgetstate"><code>Cmd.getState</code></h3>
+<p>A symbol that can be passed to a cmd object as an arg (from a reducer) that will be replaced at the time the function is called with the <code>getState()</code> method from the store.</p>
+<h4 id="example">Example</h4>
+<pre class="language-"><code class="lang-js"><span class="token keyword">import</span> <span class="token punctuation">{</span>loop<span class="token punctuation">,</span> Cmd<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;redux-loop&apos;</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span>doSomething<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;something.js&apos;</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span>doSomethingResultAction<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;./actions.js&apos;</span><span class="token punctuation">;</span>
+<span class="token keyword">function</span> <span class="token function">reducer</span><span class="token punctuation">(</span><span class="token parameter">state<span class="token punctuation">,</span> action</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">switch</span><span class="token punctuation">(</span>action<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">case</span> <span class="token string">&apos;ACTION&apos;</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> <span class="token function">loop</span><span class="token punctuation">(</span>
+      <span class="token punctuation">{</span><span class="token operator">...</span>state<span class="token punctuation">,</span> initStarted<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+      Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>doSomething<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+         successActionCreator<span class="token operator">:</span> doSomethingResultAction<span class="token punctuation">,</span>
+         args<span class="token operator">:</span> <span class="token punctuation">[</span>Cmd<span class="token punctuation">.</span>getState<span class="token punctuation">]</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">default</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> state<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">//something.js</span>
+<span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">doSomething</span><span class="token punctuation">(</span><span class="token parameter">getState</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> value <span class="token operator">=</span> <span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>some<span class="token punctuation">.</span>random<span class="token punctuation">.</span>value<span class="token punctuation">;</span>
+  console<span class="token punctuation">.</span><span class="token function">log</span><span class="token punctuation">(</span>value<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<h3 id="cmddispatch"><code>Cmd.dispatch</code></h3>
+<p>A symbol that can be passed to a cmd object as an arg (from a reducer) that will be replaced at the time the function is called with the <code>dispatch</code> method from the store.</p>
+<h4 id="example">Example</h4>
+<pre class="language-"><code class="lang-js"><span class="token keyword">import</span> <span class="token punctuation">{</span>loop<span class="token punctuation">,</span> Cmd<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;redux-loop&apos;</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span>doSomething<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;something.js&apos;</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span>doSomethingResultAction<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;./actions.js&apos;</span><span class="token punctuation">;</span>
+<span class="token keyword">function</span> <span class="token function">reducer</span><span class="token punctuation">(</span><span class="token parameter">state<span class="token punctuation">,</span> action</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">switch</span><span class="token punctuation">(</span>action<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">case</span> <span class="token string">&apos;ACTION&apos;</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> <span class="token function">loop</span><span class="token punctuation">(</span>
+      <span class="token punctuation">{</span><span class="token operator">...</span>state<span class="token punctuation">,</span> initStarted<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+      Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>doSomething<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+         successActionCreator<span class="token operator">:</span> doSomethingResultAction<span class="token punctuation">,</span>
+         args<span class="token operator">:</span> <span class="token punctuation">[</span>Cmd<span class="token punctuation">.</span>dispatch<span class="token punctuation">]</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">default</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> state<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">//something.js</span>
+<span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">doSomething</span><span class="token punctuation">(</span><span class="token parameter">dispatch</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">let</span> value <span class="token operator">=</span> <span class="token function">someThing</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">if</span><span class="token punctuation">(</span>value <span class="token operator">===</span> <span class="token number">123</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+    <span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token function">valueIs123Action</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> value<span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="isLoop.html" class="navigation navigation-prev " aria-label="Previous page: isLoop">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="cmds.html#cmdactionactiontodispatch" class="navigation navigation-next " aria-label="Next page: Cmd.action">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Cmds","level":"1.4.7","depth":2,"next":{"title":"Cmd.action","level":"1.4.7.1","depth":3,"anchor":"#cmdactionactiontodispatch","path":"docs/api-docs/cmds.md","ref":"docs/api-docs/cmds.md#cmdactionactiontodispatch","articles":[]},"previous":{"title":"isLoop","level":"1.4.6","depth":2,"path":"docs/api-docs/isLoop.md","ref":"docs/api-docs/isLoop.md","articles":[]},"dir":"ltr"},"config":{"plugins":["edit-link","prism","-highlight","github","anchorjs"],"styles":{"website":"build/gitbook.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{},"github":{"url":"https://github.com/redux-loop/redux-loop/"},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit This Page","base":"https://github.com/redux-loop/redux-loop/tree/master"},"theme-default":{"styles":{"website":"build/gitbook.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchorjs":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Redux-Loop","gitbook":"3.2.2"},"file":{"path":"docs/api-docs/cmds.md","mtime":"2020-06-22T19:19:41.924Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2020-06-22T21:22:51.108Z"},"basePath":"../..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../gitbook/gitbook.js"></script>
+    <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-edit-link/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-anchorjs/anchor.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-anchorjs/anchor-style.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

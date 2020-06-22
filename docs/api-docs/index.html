@@ -1,0 +1,673 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>API Docs · Redux-Loop</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-prism/prism.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+        <link rel="stylesheet" href="../../build/gitbook.css">
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="install.html" />
+    
+    
+    <link rel="prev" href="../recipes/ActionQueue.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../../">
+            
+                <a href="../../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="../tutorial/">
+            
+                <a href="../tutorial/">
+            
+                    
+                    Getting started
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="../tutorial/Tutorial.html">
+            
+                <a href="../tutorial/Tutorial.html">
+            
+                    
+                    Tutorial
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="../tutorial/Testing.html">
+            
+                <a href="../tutorial/Testing.html">
+            
+                    
+                    Testing
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="../tutorial/Migrating.html">
+            
+                <a href="../tutorial/Migrating.html">
+            
+                    
+                    Migrating to Redux Loop
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="../tutorial/AdvancedTopics.html">
+            
+                <a href="../tutorial/AdvancedTopics.html">
+            
+                    
+                    Advanced topics
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../recipes/">
+            
+                <a href="../recipes/">
+            
+                    
+                    Recipes
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../recipes/ActionQueue.html">
+            
+                <a href="../recipes/ActionQueue.html">
+            
+                    
+                    Action Queue
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.4" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    API Docs
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="install.html">
+            
+                <a href="install.html">
+            
+                    
+                    install
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="loop.html">
+            
+                <a href="loop.html">
+            
+                    
+                    loop
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="liftState.html">
+            
+                <a href="liftState.html">
+            
+                    
+                    liftState
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="getModel.html">
+            
+                <a href="getModel.html">
+            
+                    
+                    getModel
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="getCmd.html">
+            
+                <a href="getCmd.html">
+            
+                    
+                    getCmd
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="isLoop.html">
+            
+                <a href="isLoop.html">
+            
+                    
+                    isLoop
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7" data-path="cmds.html">
+            
+                <a href="cmds.html">
+            
+                    
+                    Cmds
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.7.1" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdactionactiontodispatch">
+            
+                    
+                    Cmd.action
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.2" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdsettimeoutcmd-delayms-options">
+            
+                    
+                    Cmd.setTimeout
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.3" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdsetintervalcmd-delayms-options">
+            
+                    
+                    Cmd.setInterval
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.4" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdrunfunc-options">
+            
+                    
+                    Cmd.run
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.5" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdlistcmds-options">
+            
+                    
+                    Cmd.list
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.6" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdmapcmd-higherorderactioncreator-additionalargs">
+            
+                    
+                    Cmd.map
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.7" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdnone">
+            
+                    
+                    Cmd.none
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdcleartimeouttimerid">
+            
+                    
+                    Cmd.clearTimeout
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.9" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdclearintervaltimerid">
+            
+                    
+                    Cmd.clearInterval
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.10" data-path="cmds.html">
+            
+                <a href="cmds.html#cmdgetstate">
+            
+                    
+                    Cmd.getState
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11" data-path="cmds.html">
+            
+                <a href="cmds.html#cmddispatch">
+            
+                    
+                    Cmd.dispatch
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.12" data-path="combine-reducers.html">
+            
+                <a href="combine-reducers.html">
+            
+                    
+                    combineReducers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.13" data-path="reduce-reducers.html">
+            
+                <a href="reduce-reducers.html">
+            
+                    
+                    reduceReducers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.14" data-path="merge-child-reducers.html">
+            
+                <a href="merge-child-reducers.html">
+            
+                    
+                    mergeChildReducers
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../.." >API Docs</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="api-docs">API Docs</h1>
+<p>Detailed documentation of the API is provided here. For a more gentle introduction, refer to the <a href="../tutorial/">tutorial</a></p>
+<ul>
+<li><a href="install.html"><code>install()</code></a></li>
+<li><a href="loop.html"><code>loop(state, cmd)</code></a></li>
+<li><a href="liftState.html"><code>liftState(state)</code></a></li>
+<li><a href="getModel.html"><code>getModel(loop)</code></a></li>
+<li><a href="getCmd.html"><code>getCmd(loop)</code></a></li>
+<li><a href="isLoop.html"><code>isLoop(object)</code></a></li>
+<li><a href="cmds.html"><code>Cmds</code></a><ul>
+<li><a href="cmds.html#cmdnone"><code>Cmd.none</code></a></li>
+<li><a href="cmds.html#cmdactionactiontodispatch"><code>Cmd.action(actionToDispatch)</code></a></li>
+<li><a href="cmds.html#cmdsettimeoutcmd-delayms-options"><code>Cmd.setTimeout(cmd, delayMs, options)</code></a></li>
+<li><a href="cmds.html#cmdsetintervalcmd-delayms-options"><code>Cmd.setInterval(cmd, delayMs, options)</code></a></li>
+<li><a href="cmds.html#cmdrunfunc-options"><code>Cmd.run(func, options)</code></a></li>
+<li><a href="cmds.html#cmdlistcmds-options"><code>Cmd.list(cmds, options)</code></a></li>
+<li><a href="cmds.html#cmdmapcmd-higherorderactioncreator-additionalargs"><code>Cmd.map(cmd, higherOrderActionCreator, [...additionalArgs])</code></a></li>
+</ul>
+</li>
+<li><a href="cmds.html#cmdcleartimeouttimerid"><code>Cmd.clearTimeout(timerId)</code></a></li>
+<li><a href="cmds.html#cmdclearintervaltimerid"><code>Cmd.clearInterval(timerId)</code></a></li>
+<li><a href="combine-reducers.html"><code>combineReducers(reducerMap)</code></a></li>
+<li><a href="reduce-reducers.html"><code>reduceReducers(...reducers)</code></a></li>
+<li><a href="merge-child-reducers.html"><code>mergeChildReducers(parentResult, action, childMap)</code></a></li>
+</ul>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="../recipes/ActionQueue.html" class="navigation navigation-prev " aria-label="Previous page: Action Queue">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="install.html" class="navigation navigation-next " aria-label="Next page: install">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"API Docs","level":"1.4","depth":1,"next":{"title":"install","level":"1.4.1","depth":2,"path":"docs/api-docs/install.md","ref":"docs/api-docs/install.md","articles":[]},"previous":{"title":"Action Queue","level":"1.3.1","depth":2,"path":"docs/recipes/ActionQueue.md","ref":"docs/recipes/ActionQueue.md","articles":[]},"dir":"ltr"},"config":{"plugins":["edit-link","prism","-highlight","github","anchorjs"],"styles":{"website":"build/gitbook.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{},"github":{"url":"https://github.com/redux-loop/redux-loop/"},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit This Page","base":"https://github.com/redux-loop/redux-loop/tree/master"},"theme-default":{"styles":{"website":"build/gitbook.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchorjs":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Redux-Loop","gitbook":"3.2.2"},"file":{"path":"docs/api-docs/README.md","mtime":"2020-06-22T19:19:41.924Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2020-06-22T21:22:51.108Z"},"basePath":"../..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../gitbook/gitbook.js"></script>
+    <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-edit-link/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-anchorjs/anchor.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-anchorjs/anchor-style.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

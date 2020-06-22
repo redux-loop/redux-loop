@@ -1,0 +1,15 @@
+{
+  "presets": [["@babel/preset-env", {"modules": false}]],
+  "plugins": [
+    "@babel/transform-member-expression-literals",
+    "@babel/transform-property-literals"
+  ],
+  "env": {
+    "commonjs": {
+      "presets": [["@babel/preset-env", {"modules": "commonjs"}]]
+    },
+    "test": {
+      "presets": [["@babel/preset-env", {"targets": { "node": "current" }}]]
+    }
+  }
+}

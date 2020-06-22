@@ -1,0 +1,729 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Advanced topics · Redux-Loop</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-prism/prism.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+        <link rel="stylesheet" href="../../build/gitbook.css">
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="../recipes/" />
+    
+    
+    <link rel="prev" href="Migrating.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../../">
+            
+                <a href="../../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Getting started
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="Tutorial.html">
+            
+                <a href="Tutorial.html">
+            
+                    
+                    Tutorial
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.2" data-path="Testing.html">
+            
+                <a href="Testing.html">
+            
+                    
+                    Testing
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="Migrating.html">
+            
+                <a href="Migrating.html">
+            
+                    
+                    Migrating to Redux Loop
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2.4" data-path="AdvancedTopics.html">
+            
+                <a href="AdvancedTopics.html">
+            
+                    
+                    Advanced topics
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../recipes/">
+            
+                <a href="../recipes/">
+            
+                    
+                    Recipes
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../recipes/ActionQueue.html">
+            
+                <a href="../recipes/ActionQueue.html">
+            
+                    
+                    Action Queue
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../api-docs/">
+            
+                <a href="../api-docs/">
+            
+                    
+                    API Docs
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../api-docs/install.html">
+            
+                <a href="../api-docs/install.html">
+            
+                    
+                    install
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../api-docs/loop.html">
+            
+                <a href="../api-docs/loop.html">
+            
+                    
+                    loop
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="../api-docs/liftState.html">
+            
+                <a href="../api-docs/liftState.html">
+            
+                    
+                    liftState
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="../api-docs/getModel.html">
+            
+                <a href="../api-docs/getModel.html">
+            
+                    
+                    getModel
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="../api-docs/getCmd.html">
+            
+                <a href="../api-docs/getCmd.html">
+            
+                    
+                    getCmd
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="../api-docs/isLoop.html">
+            
+                <a href="../api-docs/isLoop.html">
+            
+                    
+                    isLoop
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html">
+            
+                    
+                    Cmds
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.7.1" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdactionactiontodispatch">
+            
+                    
+                    Cmd.action
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.2" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdsettimeoutcmd-delayms-options">
+            
+                    
+                    Cmd.setTimeout
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.3" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdsetintervalcmd-delayms-options">
+            
+                    
+                    Cmd.setInterval
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.4" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdrunfunc-options">
+            
+                    
+                    Cmd.run
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.5" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdlistcmds-options">
+            
+                    
+                    Cmd.list
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.6" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdmapcmd-higherorderactioncreator-additionalargs">
+            
+                    
+                    Cmd.map
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.7" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdnone">
+            
+                    
+                    Cmd.none
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdcleartimeouttimerid">
+            
+                    
+                    Cmd.clearTimeout
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.9" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdclearintervaltimerid">
+            
+                    
+                    Cmd.clearInterval
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.10" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdgetstate">
+            
+                    
+                    Cmd.getState
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmddispatch">
+            
+                    
+                    Cmd.dispatch
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.12" data-path="../api-docs/combine-reducers.html">
+            
+                <a href="../api-docs/combine-reducers.html">
+            
+                    
+                    combineReducers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.13" data-path="../api-docs/reduce-reducers.html">
+            
+                <a href="../api-docs/reduce-reducers.html">
+            
+                    
+                    reduceReducers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.14" data-path="../api-docs/merge-child-reducers.html">
+            
+                <a href="../api-docs/merge-child-reducers.html">
+            
+                    
+                    mergeChildReducers
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../.." >Advanced topics</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="advanced-topics">Advanced topics</h1>
+<h2 id="accessing-state-and-dispatching-actions-from-your-cmds">Accessing state and dispatching actions from your Cmds</h2>
+<p>While most of your side effect methods should be agnostic to redux, sometimes you
+will need the flexibility of accessing arbitrary slices of state or dispatching an
+action separately from the result of the cmd. Here&apos;s an example of how you can do this.</p>
+<pre class="language-"><code class="lang-js"><span class="token keyword">import</span> <span class="token punctuation">{</span>loop<span class="token punctuation">,</span> Cmd<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;redux-loop&apos;</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span>doSomething<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;something.js&apos;</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span>doSomethingResultAction<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;./actions.js&apos;</span><span class="token punctuation">;</span>
+<span class="token keyword">function</span> <span class="token function">reducer</span><span class="token punctuation">(</span><span class="token parameter">state<span class="token punctuation">,</span> action</span><span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">switch</span><span class="token punctuation">(</span>action<span class="token punctuation">.</span>type<span class="token punctuation">)</span> <span class="token punctuation">{</span>
+  <span class="token keyword">case</span> <span class="token string">&apos;ACTION&apos;</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> <span class="token function">loop</span><span class="token punctuation">(</span>
+      <span class="token punctuation">{</span><span class="token operator">...</span>state<span class="token punctuation">,</span> initStarted<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">}</span><span class="token punctuation">,</span>
+      Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>doSomething<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+         successActionCreator<span class="token operator">:</span> doSomethingResultAction<span class="token punctuation">,</span>
+         args<span class="token operator">:</span> <span class="token punctuation">[</span>Cmd<span class="token punctuation">.</span>getState<span class="token punctuation">,</span> Cmd<span class="token punctuation">.</span>dispatch<span class="token punctuation">]</span>
+      <span class="token punctuation">}</span><span class="token punctuation">)</span>
+    <span class="token punctuation">)</span><span class="token punctuation">;</span>
+  <span class="token keyword">default</span><span class="token operator">:</span>
+    <span class="token keyword">return</span> state<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+<span class="token punctuation">}</span>
+
+<span class="token comment">//something.js</span>
+<span class="token keyword">export</span> <span class="token keyword">function</span> <span class="token function">doSomething</span><span class="token punctuation">(</span><span class="token parameter">getState<span class="token punctuation">,</span> dispatch</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+   <span class="token keyword">let</span> value <span class="token operator">=</span> <span class="token function">getState</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">.</span>some<span class="token punctuation">.</span>random<span class="token punctuation">.</span>value<span class="token punctuation">;</span>
+   <span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token function">someRandomAction</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span>
+</code></pre>
+<p>Cmd.getState and Cmd.dispatch are just symbols that the enhanced store will
+replace with the actual functions at the time the cmd is executed. You can 
+use these symbols as parameters to your cmds as you would any other parameter (the
+order does not matter).</p>
+<p>This minimal example will cause perpetual dispatching! While it is also possible
+to make this mistake with large, complicated networks of <code>redux-thunk</code> action
+creators, it is much easier to spot the mistake before it is made. It helps to
+keep your reducers small and focused, and use <code>combineReducers</code> or manually
+compose reducers so that the number of actions you deal with at one time is
+small. A small set of actions which initiate a <code>loop</code> will help reduce the
+likelihood of causing circular dispatches.</p>
+<h2 id="combining-reducers-without-nesting-them">Combining reducers without nesting them</h2>
+<p><code>combineReducers</code> is great for the case where you want to nest reducers under a common parent. However, sometimes you want to split up reducers but still let them act on the same slice of state. <code>reduceReducers</code> lets you do this. It is a loop-friendly version of <a href="https://github.com/redux-utilities/reduce-reducers" target="_blank">the original</a>. It runs multiple reducers over the same piece of state (from left to right) and combines the Cmds in those reducers similar to how combineReducers does.</p>
+<pre class="language-"><code class="lang-js"><span class="token keyword">import</span> <span class="token punctuation">{</span>reduceReducers<span class="token punctuation">,</span> Cmd<span class="token punctuation">,</span> loop<span class="token punctuation">,</span> install<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;redux-loop&apos;</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span>createStore<span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;redux&apos;</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> <span class="token function-variable function">addReducer</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">state <span class="token operator">=</span> initialState<span class="token punctuation">,</span> <span class="token punctuation">{</span>value<span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span><span class="token punctuation">(</span>action<span class="token punctuation">.</span>type <span class="token operator">!==</span> <span class="token string">&apos;change&apos;</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> state<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token function">loop</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token operator">...</span>state<span class="token punctuation">,</span> add<span class="token operator">:</span> state<span class="token punctuation">.</span>add <span class="token operator">+</span> value<span class="token punctuation">}</span><span class="token punctuation">,</span> Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>foo<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> <span class="token function-variable function">multReducer</span> <span class="token operator">=</span> <span class="token punctuation">(</span><span class="token parameter">state <span class="token operator">=</span> initialState<span class="token punctuation">,</span> <span class="token punctuation">{</span>value<span class="token punctuation">}</span></span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">if</span><span class="token punctuation">(</span>action<span class="token punctuation">.</span>type <span class="token operator">!==</span> <span class="token string">&apos;change&apos;</span><span class="token punctuation">)</span><span class="token punctuation">{</span>
+    <span class="token keyword">return</span> state<span class="token punctuation">;</span>
+  <span class="token punctuation">}</span>
+  <span class="token keyword">return</span> <span class="token function">loop</span><span class="token punctuation">(</span><span class="token punctuation">{</span><span class="token operator">...</span>state<span class="token punctuation">,</span> mult<span class="token operator">:</span> state<span class="token punctuation">.</span>mult <span class="token operator">*</span> value<span class="token punctuation">}</span><span class="token punctuation">,</span> Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>bar<span class="token punctuation">)</span><span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> reducer <span class="token operator">=</span> <span class="token function">reduceReducers</span><span class="token punctuation">(</span>addReducer<span class="token punctuation">,</span> multReducer<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token keyword">const</span> initialState <span class="token operator">=</span> <span class="token punctuation">{</span> add<span class="token operator">:</span> <span class="token number">5</span><span class="token punctuation">,</span> mult<span class="token operator">:</span> <span class="token number">7</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+<span class="token keyword">const</span> store <span class="token operator">=</span> <span class="token function">createStore</span><span class="token punctuation">(</span>reducer<span class="token punctuation">,</span> initialState<span class="token punctuation">,</span> <span class="token function">install</span><span class="token punctuation">(</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">dispatch</span><span class="token punctuation">(</span><span class="token punctuation">{</span>type<span class="token operator">:</span> <span class="token string">&apos;change&apos;</span><span class="token punctuation">,</span> value<span class="token operator">:</span> <span class="token number">6</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token comment">// state is { add: 11, mult: 42 }</span>
+<span class="token comment">// foo and bar have run</span>
+</code></pre>
+<h2 id="using-combinereducers-and-mergechildreducers-with-immutablejs-and-other-libraries">Using <code>combineReducers</code> and <code>mergeChildReducers</code> with ImmutableJS and other libraries</h2>
+<p>It&apos;s impossible to write a version of <code>combineReducers</code> or <code>mergeChildReducers</code> that supports all use cases well.
+You may want your parent state to be an array or you may be using a library such as ImmutableJS with non-standard data structures. <a href="http://redux.js.org/docs/recipes/reducers/BeyondCombineReducers.html" target="_blank">Like redux&apos;s implementation of combineReducers</a>, redux-loop&apos;s are designed to only work with plain JS objects.
+Certain implementations may be generic enough to handle many use cases, but chances are that they will be
+sub-optimal in most scenarios. For example, when iterating over properties of an Immutable Map to update children, unless you use withMutations, you will create a new parent object for each key that you iterate over and will have worse performance.</p>
+<p>For this reason, we have broken out integrations with popular libraries into separate packages.</p>
+<ul>
+<li><a href="https://github.com/redux-loop/redux-loop-immutable" target="_blank">ImmutableJS</a> </li>
+</ul>
+<p>If your use case is not currently supported, we encourage you to write your own helpers to compose reducers that fit your specific needs. The only requirement for redux-loop is that they pull the commands out of the child results and batch them together into a single cmd object to be passed along in the resulting loop object.
+See the <a href="src/merge-child-reducers.js">mergeChildReducers</a> and <a href="src/combineReducers.js">combineReducers</a> implementations for reference.</p>
+<p>If you have a popular use case or library that is not currently supported, please file an issue and we can discuss if it makes sense for us to support a custom integration. </p>
+<p>NOTE: reduceReducers does not currently need custom integrations with libraries like immutable. The base version should be generic because it does not make assumptions about the shape of your state.</p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="Migrating.html" class="navigation navigation-prev " aria-label="Previous page: Migrating to Redux Loop">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="../recipes/" class="navigation navigation-next " aria-label="Next page: Recipes">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Advanced topics","level":"1.2.4","depth":2,"next":{"title":"Recipes","level":"1.3","depth":1,"path":"docs/recipes/README.md","ref":"docs/recipes/README.md","articles":[{"title":"Action Queue","level":"1.3.1","depth":2,"path":"docs/recipes/ActionQueue.md","ref":"docs/recipes/ActionQueue.md","articles":[]}]},"previous":{"title":"Migrating to Redux Loop","level":"1.2.3","depth":2,"path":"docs/tutorial/Migrating.md","ref":"docs/tutorial/Migrating.md","articles":[]},"dir":"ltr"},"config":{"plugins":["edit-link","prism","-highlight","github","anchorjs"],"styles":{"website":"build/gitbook.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{},"github":{"url":"https://github.com/redux-loop/redux-loop/"},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit This Page","base":"https://github.com/redux-loop/redux-loop/tree/master"},"theme-default":{"styles":{"website":"build/gitbook.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchorjs":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Redux-Loop","gitbook":"3.2.2"},"file":{"path":"docs/tutorial/AdvancedTopics.md","mtime":"2020-06-17T22:15:16.389Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2020-06-22T21:22:51.108Z"},"basePath":"../..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../gitbook/gitbook.js"></script>
+    <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-edit-link/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-anchorjs/anchor.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-anchorjs/anchor-style.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+

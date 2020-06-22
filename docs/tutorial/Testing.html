@@ -1,0 +1,709 @@
+
+<!DOCTYPE HTML>
+<html lang="" >
+    <head>
+        <meta charset="UTF-8">
+        <meta content="text/html; charset=utf-8" http-equiv="Content-Type">
+        <title>Testing · Redux-Loop</title>
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="description" content="">
+        <meta name="generator" content="GitBook 3.2.2">
+        
+        
+        
+    
+    <link rel="stylesheet" href="../../gitbook/style.css">
+
+    
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-prism/prism.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-search/search.css">
+                
+            
+                
+                <link rel="stylesheet" href="../../gitbook/gitbook-plugin-fontsettings/website.css">
+                
+            
+        
+
+    
+
+    
+        
+        <link rel="stylesheet" href="../../build/gitbook.css">
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+        
+    
+    
+    <meta name="HandheldFriendly" content="true"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="../../gitbook/images/apple-touch-icon-precomposed-152.png">
+    <link rel="shortcut icon" href="../../gitbook/images/favicon.ico" type="image/x-icon">
+
+    
+    <link rel="next" href="Migrating.html" />
+    
+    
+    <link rel="prev" href="Tutorial.html" />
+    
+
+    </head>
+    <body>
+        
+<div class="book">
+    <div class="book-summary">
+        
+            
+<div id="book-search-input" role="search">
+    <input type="text" placeholder="Type to search" />
+</div>
+
+            
+                <nav role="navigation">
+                
+
+
+<ul class="summary">
+    
+    
+
+    
+
+    
+        
+        
+    
+        <li class="chapter " data-level="1.1" data-path="../../">
+            
+                <a href="../../">
+            
+                    
+                    Introduction
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2" data-path="./">
+            
+                <a href="./">
+            
+                    
+                    Getting started
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.2.1" data-path="Tutorial.html">
+            
+                <a href="Tutorial.html">
+            
+                    
+                    Tutorial
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter active" data-level="1.2.2" data-path="Testing.html">
+            
+                <a href="Testing.html">
+            
+                    
+                    Testing
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.3" data-path="Migrating.html">
+            
+                <a href="Migrating.html">
+            
+                    
+                    Migrating to Redux Loop
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.2.4" data-path="AdvancedTopics.html">
+            
+                <a href="AdvancedTopics.html">
+            
+                    
+                    Advanced topics
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.3" data-path="../recipes/">
+            
+                <a href="../recipes/">
+            
+                    
+                    Recipes
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.3.1" data-path="../recipes/ActionQueue.html">
+            
+                <a href="../recipes/ActionQueue.html">
+            
+                    
+                    Action Queue
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4" data-path="../api-docs/">
+            
+                <a href="../api-docs/">
+            
+                    
+                    API Docs
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.1" data-path="../api-docs/install.html">
+            
+                <a href="../api-docs/install.html">
+            
+                    
+                    install
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.2" data-path="../api-docs/loop.html">
+            
+                <a href="../api-docs/loop.html">
+            
+                    
+                    loop
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.3" data-path="../api-docs/liftState.html">
+            
+                <a href="../api-docs/liftState.html">
+            
+                    
+                    liftState
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.4" data-path="../api-docs/getModel.html">
+            
+                <a href="../api-docs/getModel.html">
+            
+                    
+                    getModel
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.5" data-path="../api-docs/getCmd.html">
+            
+                <a href="../api-docs/getCmd.html">
+            
+                    
+                    getCmd
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.6" data-path="../api-docs/isLoop.html">
+            
+                <a href="../api-docs/isLoop.html">
+            
+                    
+                    isLoop
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html">
+            
+                    
+                    Cmds
+            
+                </a>
+            
+
+            
+            <ul class="articles">
+                
+    
+        <li class="chapter " data-level="1.4.7.1" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdactionactiontodispatch">
+            
+                    
+                    Cmd.action
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.2" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdsettimeoutcmd-delayms-options">
+            
+                    
+                    Cmd.setTimeout
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.3" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdsetintervalcmd-delayms-options">
+            
+                    
+                    Cmd.setInterval
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.4" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdrunfunc-options">
+            
+                    
+                    Cmd.run
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.5" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdlistcmds-options">
+            
+                    
+                    Cmd.list
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.6" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdmapcmd-higherorderactioncreator-additionalargs">
+            
+                    
+                    Cmd.map
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.7.7" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdnone">
+            
+                    
+                    Cmd.none
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.8" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdcleartimeouttimerid">
+            
+                    
+                    Cmd.clearTimeout
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.9" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdclearintervaltimerid">
+            
+                    
+                    Cmd.clearInterval
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.10" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmdgetstate">
+            
+                    
+                    Cmd.getState
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.11" data-path="../api-docs/cmds.html">
+            
+                <a href="../api-docs/cmds.html#cmddispatch">
+            
+                    
+                    Cmd.dispatch
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.12" data-path="../api-docs/combine-reducers.html">
+            
+                <a href="../api-docs/combine-reducers.html">
+            
+                    
+                    combineReducers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.13" data-path="../api-docs/reduce-reducers.html">
+            
+                <a href="../api-docs/reduce-reducers.html">
+            
+                    
+                    reduceReducers
+            
+                </a>
+            
+
+            
+        </li>
+    
+        <li class="chapter " data-level="1.4.14" data-path="../api-docs/merge-child-reducers.html">
+            
+                <a href="../api-docs/merge-child-reducers.html">
+            
+                    
+                    mergeChildReducers
+            
+                </a>
+            
+
+            
+        </li>
+    
+
+            </ul>
+            
+        </li>
+    
+
+    
+
+    <li class="divider"></li>
+
+    <li>
+        <a href="https://www.gitbook.com" target="blank" class="gitbook-link">
+            Published with GitBook
+        </a>
+    </li>
+</ul>
+
+
+                </nav>
+            
+        
+    </div>
+
+    <div class="book-body">
+        
+            <div class="body-inner">
+                
+                    
+
+<div class="book-header" role="navigation">
+    
+
+    <!-- Title -->
+    <h1>
+        <i class="fa fa-circle-o-notch fa-spin"></i>
+        <a href="../.." >Testing</a>
+    </h1>
+</div>
+
+
+
+
+                    <div class="page-wrapper" tabindex="-1" role="main">
+                        <div class="page-inner">
+                            
+<div id="book-search-results">
+    <div class="search-noresults">
+    
+                                <section class="normal markdown-section">
+                                
+                                <h1 id="test-reducer-results">Test reducer results</h1>
+<p>Objects returned by functions from the <code>Cmd</code> module are declarative
+specifications of the next behavior of the store. They are only processed by
+an active store, pushing effecting behavior to the edge of the application.
+You can call a reducer as many times with a given action and state and always
+get a result which is <code>deepEqual</code>.</p>
+<pre class="language-"><code class="lang-js"><span class="token keyword">import</span> test <span class="token keyword">from</span> <span class="token string">&apos;tape&apos;</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> reducer<span class="token punctuation">,</span> <span class="token punctuation">{</span> fetchDetails <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;./reducer&apos;</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> loadingStart<span class="token punctuation">,</span> loadingSuccess<span class="token punctuation">,</span> loadingError <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;./actions&apos;</span><span class="token punctuation">;</span>
+<span class="token keyword">import</span> <span class="token punctuation">{</span> Cmd<span class="token punctuation">,</span> loop <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;redux-loop&apos;</span><span class="token punctuation">;</span>
+
+<span class="token function">test</span><span class="token punctuation">(</span><span class="token string">&apos;reducer works as expected&apos;</span><span class="token punctuation">,</span> <span class="token punctuation">(</span><span class="token parameter">t</span><span class="token punctuation">)</span> <span class="token operator">=&gt;</span> <span class="token punctuation">{</span>
+  <span class="token keyword">const</span> state <span class="token operator">=</span> <span class="token punctuation">{</span> loading<span class="token operator">:</span> <span class="token boolean">false</span> <span class="token punctuation">}</span><span class="token punctuation">;</span>
+
+  <span class="token keyword">const</span> result <span class="token operator">=</span> <span class="token function">reducer</span><span class="token punctuation">(</span>state<span class="token punctuation">,</span> <span class="token function">loadingStart</span><span class="token punctuation">(</span><span class="token number">1</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+  t<span class="token punctuation">.</span><span class="token function">deepEqual</span><span class="token punctuation">(</span>result<span class="token punctuation">,</span> <span class="token function">loop</span><span class="token punctuation">(</span>
+    <span class="token punctuation">{</span> loading<span class="token operator">:</span> <span class="token boolean">true</span> <span class="token punctuation">}</span><span class="token punctuation">,</span>
+    Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>fetchDetails<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+      successActionCreator<span class="token operator">:</span> loadingSuccess<span class="token punctuation">,</span>
+      failActionCreator<span class="token operator">:</span> loadingError<span class="token punctuation">,</span>
+      args<span class="token operator">:</span> <span class="token punctuation">[</span><span class="token number">1</span><span class="token punctuation">]</span>
+    <span class="token punctuation">}</span><span class="token punctuation">)</span>
+  <span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<blockquote>
+<p>CAVEAT
+For testing sanity, always pass a referenceable function to a cmd.
+Functions curried or bound from the same function with the same arguments are
+not equal within JavaScript, and so are best to avoid if you want to compare
+effects in your tests.</p>
+</blockquote>
+<h2 id="simulating-cmd-objects">Simulating cmd objects</h2>
+<p>Occasionally you may find yourself in a situation where you need to pass more
+than one parameter to an action creator, such as:</p>
+<pre class="language-"><code class="lang-js">Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>foo<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  <span class="token function-variable function">successActionCreator</span><span class="token operator">:</span> <span class="token parameter">foo</span> <span class="token operator">=&gt;</span> <span class="token function">actionCreator</span><span class="token punctuation">(</span>foo<span class="token punctuation">,</span> state<span class="token punctuation">.</span>blah<span class="token punctuation">)</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span>
+</code></pre>
+<p>You can&apos;t do a deep equality check on this because the success action creator
+is always new. Instead, you can simulate the cmd object to test the action creators.</p>
+<pre class="language-"><code class="lang-js"><span class="token keyword">import</span> <span class="token punctuation">{</span> Cmd<span class="token punctuation">,</span> getCmd<span class="token punctuation">,</span> getModel <span class="token punctuation">}</span> <span class="token keyword">from</span> <span class="token string">&apos;redux-loop&apos;</span><span class="token punctuation">;</span>
+<span class="token operator">...</span>
+
+<span class="token keyword">let</span> result <span class="token operator">=</span> <span class="token function">reducer</span><span class="token punctuation">(</span>state<span class="token punctuation">,</span> action<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">expect</span><span class="token punctuation">(</span><span class="token function">getModel</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toEqual</span><span class="token punctuation">(</span>whatever<span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token keyword">let</span> cmd <span class="token operator">=</span> <span class="token function">getCmd</span><span class="token punctuation">(</span>result<span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token comment">//test the rest of the cmd</span>
+<span class="token function">expect</span><span class="token punctuation">(</span>cmd<span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toEqual</span><span class="token punctuation">(</span>Cmd<span class="token punctuation">.</span><span class="token function">run</span><span class="token punctuation">(</span>foo<span class="token punctuation">,</span> <span class="token punctuation">{</span>
+  testInvariants<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span>
+  successActionCreator<span class="token operator">:</span> jasmine<span class="token punctuation">.</span><span class="token function">any</span><span class="token punctuation">(</span>Function<span class="token punctuation">)</span> <span class="token comment">//replace with your testing library&apos;s equivalent matcher</span>
+<span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+
+<span class="token function">expect</span><span class="token punctuation">(</span>cmd<span class="token punctuation">.</span><span class="token function">simulate</span><span class="token punctuation">(</span><span class="token punctuation">{</span>success<span class="token operator">:</span> <span class="token boolean">true</span><span class="token punctuation">,</span> result<span class="token operator">:</span> <span class="token number">123</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toEqual</span><span class="token punctuation">(</span><span class="token function">actionCreator</span><span class="token punctuation">(</span><span class="token number">123</span><span class="token punctuation">,</span> state<span class="token punctuation">.</span>blah<span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+<span class="token function">expect</span><span class="token punctuation">(</span>cmd<span class="token punctuation">.</span><span class="token function">simulate</span><span class="token punctuation">(</span><span class="token punctuation">{</span>success<span class="token operator">:</span> <span class="token boolean">false</span><span class="token punctuation">,</span> result<span class="token operator">:</span> <span class="token number">123</span><span class="token punctuation">}</span><span class="token punctuation">)</span><span class="token punctuation">)</span><span class="token punctuation">.</span><span class="token function">toBe</span><span class="token punctuation">(</span><span class="token keyword">null</span><span class="token punctuation">)</span><span class="token punctuation">;</span>
+</code></pre>
+<p>You can simulate any cmd object to test the actions returned. Lists take
+arrays of simulations for their child cmds.</p>
+<p><a href="../api-docs/cmds.html">See detailed documentation about simulating Cmds</a></p>
+
+                                
+                                </section>
+                            
+    </div>
+    <div class="search-results">
+        <div class="has-results">
+            
+            <h1 class="search-results-title"><span class='search-results-count'></span> results matching "<span class='search-query'></span>"</h1>
+            <ul class="search-results-list"></ul>
+            
+        </div>
+        <div class="no-results">
+            
+            <h1 class="search-results-title">No results matching "<span class='search-query'></span>"</h1>
+            
+        </div>
+    </div>
+</div>
+
+                        </div>
+                    </div>
+                
+            </div>
+
+            
+                
+                <a href="Tutorial.html" class="navigation navigation-prev " aria-label="Previous page: Tutorial">
+                    <i class="fa fa-angle-left"></i>
+                </a>
+                
+                
+                <a href="Migrating.html" class="navigation navigation-next " aria-label="Next page: Migrating to Redux Loop">
+                    <i class="fa fa-angle-right"></i>
+                </a>
+                
+            
+        
+    </div>
+
+    <script>
+        var gitbook = gitbook || [];
+        gitbook.push(function() {
+            gitbook.page.hasChanged({"page":{"title":"Testing","level":"1.2.2","depth":2,"next":{"title":"Migrating to Redux Loop","level":"1.2.3","depth":2,"path":"docs/tutorial/Migrating.md","ref":"docs/tutorial/Migrating.md","articles":[]},"previous":{"title":"Tutorial","level":"1.2.1","depth":2,"path":"docs/tutorial/Tutorial.md","ref":"docs/tutorial/Tutorial.md","articles":[]},"dir":"ltr"},"config":{"plugins":["edit-link","prism","-highlight","github","anchorjs"],"styles":{"website":"build/gitbook.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"pluginsConfig":{"prism":{},"github":{"url":"https://github.com/redux-loop/redux-loop/"},"search":{},"lunr":{"maxIndexSize":1000000,"ignoreSpecialCharacters":false},"fontsettings":{"theme":"white","family":"sans","size":2},"sharing":{"facebook":true,"twitter":true,"google":false,"weibo":false,"instapaper":false,"vk":false,"all":["facebook","google","twitter","weibo","instapaper"]},"edit-link":{"label":"Edit This Page","base":"https://github.com/redux-loop/redux-loop/tree/master"},"theme-default":{"styles":{"website":"build/gitbook.css","pdf":"styles/pdf.css","epub":"styles/epub.css","mobi":"styles/mobi.css","ebook":"styles/ebook.css","print":"styles/print.css"},"showLevel":false},"anchorjs":{}},"theme":"default","pdf":{"pageNumbers":true,"fontSize":12,"fontFamily":"Arial","paperSize":"a4","chapterMark":"pagebreak","pageBreaksBefore":"/","margin":{"right":62,"left":62,"top":56,"bottom":56}},"structure":{"langs":"LANGS.md","readme":"README.md","glossary":"GLOSSARY.md","summary":"SUMMARY.md"},"variables":{},"title":"Redux-Loop","gitbook":"3.2.2"},"file":{"path":"docs/tutorial/Testing.md","mtime":"2020-06-17T22:15:16.390Z","type":"markdown"},"gitbook":{"version":"3.2.2","time":"2020-06-22T21:22:51.108Z"},"basePath":"../..","book":{"language":""}});
+        });
+    </script>
+</div>
+
+        
+    <script src="../../gitbook/gitbook.js"></script>
+    <script src="../../gitbook/theme.js"></script>
+    
+        
+        <script src="../../gitbook/gitbook-plugin-edit-link/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-github/plugin.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-anchorjs/anchor.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-anchorjs/anchor-style.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search-engine.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-search/search.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/lunr.min.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-lunr/search-lunr.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-sharing/buttons.js"></script>
+        
+    
+        
+        <script src="../../gitbook/gitbook-plugin-fontsettings/fontsettings.js"></script>
+        
+    
+
+    </body>
+</html>
+
