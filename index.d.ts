@@ -108,8 +108,8 @@ export type CmdType =
   | RunCmd<UnknownAction, UnknownAction>;
 
 export interface LoopConfig {
-  readonly DONT_LOG_ERRORS_ON_HANDLED_FAILURES: boolean;
-  readonly ENABLE_THUNK_MIGRATION: boolean;
+  readonly DONT_LOG_ERRORS_ON_HANDLED_FAILURES?: boolean;
+  readonly ENABLE_THUNK_MIGRATION?: boolean;
 }
 
 export function install<S>(config?: LoopConfig): StoreEnhancer<S>;
