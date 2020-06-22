@@ -79,6 +79,46 @@ return loop(
 );
 ```
 
+### `Cmd.setTimeout(cmd, delayMs, options)`
+
+`setTimeout()` allows you to delay the execution of a command to sometime the future. The given command can be of any kind, including a command created by `setTimeout()` itself.
+It uses JavaScript's global `setTimeout()` internally.
+
+* `cmd: Cmd` &ndash; the command to execute.
+* `delayMs: number` &ndash; the number of milliseconds to wait before executing the command.
+* `options.scheduledActionCreator: (timerId: number) => Action` &ndash; an optional function that takes `timerId` and creates an action to be dispatched. The `timerId` can be passed to `Cmd.clearTimeout()` to cancel the delayed execution.
+
+#### Simulation
+
+Two parameters are passed to the `simulate()` method:
+* `timerId: number` &ndash; the value to be passed to `options.scheduledActionCreator`.
+* `nestedSimulation` &ndash; the simulation value for the nested command. The type depends on which kind of command is nested inside.
+
+#### Examples
+
+```js
+// Once the store has finished updating this part of the state with the new
+// result where `showAnimation` is `true` it will use `setTimeout()` to
+// schedule another dispatch in 3000ms for the action HIDE_ANIMATION.
+return loop(
+  { ...state, showAnimation: true },
+  Cmd.setTimeout(Cmd.action({ type: 'HIDE_ANIMATION' }), 3000)
+);
+```
+
+### `Cmd.setInterval(cmd, delayMs, options)`
+`setInterval()` allows you to repeatedly execute a command with a fixed delay between each execution. It uses JavaScript's global `setInterval()` internally.
+
+For details, see `setTimeout()` above.
+
+### `Cmd.clearTimeout(timerId)`
+Cancel's a delayed command execution created by `Cmd.setTimeout()`.
+Equivalent to `Cmd.run(clearTimeout, { args: [timerId] })`.
+
+### `Cmd.clearInterval(timerId)`
+Cancel's a repeated command execution created by `Cmd.setInterval()`.
+Equivalent to `Cmd.run(clearInterval, { args: [timerId] })`.
+
 ### `Cmd.run(func, options)`
 
 `run()` allows you to declaratively schedule a function to be called with some
@@ -176,10 +216,10 @@ function reducer(state , action) {
 
   case 'USER_FETCH_SUCCESSFUL':
     return {...state, user: action.user};
-    
+
   case 'USER_FETCH_FAILED':
     return {...state, error: action.error};
-    
+
   default:
     return state;
   }

@@ -61,6 +61,22 @@ export interface ActionCmd<A extends Action> {
   simulate(): A;
 }
 
+export interface SetTimeoutCmd<A extends Action = never> {
+  readonly type: 'SET_TIMEOUT';
+  readonly nestedCmd: CmdType;
+  readonly delayMs: number;
+  readonly scheduledActionCreator?: (timerId: number) => A;
+  simulate(timerId: number, nestedSimulation?: CmdSimulation | MultiCmdSimulation): A[] | A | null
+}
+
+export interface SetIntervalCmd<A extends Action = never> {
+  readonly type: 'SET_INTERVAL';
+  readonly nestedCmd: CmdType;
+  readonly delayMs: number;
+  readonly scheduledActionCreator?: (timerId: number) => A;
+  simulate(timerId: number, nestedSimulation?: CmdSimulation | MultiCmdSimulation): A[] | A | null
+}
+
 export interface MapCmd<A extends Action = never> {
   readonly type: 'MAP';
   readonly tagger: ActionCreator<A>;
@@ -84,6 +100,8 @@ export interface RunCmd<
 
 export type CmdType =
   | ActionCmd<UnknownAction>
+  | SetTimeoutCmd<UnknownAction>
+  | SetIntervalCmd<UnknownAction>
   | ListCmd
   | MapCmd<UnknownAction>
   | NoneCmd
@@ -114,6 +132,24 @@ export namespace Cmd {
   };
 
   export function list(cmds: CmdType[], options?: ListOptions): ListCmd;
+  export function clearTimeout(timerId: number): RunCmd;
+  export function clearInterval(timerId: number): RunCmd;
+
+  export function setTimeout<A extends Action = never>(
+    cmd: CmdType,
+    delayMs: number,
+    options?: {
+      scheduledActionCreator?: (timerId: number) => A;
+    },
+  ): SetTimeoutCmd<A>;
+
+  export function setInterval<A extends Action = never>(
+    cmd: CmdType,
+    delayMs: number,
+    options?: {
+      scheduledActionCreator?: (timerId: number) => A;
+    },
+  ): SetIntervalCmd<A>;
 
   export function map<A extends Action, B extends Action>(
     cmd: CmdType,

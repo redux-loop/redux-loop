@@ -7,6 +7,8 @@ const getStateSymbol = Symbol('getState');
 const cmdTypes = {
   RUN: 'RUN',
   ACTION: 'ACTION',
+  SET_TIMEOUT: 'SET_TIMEOUT',
+  SET_INTERVAL: 'SET_INTERVAL',
   LIST: 'LIST',
   MAP: 'MAP',
   NONE: 'NONE'
@@ -131,6 +133,30 @@ function handleSequenceList({ cmds, batch = false }, context) {
   return batch ? result : result.then(() => []);
 }
 
+function handleDelayCmd(cmd, context) {
+  const executeNestedCmd = () => {
+    const cmdPromise = executeCmdInternal(cmd.nestedCmd, context);
+    if (cmdPromise) {
+      cmdPromise.then(actions => {
+        actions.forEach(action => context.wrappedDispatch(action));
+      });
+    }
+  };
+
+  let timerId;
+  if (cmd.type === cmdTypes.SET_INTERVAL) {
+    timerId = setInterval(executeNestedCmd, cmd.delayMs);
+  } else {
+    timerId = setTimeout(executeNestedCmd, cmd.delayMs);
+  }
+
+  if (cmd.scheduledActionCreator) {
+    return Promise.resolve([cmd.scheduledActionCreator(timerId)]);
+  } else {
+    return null;
+  }
+}
+
 export function executeCmd(cmd, dispatch, getState, loopConfig = {}) {
   return executeCmdInternal(cmd, {
     dispatch,
@@ -147,6 +173,10 @@ function executeCmdInternal(cmd, context) {
 
     case cmdTypes.ACTION:
       return Promise.resolve([cmd.actionToDispatch]);
+
+    case cmdTypes.SET_TIMEOUT:
+    case cmdTypes.SET_INTERVAL:
+      return handleDelayCmd(cmd, context);
 
     case cmdTypes.LIST:
       return cmd.sequence
@@ -253,6 +283,81 @@ function action(actionToDispatch) {
   });
 }
 
+function clearTimeoutCmd(timerId) {
+  return run(clearTimeout, { args: [timerId] });
+}
+
+function clearIntervalCmd(timerId) {
+  return run(clearInterval, { args: [timerId] });
+}
+
+function setTimeoutCmd(nestedCmd, delayMs, options = {}) {
+  return delay(
+    nestedCmd,
+    delayMs,
+    options,
+    cmdTypes.SET_TIMEOUT,
+    'Cmd.setTimeout'
+  );
+}
+
+function setIntervalCmd(nestedCmd, delayMs, options = {}) {
+  return delay(
+    nestedCmd,
+    delayMs,
+    options,
+    cmdTypes.SET_INTERVAL,
+    'Cmd.setInterval'
+  );
+}
+
+function delay(nestedCmd, delayMs, options, cmdType, funcName) {
+  if (process.env.NODE_ENV !== 'production') {
+    throwInvariant(
+      isCmd(nestedCmd),
+      `${funcName}: first argument must be another Cmd`
+    );
+    throwInvariant(
+      typeof delayMs === 'number',
+      `${funcName}: second argument must be a number`
+    );
+    throwInvariant(
+      typeof options === 'object',
+      `${funcName}: third argument must be an options object`
+    );
+    throwInvariant(
+      options.scheduledActionCreator === undefined ||
+        typeof options.scheduledActionCreator === 'function',
+      `${funcName}: scheduledActionCreator option must be a function if specified`
+    );
+  }
+
+  return Object.freeze({
+    [isCmdSymbol]: true,
+    type: cmdType,
+    nestedCmd,
+    delayMs,
+    scheduledActionCreator: options.scheduledActionCreator,
+    simulate: simulateDelay
+  });
+}
+
+function simulateDelay(timerId, nestedSimulation) {
+  let result = this.nestedCmd.simulate(nestedSimulation);
+  let nestedActions = null;
+  if (Array.isArray(result)) {
+    nestedActions = result;
+  } else if (result) {
+    nestedActions = [result];
+  }
+
+  if (this.scheduledActionCreator) {
+    return [this.scheduledActionCreator(timerId)].concat(nestedActions);
+  } else {
+    return nestedActions;
+  }
+}
+
 function simulateList(simulations) {
   return flatten(
     this.cmds.map((cmd, i) => cmd.simulate(simulations[i])).filter(a => a)
@@ -332,6 +437,10 @@ const none = Object.freeze({
 export default {
   run,
   action,
+  setTimeout: setTimeoutCmd,
+  setInterval: setIntervalCmd,
+  clearTimeout: clearTimeoutCmd,
+  clearInterval: clearIntervalCmd,
   list,
   map,
   none,

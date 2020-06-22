@@ -122,7 +122,14 @@ const todosReducer: LoopReducer<TodoState, TodoReducerActions> = (
     case ADD_TODO:
       return loop(
         { ...state, todos: [...state.todos, action.text] },
-        Cmd.list([Cmd.none, Cmd.action(noop())])
+        Cmd.list([
+          Cmd.none,
+          Cmd.action(noop()),
+          Cmd.setTimeout(Cmd.none, 100, { scheduledActionCreator: noop }),
+          Cmd.setInterval(Cmd.none, 100, { scheduledActionCreator: noop }),
+          Cmd.clearTimeout(1),
+          Cmd.clearInterval(1),
+        ])
       );
     case NOOP:
       return state;

@@ -227,6 +227,79 @@ describe('Cmds', () => {
       });
     });
 
+    describe('Cmd.setTimeout', () => {
+      beforeEach(() => {
+        jest.useFakeTimers();
+      });
+
+      afterEach(() => {
+        jest.useRealTimers();
+      });
+
+      it('resolves with the action created from the action creator', async () => {
+        let action = actionCreator1(123);
+        let cmd = Cmd.setTimeout(Cmd.action(action), 100, {
+          scheduledActionCreator: actionCreator2
+        });
+        let result = executeCmd(cmd, dispatch, getState);
+
+        expect(setTimeout).toHaveBeenCalledTimes(1);
+        expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 100);
+
+        await expect(result).resolves.toEqual([
+          actionCreator2(expect.anything())
+        ]);
+
+        expect(dispatch.mock.calls.length).toEqual(0);
+
+        jest.runOnlyPendingTimers();
+        await Promise.resolve(); // wait for dispatch() which happens immediately in .then() callback
+        expect(dispatch.mock.calls.length).toEqual(1);
+        expect(dispatch.mock.calls[0][0]).toEqual(action);
+
+        jest.runOnlyPendingTimers();
+        await Promise.resolve(); // wait for dispatch() which happens immediately in .then() callback
+        expect(dispatch.mock.calls.length).toEqual(1);
+      });
+    });
+
+    describe('Cmd.setInterval', () => {
+      beforeEach(() => {
+        jest.useFakeTimers();
+      });
+
+      afterEach(() => {
+        jest.useRealTimers();
+      });
+
+      it('resolves with the action created from the action creator', async () => {
+        let action = actionCreator1(123);
+        let cmd = Cmd.setInterval(Cmd.action(action), 100, {
+          scheduledActionCreator: actionCreator2
+        });
+        let result = executeCmd(cmd, dispatch, getState);
+
+        expect(setInterval).toHaveBeenCalledTimes(1);
+        expect(setInterval).toHaveBeenCalledWith(expect.any(Function), 100);
+
+        await expect(result).resolves.toEqual([
+          actionCreator2(expect.anything())
+        ]);
+
+        expect(dispatch.mock.calls.length).toEqual(0);
+
+        jest.runOnlyPendingTimers();
+        await Promise.resolve(); // wait for dispatch() which happens immediately in .then() callback
+        expect(dispatch.mock.calls.length).toEqual(1);
+        expect(dispatch.mock.calls[0][0]).toEqual(action);
+
+        jest.runOnlyPendingTimers();
+        await Promise.resolve(); // wait for dispatch() which happens immediately in .then() callback
+        expect(dispatch.mock.calls.length).toEqual(2);
+        expect(dispatch.mock.calls[1][0]).toEqual(action);
+      });
+    });
+
     describe('Cmd.list', () => {
       let consoleError;
 
@@ -599,6 +672,38 @@ describe('Cmds', () => {
         let action = actionCreator1(123);
         let cmd = Cmd.action(action);
         expect(cmd.simulate()).toBe(action);
+      });
+    });
+
+    describe('Cmd.setTimeout', () => {
+      it('returns the nested action', () => {
+        let action = actionCreator1(123);
+        let cmd = Cmd.setTimeout(Cmd.action(action), 100);
+        expect(cmd.simulate()).toEqual([action]);
+      });
+
+      it('returns the scedule action with the nested action', () => {
+        let action = actionCreator1(123);
+        let cmd = Cmd.setTimeout(Cmd.action(action), 100, {
+          scheduledActionCreator: actionCreator2
+        });
+        expect(cmd.simulate(456)).toEqual([actionCreator2(456), action]);
+      });
+    });
+
+    describe('Cmd.setInterval', () => {
+      it('returns the nested action', () => {
+        let action = actionCreator1(123);
+        let cmd = Cmd.setInterval(Cmd.action(action), 100);
+        expect(cmd.simulate()).toEqual([action]);
+      });
+
+      it('returns the scheduled action with the nested action', () => {
+        let action = actionCreator1(123);
+        let cmd = Cmd.setInterval(Cmd.action(action), 100, {
+          scheduledActionCreator: actionCreator2
+        });
+        expect(cmd.simulate(456)).toEqual([actionCreator2(456), action]);
       });
     });
 
