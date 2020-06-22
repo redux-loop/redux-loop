@@ -228,23 +228,38 @@ describe('Cmds', () => {
     });
 
     describe('Cmd.setTimeout', () => {
-      it('resolves with the action created from the action creator', async () => {
-        let dispatchPromise = new Promise(resolve => {
-          dispatch = jest.fn(() => resolve());
-        });
+      beforeEach(() => {
+        jest.useFakeTimers();
+      });
 
+      afterEach(() => {
+        jest.useRealTimers();
+      });
+
+      it('resolves with the action created from the action creator', async () => {
         let action = actionCreator1(123);
         let cmd = Cmd.setTimeout(Cmd.action(action), 100, {
           scheduledActionCreator: actionCreator2
         });
         let result = executeCmd(cmd, dispatch, getState);
 
+        expect(setTimeout).toHaveBeenCalledTimes(1);
+        expect(setTimeout).toHaveBeenCalledWith(expect.any(Function), 100);
+
         await expect(result).resolves.toEqual([
           actionCreator2(expect.anything())
         ]);
-        await dispatchPromise;
+
+        expect(dispatch.mock.calls.length).toEqual(0);
+
+        jest.runOnlyPendingTimers();
+        await Promise.resolve(); // wait for dispatch() which happens immediately in .then() callback
         expect(dispatch.mock.calls.length).toEqual(1);
         expect(dispatch.mock.calls[0][0]).toEqual(action);
+
+        jest.runOnlyPendingTimers();
+        await Promise.resolve(); // wait for dispatch() which happens immediately in .then() callback
+        expect(dispatch.mock.calls.length).toEqual(1);
       });
     });
 
