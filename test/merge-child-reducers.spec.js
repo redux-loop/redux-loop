@@ -1,4 +1,5 @@
-import { loop, Cmd, mergeChildReducers } from '../src';
+// eslint-disable-next-line camelcase
+import { loop, Cmd, DEPRECATED_mergeChildReducers } from '../src';
 
 let adder = (state = 0, { value }) => state + value;
 let multiplier = (state = 1, { value }) => state * value;
@@ -9,14 +10,14 @@ let multiplierCmd = (state = 1, { value }) =>
 
 function foo() {}
 
-describe('mergeChildReducers', function() {
+describe('DEPRECATED_mergeChildReducers', function() {
   it('runs each child reducer and merges it onto the parent result, and returns a loop with Cmd.none', function() {
     let state = {
       foo: 'bar',
       adder: 2,
       multiplier: 3
     };
-    const result = mergeChildReducers(
+    const result = DEPRECATED_mergeChildReducers(
       state,
       { type: 'foo', value: 5 },
       { adder, multiplier }
@@ -34,7 +35,7 @@ describe('mergeChildReducers', function() {
     let state = {
       foo: 'bar'
     };
-    const result = mergeChildReducers(
+    const result = DEPRECATED_mergeChildReducers(
       state,
       { type: 'foo', value: 3 },
       { adder, multiplier }
@@ -48,7 +49,7 @@ describe('mergeChildReducers', function() {
   });
 
   it('runs cmd from the parent result if it is a loop', function() {
-    const result = mergeChildReducers(
+    const result = DEPRECATED_mergeChildReducers(
       loop({}, Cmd.run(foo)),
       { type: 'foo', value: 2 },
       { adder, multiplier }
@@ -67,7 +68,7 @@ describe('mergeChildReducers', function() {
       adderCmd: 3,
       multiplierCmd: 5
     };
-    const result = mergeChildReducers(
+    const result = DEPRECATED_mergeChildReducers(
       loop(state, Cmd.run(foo)),
       { type: 'foo', value: 10 },
       map
@@ -92,7 +93,11 @@ describe('mergeChildReducers', function() {
       adder: 3,
       multiplierCmd: 5
     };
-    const result = mergeChildReducers(state, { type: 'foo', value: 10 }, map);
+    const result = DEPRECATED_mergeChildReducers(
+      state,
+      { type: 'foo', value: 10 },
+      map
+    );
     let newState = {
       foo: 'bar',
       adder: 13,
@@ -107,7 +112,7 @@ describe('mergeChildReducers', function() {
       adder: 2,
       multiplier: 3
     };
-    const result = mergeChildReducers(
+    const result = DEPRECATED_mergeChildReducers(
       state,
       { type: 'foo', value: 5 },
       { adder: null, multiplier }
@@ -127,7 +132,7 @@ describe('mergeChildReducers', function() {
     const r1 = (state = [], action, ...extra) => state.concat(extra);
     const r2 = (state = 0, action, extra) => state + extra;
 
-    const result = mergeChildReducers(
+    const result = DEPRECATED_mergeChildReducers(
       state,
       { type: 'foo', value: 5 },
       { r1, r2 },

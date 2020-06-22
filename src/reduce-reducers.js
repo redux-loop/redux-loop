@@ -1,4 +1,4 @@
-import { batchCmds } from './merge-child-reducers';
+import batchCmds from './batch-cmds';
 import { loop, isLoop, getModel, getCmd } from './loop';
 
 export default (...reducers) => (prevState, action, ...args) => {

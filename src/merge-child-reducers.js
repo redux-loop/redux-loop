@@ -1,7 +1,15 @@
 import { loop, isLoop, getModel, getCmd } from './loop';
-import Cmd from './cmd';
+import batchCmds from './batch-cmds';
 
-export default function mergeChildReducers(
+export default function mergeChildReducers(...args) {
+  console.warning(
+    'mergeChildReducers is deprecated. Use reduceReducers or combineReducers instead.'
+  );
+  return DEPRECATED_mergeChildReducers(...args);
+}
+
+// eslint-disable-next-line camelcase
+export function DEPRECATED_mergeChildReducers(
   parentResult,
   action,
   childMap,
@@ -43,15 +51,4 @@ export default function mergeChildReducers(
   }, initialState);
 
   return loop(newState, batchCmds(cmds));
-}
-
-export function batchCmds(cmds) {
-  switch (cmds.length) {
-    case 0:
-      return Cmd.none;
-    case 1:
-      return cmds[0];
-    default:
-      return Cmd.list(cmds);
-  }
 }

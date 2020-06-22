@@ -235,6 +235,13 @@ export function mergeChildReducers<S>(
   childMap: ReducersMapObject<S>
 ): Loop<S>;
 
+// eslint-disable-next-line camelcase
+export function DEPRECATED_mergeChildReducers<S>(
+  parentResult: S | Loop<S>,
+  action: AnyAction,
+  childMap: ReducersMapObject<S>
+): Loop<S>;
+
 export function reduceReducers<S>(
   initialReducer: LoopReducer<S, any>,
   ...reducers: Array<LoopReducerWithDefinedState<S, any>>
