@@ -66,7 +66,10 @@ export interface SetTimeoutCmd<A extends Action = never> {
   readonly nestedCmd: CmdType;
   readonly delayMs: number;
   readonly scheduledActionCreator?: (timerId: number) => A;
-  simulate(timerId: number, nestedSimulation?: CmdSimulation | MultiCmdSimulation): A[] | A | null
+  simulate(
+    timerId: number,
+    nestedSimulation?: CmdSimulation | MultiCmdSimulation
+  ): A[] | A | null;
 }
 
 export interface SetIntervalCmd<A extends Action = never> {
@@ -74,7 +77,10 @@ export interface SetIntervalCmd<A extends Action = never> {
   readonly nestedCmd: CmdType;
   readonly delayMs: number;
   readonly scheduledActionCreator?: (timerId: number) => A;
-  simulate(timerId: number, nestedSimulation?: CmdSimulation | MultiCmdSimulation): A[] | A | null
+  simulate(
+    timerId: number,
+    nestedSimulation?: CmdSimulation | MultiCmdSimulation
+  ): A[] | A | null;
 }
 
 export interface MapCmd<A extends Action = never> {
@@ -140,7 +146,7 @@ export namespace Cmd {
     delayMs: number,
     options?: {
       scheduledActionCreator?: (timerId: number) => A;
-    },
+    }
   ): SetTimeoutCmd<A>;
 
   export function setInterval<A extends Action = never>(
@@ -148,7 +154,7 @@ export namespace Cmd {
     delayMs: number,
     options?: {
       scheduledActionCreator?: (timerId: number) => A;
-    },
+    }
   ): SetIntervalCmd<A>;
 
   export function map<A extends Action, B extends Action>(
@@ -158,12 +164,13 @@ export namespace Cmd {
   ): MapCmd<A>;
 
   // Allow the use of special dispatch | getState symbols
+  // and check for a union with other types, e.g., support `getState?: GetState | number`
   type ArgOrSymbol<T> = {
-    [K in keyof T]: T[K] extends GetState
-      ? typeof getState
-      : T[K] extends Dispatch
-      ? typeof dispatch
-      : T[K];
+    [K in keyof T]: Extract<T[K], GetState> extends never
+      ? Extract<T[K], Dispatch> extends never
+        ? T[K]
+        : Exclude<T[K], Dispatch> | typeof dispatch
+      : Exclude<T[K], GetState> | typeof getState;
   };
 
   type RunFunc = (...args: any[]) => Promise<any> | any;
