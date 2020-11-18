@@ -126,8 +126,8 @@ export namespace Cmd {
   export const dispatch: unique symbol;
   export const getState: unique symbol;
   export const none: NoneCmd;
-  export type Dispatch = <A extends Action>(a: A) => Promise<A>;
-  export type GetState = <S>() => S;
+  export type Dispatch<A extends Action = AnyAction> = (a: A) => Promise<A>;
+  export type GetState<S = any> = () => S;
 
   export function action<A extends Action>(action: A): ActionCmd<A>;
 
