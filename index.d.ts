@@ -10,7 +10,7 @@ export interface StoreCreator {
   ): Store<S>;
 }
 
-type WithDefaultActionHandling<T extends AnyAction> =
+export type WithDefaultActionHandling<T extends AnyAction> =
   | T
   | Action<'@@REDUX_LOOP/ENFORCE_DEFAULT_HANDLING'>;
 
