@@ -21,3 +21,4 @@ Detailed documentation of the API is provided here. For a more gentle introducti
 * [`combineReducers(reducerMap)`](combine-reducers.md)
 * [`reduceReducers(...reducers)`](reduce-reducers.md)
 * [`mergeChildReducers(parentResult, action, childMap)`](merge-child-reducers.md)
+* [`Typescript`](TypeScript.md)
