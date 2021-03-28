@@ -434,6 +434,20 @@ const none = Object.freeze({
   simulate: () => null,
 });
 
+export function flattenCmd(cmd) {
+  if (
+    cmd.type === cmdTypes.MAP ||
+    cmd.type === cmdTypes.SET_TIMEOUT ||
+    cmd.type === cmdTypes.SET_INTERVAL
+  ) {
+    return flattenCmd(cmd.nestedCmd);
+  }
+  if (cmd.type === cmdTypes.LIST) {
+    return cmd.cmds.flatMap(flattenCmd);
+  }
+  return [cmd];
+}
+
 export default {
   run,
   action,

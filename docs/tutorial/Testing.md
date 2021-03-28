@@ -34,6 +34,49 @@ test('reducer works as expected', (t) => {
 > not equal within JavaScript, and so are best to avoid if you want to compare
 > effects in your tests.
 
+## Working with nested cmd objects
+
+You may need to test objects from the `Cmd` module that make use of
+`Cmd.list` or `Cmd.map`. Imagine in the above example the reducer is updated to
+perform multiple commands when loading starts. We want to test that the properly
+shaped `fetchDetails` cmd is called, but don't necessarily want to mock out every
+effect in `Cmd.list` for an assertion. `flattenCmd` will return all commands nested in
+`Cmd.list`, `Cmd.map`, `Cmd.setInterval` and `Cmd.timeout` in a coniently un-nested array that contains
+only `Cmd.none`, `Cmd.run`, and `Cmd.action` objects.
+
+```js
+import test from 'tape';
+import reducer, { fetchDetails } from './reducer';
+import { loadingStart, loadingSuccess, loadingError } from './actions';
+import { Cmd, loop, flattenCmd, getCmd } from 'redux-loop';
+
+test('reducer fetches data after loadingStart action', (t) => {
+  t.plan(2)
+  const state = { loading: false };
+
+  const resultCmd = getCmd(
+    reducer(state, loadingStart(1));
+  );
+
+  const fetchCmd = flattenCmd(resultCmd).find((cmd) => {
+    return cmd.successActionCreator === loadingSuccess
+  })
+
+  t.ok(fetchCmd)
+
+  t.deepEqual(
+    fetchCmd,
+    Cmd.run(fetchDetails, {
+      successActionCreator: loadingSuccess,
+      failActionCreator: loadingError,
+      args: [1]
+    })
+  )
+
+  t.end()
+});
+```
+
 ## Simulating cmd objects
 
 Occasionally you may find yourself in a situation where you need to pass more
@@ -71,3 +114,11 @@ You can simulate any cmd object to test the actions returned. Lists take
 arrays of simulations for their child cmds.
 
 [See detailed documentation about simulating Cmds](/docs/api-docs/cmds.md)
+
+## Testing nested cmd objects
+
+You may have cases where you are interested in 
+
+```
+
+```

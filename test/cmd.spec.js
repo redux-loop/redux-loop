@@ -1,4 +1,4 @@
-import Cmd, { isCmd, executeCmd } from '../src/cmd';
+import Cmd, { isCmd, executeCmd, flattenCmd } from '../src/cmd';
 
 function actionCreator1(val) {
   return { type: 'TYPE1', val };
@@ -887,6 +887,29 @@ describe('Cmds', () => {
       expect(listCmd).toEqual(
         Cmd.list(expect.arrayContaining([cmd]), { testInvariants: true })
       );
+    });
+  });
+
+  describe('flattenCmd', () => {
+    it('Should only return "root" cmd objects', () => {
+      const depth0Cmd = Cmd.action({ type: 'DEPTH_0' });
+      const depth1Cmd = Cmd.action({ type: 'DEPTH_1' });
+      const depth2Cmd = Cmd.run(() => Promise.resolve(), {
+        successActionCreator: () => ({ type: 'DEPTH_2' }),
+      });
+
+      const listCmd = Cmd.list([
+        depth0Cmd,
+        Cmd.setTimeout(Cmd.none, 1000),
+        Cmd.map(depth1Cmd, (subAction) => ({ subAction })),
+        Cmd.map(Cmd.setInterval(depth2Cmd, 1000), (subAction) => ({
+          subAction,
+        })),
+      ]);
+
+      const flattenedCmd = flattenCmd(listCmd);
+
+      expect(flattenedCmd).toEqual([depth0Cmd, Cmd.none, depth1Cmd, depth2Cmd]);
     });
   });
 });

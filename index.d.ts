@@ -266,3 +266,5 @@ export function isLoop(test: any): boolean;
 export function getModel<S>(loop: S | Loop<S>): S;
 
 export function getCmd(a: any): CmdType | null;
+
+export function flattenCmd(cmd: CmdType): CmdType[];

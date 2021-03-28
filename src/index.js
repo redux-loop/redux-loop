@@ -1,6 +1,6 @@
 import { loop, liftState, getModel, getCmd, isLoop } from './loop';
 
-import Cmd from './cmd';
+import Cmd, { flattenCmd } from './cmd';
 
 import { install } from './install';
 
@@ -27,4 +27,4 @@ export function reduceReducers(...args) {
   return r(...args);
 }
 
-export { Cmd, install, loop, liftState, getModel, getCmd, isLoop };
+export { Cmd, install, loop, liftState, getModel, getCmd, isLoop, flattenCmd };
