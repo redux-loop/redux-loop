@@ -902,7 +902,7 @@ describe('Cmds', () => {
         depth0Cmd,
         Cmd.setTimeout(Cmd.none, 1000),
         Cmd.map(depth1Cmd, (subAction) => ({ subAction })),
-        Cmd.map(Cmd.setInterval(depth2Cmd, 1000), (subAction) => ({
+        Cmd.map(Cmd.setInterval(Cmd.list([depth2Cmd]), 1000), (subAction) => ({
           subAction,
         })),
       ]);
