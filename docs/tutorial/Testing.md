@@ -59,10 +59,10 @@ test('reducer fetches data after loadingStart action', (t) => {
   );
 
   const fetchCmd = flattenCmd(resultCmd).find((cmd) => {
-    return cmd.successActionCreator === loadingSuccess
-  })
+    return cmd.successActionCreator === loadingSuccess;
+  });
 
-  t.ok(fetchCmd)
+  t.ok(fetchCmd);
 
   t.deepEqual(
     fetchCmd,
@@ -71,9 +71,9 @@ test('reducer fetches data after loadingStart action', (t) => {
       failActionCreator: loadingError,
       args: [1]
     })
-  )
+  );
 
-  t.end()
+  t.end();
 });
 ```
 
