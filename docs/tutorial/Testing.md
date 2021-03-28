@@ -41,7 +41,7 @@ You may need to test objects from the `Cmd` module that make use of
 perform multiple commands when loading starts. We want to test that the properly
 shaped `fetchDetails` cmd is called, but don't necessarily want to mock out every
 effect in `Cmd.list` for an assertion. `flattenCmd` will return all commands nested in
-`Cmd.list`, `Cmd.map`, `Cmd.setInterval` and `Cmd.timeout` in a coniently un-nested array that contains
+`Cmd.list`, `Cmd.map`, `Cmd.setInterval` and `Cmd.timeout` in a conveniently un-nested array that contains
 only `Cmd.none`, `Cmd.run`, and `Cmd.action` objects.
 
 ```js
@@ -114,11 +114,3 @@ You can simulate any cmd object to test the actions returned. Lists take
 arrays of simulations for their child cmds.
 
 [See detailed documentation about simulating Cmds](/docs/api-docs/cmds.md)
-
-## Testing nested cmd objects
-
-You may have cases where you are interested in 
-
-```
-
-```
