@@ -1,4 +1,4 @@
-import { throwInvariant, flatten, isPromiseLike } from './utils';
+import { throwInvariant, flatten, isPromiseLike, flatMap } from './utils';
 
 const isCmdSymbol = Symbol('isCmd');
 const dispatchSymbol = Symbol('dispatch');
@@ -442,7 +442,7 @@ export function flattenCmd(cmd) {
   ) {
     return flattenCmd(cmd.nestedCmd);
   } else if (cmd.type === cmdTypes.LIST) {
-    return cmd.cmds.flatMap(flattenCmd);
+    return flatMap(cmd.cmds, flattenCmd);
   } else if (cmd.type === cmdTypes.NONE) {
     return [];
   }
