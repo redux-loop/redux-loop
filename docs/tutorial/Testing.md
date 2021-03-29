@@ -42,7 +42,7 @@ perform multiple commands when loading starts. We want to test that the properly
 shaped `fetchDetails` cmd is called, but don't necessarily want to mock out every
 effect in `Cmd.list` for an assertion. `flattenCmd` will return all commands nested in
 `Cmd.list`, `Cmd.map`, `Cmd.setInterval` and `Cmd.timeout` in a conveniently un-nested array that contains
-only `Cmd.none`, `Cmd.run`, and `Cmd.action` objects.
+only `Cmd.run` and `Cmd.action` objects.
 
 ```js
 import test from 'tape';

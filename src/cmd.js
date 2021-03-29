@@ -441,9 +441,10 @@ export function flattenCmd(cmd) {
     cmd.type === cmdTypes.SET_INTERVAL
   ) {
     return flattenCmd(cmd.nestedCmd);
-  }
-  if (cmd.type === cmdTypes.LIST) {
+  } else if (cmd.type === cmdTypes.LIST) {
     return cmd.cmds.flatMap(flattenCmd);
+  } else if (cmd.type === cmdTypes.NONE) {
+    return [];
   }
   return [cmd];
 }

@@ -891,7 +891,33 @@ describe('Cmds', () => {
   });
 
   describe('flattenCmd', () => {
-    it('Should only return "root" cmd objects', () => {
+    const actionCmd = Cmd.action({ type: 'SUCCESS' });
+    const runCmd = Cmd.run(() => Promise.resolve(), {
+      successActionCreator: () => ({ type: 'SUCCESS' }),
+      failActionCreator: () => ({ type: 'FAIL' }),
+    });
+    const timeoutCmd = Cmd.setTimeout(runCmd, 1000);
+
+    it('Should "flatten" un-nested commands', () => {
+      expect(flattenCmd(runCmd)).toEqual([runCmd]);
+    });
+
+    it('Should exclude Cmd.none', () => {
+      const cmd = Cmd.list([Cmd.none, runCmd, Cmd.none]);
+      expect(flattenCmd(cmd)).toEqual([runCmd]);
+    });
+
+    it('Handles multi-level lists', () => {
+      const cmd = Cmd.list([Cmd.list([runCmd]), timeoutCmd]);
+      expect(flattenCmd(cmd)).toEqual([runCmd, runCmd]);
+    });
+
+    it('Includes both runCmd and actionCmd', () => {
+      const cmd = Cmd.list([actionCmd, Cmd.none, runCmd, Cmd.none]);
+      expect(flattenCmd(cmd)).toEqual([actionCmd, runCmd]);
+    });
+
+    it('Should flatten cmd objects at a variety of depths', () => {
       const depth0Cmd = Cmd.action({ type: 'DEPTH_0' });
       const depth1Cmd = Cmd.action({ type: 'DEPTH_1' });
       const depth2Cmd = Cmd.run(() => Promise.resolve(), {
@@ -909,7 +935,7 @@ describe('Cmds', () => {
 
       const flattenedCmd = flattenCmd(listCmd);
 
-      expect(flattenedCmd).toEqual([depth0Cmd, Cmd.none, depth1Cmd, depth2Cmd]);
+      expect(flattenedCmd).toEqual([depth0Cmd, depth1Cmd, depth2Cmd]);
     });
   });
 });
