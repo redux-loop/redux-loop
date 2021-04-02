@@ -1,0 +1,5 @@
+{
+  "name": "redux-loop/react-redux",
+  "private": true,
+  "types": "./index.d.ts"
+}
