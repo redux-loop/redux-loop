@@ -902,40 +902,40 @@ describe('Cmds', () => {
       expect(flattenCmd(runCmd)).toEqual([runCmd]);
     });
 
-    it('Should exclude Cmd.none', () => {
-      const cmd = Cmd.list([Cmd.none, runCmd, Cmd.none]);
-      expect(flattenCmd(cmd)).toEqual([runCmd]);
-    });
-
     it('Handles multi-level lists', () => {
       const cmd = Cmd.list([Cmd.list([runCmd]), timeoutCmd]);
-      expect(flattenCmd(cmd)).toEqual([runCmd, runCmd]);
+
+      expect(flattenCmd(cmd)).toEqual([
+        cmd,
+        Cmd.list([runCmd]),
+        runCmd,
+        timeoutCmd,
+        runCmd,
+      ]);
     });
 
-    it('Includes both runCmd and actionCmd', () => {
-      const cmd = Cmd.list([actionCmd, Cmd.none, runCmd, Cmd.none]);
-      expect(flattenCmd(cmd)).toEqual([actionCmd, runCmd]);
-    });
-
-    it('Should flatten cmd objects at a variety of depths', () => {
-      const depth0Cmd = Cmd.action({ type: 'DEPTH_0' });
-      const depth1Cmd = Cmd.action({ type: 'DEPTH_1' });
+    it('Should flatten deep while preserving "parent" cmd objects', () => {
       const depth2Cmd = Cmd.run(() => Promise.resolve(), {
         successActionCreator: () => ({ type: 'DEPTH_2' }),
       });
 
+      const mapCmd = (subAction) => ({ subAction });
+
       const listCmd = Cmd.list([
-        depth0Cmd,
-        Cmd.setTimeout(Cmd.none, 1000),
-        Cmd.map(depth1Cmd, (subAction) => ({ subAction })),
-        Cmd.map(Cmd.setInterval(Cmd.list([depth2Cmd]), 1000), (subAction) => ({
-          subAction,
-        })),
+        actionCmd,
+        Cmd.map(Cmd.setInterval(Cmd.list([depth2Cmd]), 1000), mapCmd),
       ]);
 
       const flattenedCmd = flattenCmd(listCmd);
 
-      expect(flattenedCmd).toEqual([depth0Cmd, depth1Cmd, depth2Cmd]);
+      expect(flattenedCmd).toEqual([
+        listCmd,
+        actionCmd,
+        Cmd.map(Cmd.setInterval(Cmd.list([depth2Cmd]), 1000), mapCmd),
+        Cmd.setInterval(Cmd.list([depth2Cmd]), 1000),
+        Cmd.list([depth2Cmd]),
+        depth2Cmd,
+      ]);
     });
   });
 });

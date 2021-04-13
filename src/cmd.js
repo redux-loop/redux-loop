@@ -440,11 +440,9 @@ export function flattenCmd(cmd) {
     cmd.type === cmdTypes.SET_TIMEOUT ||
     cmd.type === cmdTypes.SET_INTERVAL
   ) {
-    return flattenCmd(cmd.nestedCmd);
+    return [cmd].concat(flattenCmd(cmd.nestedCmd));
   } else if (cmd.type === cmdTypes.LIST) {
-    return flatMap(cmd.cmds, flattenCmd);
-  } else if (cmd.type === cmdTypes.NONE) {
-    return [];
+    return [cmd].concat(flatMap(cmd.cmds, flattenCmd));
   }
   return [cmd];
 }
