@@ -41,8 +41,7 @@ You may need to test objects from the `Cmd` module that make use of
 perform multiple commands when loading starts. We want to test that the properly
 shaped `fetchDetails` cmd is included, but don't want to perform a `deepEqual` that 
 is sensitive to how we've nested that command. `flattenCmd` will return all commands nested in
-`Cmd.list`, `Cmd.map`, `Cmd.setInterval` and `Cmd.timeout` in a conveniently un-nested array that contains
-only `Cmd.run` and `Cmd.action` objects.
+`Cmd.list`, `Cmd.map`, `Cmd.setInterval` and `Cmd.timeout` in a conveniently un-nested array.
 
 ```js
 import reducer, { fetchDetails } from './reducer';
