@@ -34,6 +34,53 @@ test('reducer works as expected', (t) => {
 > not equal within JavaScript, and so are best to avoid if you want to compare
 > effects in your tests.
 
+## Working with nested cmd objects
+
+You may need to test objects from the `Cmd` module that make use of
+`Cmd.list` or `Cmd.map`. Imagine in the above example the reducer is updated to
+perform multiple commands when loading starts. We want to test that the properly
+shaped `fetchDetails` cmd is included, but don't want to perform a `deepEqual` that 
+is sensitive to how we've nested that command. `flattenCmd` will return all commands nested in
+`Cmd.list`, `Cmd.map`, `Cmd.setInterval` and `Cmd.timeout` in a conveniently un-nested array.
+
+```js
+import reducer, { fetchDetails } from './reducer';
+import { loadingStart, loadingSuccess, loadingError } from './actions';
+import { Cmd, flattenCmd, getCmd } from 'redux-loop';
+
+const state = { loading: false };
+
+const resultCmd = getCmd(
+  reducer(state, loadingStart(1));
+);
+
+expect(flattenCmd(resultCmd)).toContain(
+  Cmd.run(fetchDetails, {
+    successActionCreator: loadingSuccess,
+    failActionCreator: loadingError,
+    args: [1]
+  })
+);
+```
+
+`flattenCmd` does not discard the parent cmd objects for nested cmd's. For example:
+
+```
+Cmd.list([Cmd.timeout(runCmd, 1000)])
+```
+
+Will "flatten" to
+
+```
+[ Cmd.list([Cmd.timeout(runCmd, 1000)]),
+  Cmd.timeout(runCmd, 1000),
+  runCmd
+]
+```
+
+So you may choose whether a test assertion considers nesting such as `Cmd.list` and `Cmd.timeout` a relevant detail.
+
+
 ## Simulating cmd objects
 
 Occasionally you may find yourself in a situation where you need to pass more

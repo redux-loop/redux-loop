@@ -1,4 +1,4 @@
-import { flatten, throwInvariant, isPromiseLike } from '../src/utils';
+import { flatten, throwInvariant, isPromiseLike, flatMap } from '../src/utils';
 
 describe('utils', () => {
   describe('flatten', () => {
@@ -8,6 +8,13 @@ describe('utils', () => {
         [4, 5, 6],
       ];
       expect(flatten(arr)).toEqual([1, 2, 3, 4, 5, 6]);
+    });
+  });
+
+  describe('flatMap', () => {
+    it('maps and then flattens the result', () => {
+      let arr = [1, 1];
+      expect(flatMap(arr, (v) => [v * 2, v * 2])).toEqual([2, 2, 2, 2]);
     });
   });
 

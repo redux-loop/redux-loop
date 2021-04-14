@@ -4,6 +4,10 @@ export const flatten = (array) => {
   return concat.apply([], array);
 };
 
+export const flatMap = (array, mapFn) => {
+  return array.reduce((nextArray, cur) => nextArray.concat(mapFn(cur)), []);
+};
+
 export const throwInvariant = (condition, message) => {
   if (!condition) {
     throw Error(message);

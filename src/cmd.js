@@ -1,4 +1,4 @@
-import { throwInvariant, flatten, isPromiseLike } from './utils';
+import { throwInvariant, flatten, isPromiseLike, flatMap } from './utils';
 
 const isCmdSymbol = Symbol('isCmd');
 const dispatchSymbol = Symbol('dispatch');
@@ -433,6 +433,19 @@ const none = Object.freeze({
   type: cmdTypes.NONE,
   simulate: () => null,
 });
+
+export function flattenCmd(cmd) {
+  if (
+    cmd.type === cmdTypes.MAP ||
+    cmd.type === cmdTypes.SET_TIMEOUT ||
+    cmd.type === cmdTypes.SET_INTERVAL
+  ) {
+    return [cmd].concat(flattenCmd(cmd.nestedCmd));
+  } else if (cmd.type === cmdTypes.LIST) {
+    return [cmd].concat(flatMap(cmd.cmds, flattenCmd));
+  }
+  return [cmd];
+}
 
 export default {
   run,

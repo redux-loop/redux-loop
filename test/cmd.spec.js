@@ -1,4 +1,4 @@
-import Cmd, { isCmd, executeCmd } from '../src/cmd';
+import Cmd, { isCmd, executeCmd, flattenCmd } from '../src/cmd';
 
 function actionCreator1(val) {
   return { type: 'TYPE1', val };
@@ -887,6 +887,55 @@ describe('Cmds', () => {
       expect(listCmd).toEqual(
         Cmd.list(expect.arrayContaining([cmd]), { testInvariants: true })
       );
+    });
+  });
+
+  describe('flattenCmd', () => {
+    const actionCmd = Cmd.action({ type: 'SUCCESS' });
+    const runCmd = Cmd.run(() => Promise.resolve(), {
+      successActionCreator: () => ({ type: 'SUCCESS' }),
+      failActionCreator: () => ({ type: 'FAIL' }),
+    });
+    const timeoutCmd = Cmd.setTimeout(runCmd, 1000);
+
+    it('Should "flatten" un-nested commands', () => {
+      expect(flattenCmd(runCmd)).toEqual([runCmd]);
+    });
+
+    it('Handles multi-level lists', () => {
+      const cmd = Cmd.list([Cmd.list([runCmd]), timeoutCmd]);
+
+      expect(flattenCmd(cmd)).toEqual([
+        cmd,
+        Cmd.list([runCmd]),
+        runCmd,
+        timeoutCmd,
+        runCmd,
+      ]);
+    });
+
+    it('Should flatten deep while preserving "parent" cmd objects', () => {
+      const depth2Cmd = Cmd.run(() => Promise.resolve(), {
+        successActionCreator: () => ({ type: 'DEPTH_2' }),
+      });
+
+      const mapCmd = (subAction) => ({ subAction });
+
+      const listCmd = Cmd.list([
+        actionCmd,
+        Cmd.map(Cmd.setInterval(Cmd.list([depth2Cmd]), 1000), mapCmd),
+      ]);
+
+      const flattenedCmd = flattenCmd(listCmd);
+
+      expect(flattenedCmd).toEqual([
+        listCmd,
+        actionCmd,
+        Cmd.map(Cmd.setInterval(Cmd.list([depth2Cmd]), 1000), mapCmd),
+        Cmd.setInterval(Cmd.list([depth2Cmd]), 1000),
+        Cmd.list([depth2Cmd]),
+        depth2Cmd,
+      ]);
     });
   });
 });
