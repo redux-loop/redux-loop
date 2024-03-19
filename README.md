@@ -57,10 +57,6 @@ library as well and want it to be the best it can! For questions about using the
 library, [submit questions on StackOverflow](http://stackoverflow.com/questions/ask)
 with the [`redux-loop` tag](http://stackoverflow.com/questions/tagged/redux-loop).
 
-### Slack channel
-
-[Come join our slack channel.](https://reduxloop-slack.herokuapp.com/)
-
 ### Don't see a feature you want?
 
 If you're interested in adding something to `redux-loop` but don't want to wait
